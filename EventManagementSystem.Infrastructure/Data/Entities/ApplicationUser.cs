@@ -9,7 +9,7 @@ namespace EventManagementSystem.Infrastructure.Entities
     public class ApplicationUser: IdentityUser
     {
         [Phone(ErrorMessage = ValidationConstants.InvalidPhoneNumber)]
-        public override string PhoneNumber { get; set; }
+        public override string? PhoneNumber { get; set; }
 
         public ICollection<Ticket> Tickets { get; set; }
         public ICollection<Reservation> Reservations { get; set; }

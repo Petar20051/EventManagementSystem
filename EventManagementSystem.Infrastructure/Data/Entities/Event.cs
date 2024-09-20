@@ -22,9 +22,15 @@ namespace EventManagementSystem.Infrastructure.Entities
         public DateTime Date { get; set; }
 
         [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        public int VenueId { get; set; }
+        public int VenueId { get; set; } // Foreign key for Venue
+
         [ForeignKey(nameof(VenueId))]
-        public Venue Venue { get; set; }
+        public Venue Venue { get; set; } // Navigation property to Venue
+
+        public string OrganizerId { get; set; }
+
+        [ForeignKey(nameof(OrganizerId))]
+        public ApplicationUser Organizer { get; set; }
 
         public ICollection<Ticket> Tickets { get; set; }
         public ICollection<Reservation> Reservations { get; set; }

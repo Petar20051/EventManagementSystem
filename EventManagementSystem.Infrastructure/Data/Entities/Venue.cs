@@ -18,6 +18,6 @@ namespace EventManagementSystem.Infrastructure.Entities
         [Required(ErrorMessage = ValidationConstants.RequiredField)]
         public int Capacity { get; set; }
 
-        public ICollection<Event> Events { get; set; }
+        public ICollection<Event> Events { get; set; } 
     }
 }

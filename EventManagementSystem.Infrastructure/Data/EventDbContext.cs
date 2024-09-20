@@ -1,11 +1,13 @@
 ﻿using EventManagementSystem.Infrastructure.Data.Entities;
+using EventManagementSystem.Infrastructure.Data.Enums;
 using EventManagementSystem.Infrastructure.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventMaganementSystem.Data
 {
-    public class EventDbContext : IdentityDbContext
+    public class EventDbContext : IdentityDbContext<ApplicationUser>
     {
         public EventDbContext(DbContextOptions<EventDbContext> options)
             : base(options)
@@ -50,6 +52,34 @@ namespace EventMaganementSystem.Data
 
             modelBuilder.Entity<UserEvent>()
                 .HasKey(ue => new { ue.UserId, ue.EventId });
+
+            modelBuilder.Entity<Event>()
+       .HasOne(e => e.Venue)
+       .WithMany(v => v.Events) // Configuring the one-to-many relationship
+       .HasForeignKey(e => e.VenueId)
+       .OnDelete(DeleteBehavior.Cascade); // Adjust as needed
+
+            modelBuilder.Entity<Event>()
+                .HasOne(e => e.Organizer)
+                .WithMany() // Assuming ApplicationUser does not have a collection of Events
+                .HasForeignKey(e => e.OrganizerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<IdentityRole>().HasData(
+            new IdentityRole { Id = "1", Name = "Guest", NormalizedName = "GUEST" },
+            new IdentityRole { Id = "2", Name = "Organizer", NormalizedName = "ORGANIZER" },
+            new IdentityRole { Id = "3", Name = "Sponsor", NormalizedName = "SPONSOR" },
+            new IdentityRole { Id = "4", Name = "Admin", NormalizedName = "ADMIN" }
+        );
+
+
+            // Seed Venues
+            modelBuilder.Entity<Venue>().HasData(
+                new Venue { Id = 1, Name = "Conference Hall A", Address = "City Center", Capacity = 500 },
+                new Venue { Id = 2, Name = "Workshop Room B", Address = "Tech Park", Capacity = 150 }
+            );
+
+            
         }
 
     }
