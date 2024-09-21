@@ -1,23 +1,25 @@
-﻿@using EventManagementSystem.Core.Models.Account
+﻿﻿@using EventManagementSystem.Core.Models.Account
 @model ManageProfileViewModel
 
 <h2 class="text-center">Manage Profile</h2>
 
 <div class="profile-info">
-    <p><strong>Username:</strong> @Model.UserName</p>
-    <p><strong>Email:</strong> @Model.Email</p>
-    <p><strong>Phone Number:</strong> @Model.PhoneNumber</p>
-    <p><strong>Sponsored Amount:</strong> @Model.SponsoredAmount</p>
-    <p><strong>Sponsorship Tier:</strong> @Model.SponsorshipTier</p>
+    <p>
+        <strong>Username:</strong> @Model.UserName.Substring(0, Model.UserName.IndexOf('@'))
+    </p>
+
+    <p><strong>Email:</strong> @Model.UserName</p>
+    <p><strong>Sponsored Amount:</strong> @Model?.SponsoredAmount.ToString("C")</p>
+    <p><strong>Sponsorship Tier:</strong> @Model?.SponsorshipTier?.ToString()</p>
 </div>
 
 <h3>Your Tickets</h3>
-@if (Model.Tickets != null && Model.Tickets.Any())
+@if (Model?.Tickets != null && Model.Tickets.Any())
 {
     <ul>
         @foreach (var ticket in Model.Tickets)
         {
-            <li>Ticket ID: @ticket.Id - Event: @ticket.Event.Name</li>
+            <li>Ticket ID: @ticket.Id - Event: @ticket.Event?.Name ?? "Unknown Event"</li>
         }
     </ul>
 }
@@ -28,25 +30,7 @@ else
 
 <h3>Update Profile Information</h3>
 
-<form asp-action="Index" method="post">
-    <div class="form-group">
-        <label asp-for="Email">Email</label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="PhoneNumber">Phone Number</label>
-        <input asp-for="PhoneNumber" class="form-control" />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
-
-    <!-- Include any additional fields as needed -->
-
-    <button type="submit" class="btn btn-primary">Update Profile</button>
-</form>
-
 <div>
-    <h3>Change Password</h3>
-    <a asp-controller="ChangePassword" asp-action="Index">Change Password</a>
+   
+    <button type="button" class="btn btn-secondary" onclick="window.location.href='@Url.Action("Index", "ChangePassword")'">Change Password</button>
 </div>

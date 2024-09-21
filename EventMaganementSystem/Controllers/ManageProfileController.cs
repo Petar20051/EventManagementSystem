@@ -29,7 +29,7 @@ namespace EventMaganementSystem.Controllers
                 SponsoredAmount = user.SponsoredAmount,
                 SponsorshipTier = user.SponsorshipTier.ToString(),
                 Tickets=tickets,
-                PhoneNumber=user.PhoneNumber
+              
                
             };
 
