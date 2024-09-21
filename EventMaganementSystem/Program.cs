@@ -28,6 +28,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IProfileService, ProfileService>();
+builder.Services.AddTransient<IEventService, EventService>();
+builder.Services.AddScoped<IVenueService, VenueService>();
+builder.Services.AddScoped<IUserEventService, UserEventService>();
 
 
 var app = builder.Build();

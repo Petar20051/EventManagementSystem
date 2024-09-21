@@ -3,6 +3,7 @@
 
 <h2 class="text-center">Manage Profile</h2>
 
+
 <div class="profile-info">
     <p>
         <strong>Username:</strong> @Model.UserName.Substring(0, Model.UserName.IndexOf('@'))
@@ -31,6 +32,27 @@ else
 <h3>Update Profile Information</h3>
 
 <div>
-   
     <button type="button" class="btn btn-secondary" onclick="window.location.href='@Url.Action("Index", "ChangePassword")'">Change Password</button>
 </div>
+@if (!User.IsInRole("Organizer"))
+{
+    <h3>Become an Organizer</h3>
+    <form asp-action="BecomeOrganizer" method="post">
+        <button type="submit" class="btn btn-primary">Become Organizer</button>
+    </form>
+}
+else
+{
+    <h3>Organizer Status:</h3>
+    <p>You are already an organizer.</p>
+}<!-- TempData Messages -->
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+

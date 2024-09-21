@@ -21,6 +21,8 @@ namespace EventManagementSystem.Infrastructure.Entities
         [Required(ErrorMessage = ValidationConstants.RequiredField)]
         public DateTime Date { get; set; }
 
+        public string Description { get; set; }
+
         [Required(ErrorMessage = ValidationConstants.RequiredField)]
         public int VenueId { get; set; } // Foreign key for Venue
 
