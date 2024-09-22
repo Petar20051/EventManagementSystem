@@ -1,6 +1,8 @@
-﻿using EventManagementSystem.Infrastructure.Entities;
+﻿using EventManagementSystem.Core.Models.Events;
+using EventManagementSystem.Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,5 +19,6 @@ namespace EventManagementSystem.Core.Contracts
     Task DeleteEventAsync(int id);
     Task<List<Event>> GetAllEventsAsync();
 
+    Task<bool> HasTicketsAsync(int eventId);
     }
 }

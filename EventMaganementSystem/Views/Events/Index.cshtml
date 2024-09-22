@@ -22,7 +22,7 @@
                 <td>@item.Name</td>
                 <td>@item.Description</td>
                 <td>@item.Date.ToString("d")</td>
-                <td></td>
+                <td>@item.Location</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
                     <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;">
@@ -30,6 +30,19 @@
                     </form>
                 </td>
             </tr>
+        }
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Message"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
         }
     </tbody>
 </table>

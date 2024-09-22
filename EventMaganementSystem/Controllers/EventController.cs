@@ -5,7 +5,10 @@ using EventManagementSystem.Core.Services;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EventMaganementSystem.Controllers
 {
@@ -30,8 +33,9 @@ namespace EventMaganementSystem.Controllers
             {
                 Id = e.Id,
                 Name = e.Name,
-                Date = e.Date
-                
+                Date = e.Date,
+                Description = e.Description,
+                Location = e.Venue != null ? e.Venue.Name : "Unknown Location"  
             }).ToList();
 
             return View(eventViewModels);
@@ -48,6 +52,7 @@ namespace EventMaganementSystem.Controllers
                     Name = venue.Name
                 }).ToList()
             };
+            model.Date = DateTime.Now;
             return View(model);
         }
 
@@ -92,19 +97,29 @@ namespace EventMaganementSystem.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var eventItem = await _eventService.GetEventByIdAsync(id);
             if (eventItem == null) return NotFound();
-
+            var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var model = new EventViewModel
             {
                 Id = eventItem.Id,
                 Name = eventItem.Name,
-               
                 Date = eventItem.Date,
-             
+                Description = eventItem.Description,
+                VenueId = eventItem.VenueId, 
+                OrganizerId = organizerId
             };
+
+            var venues = await _venueService.GetAllVenuesAsync();
+            model.Venues = venues.Select(venue => new VenueViewModel
+            {
+                Id = venue.Id,
+                Name = venue.Name
+            }).ToList();
+
             return View(model);
         }
 
@@ -113,27 +128,44 @@ namespace EventMaganementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                var eventItem = new Event
-                {
-                    Id = model.Id,
-                    Name = model.Name,
-                    
-                    Date = model.Date
-                    
-                };
+                var eventItem = await _eventService.GetEventByIdAsync(model.Id);
+                if (eventItem == null) return NotFound();
+
+                eventItem.Name = model.Name;
+                eventItem.Description = model.Description;
+                eventItem.Date = model.Date;
+                eventItem.VenueId = model.VenueId;
+
                 await _eventService.UpdateEventAsync(eventItem);
                 TempData["Message"] = "Event updated successfully.";
                 return RedirectToAction(nameof(Index));
             }
+
+            // Repopulate venues if the model state is invalid
+            var venues = await _venueService.GetAllVenuesAsync();
+            model.Venues = venues.Select(venue => new VenueViewModel
+            {
+                Id = venue.Id,
+                Name = venue.Name
+            }).ToList();
+
             return View(model);
         }
-
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
+            
+            var hasTickets = await _eventService.HasTicketsAsync(id);
+            if (hasTickets)
+            {
+                TempData["ErrorMessage"] = "Cannot delete the event because there are tickets associated with it.";
+                return RedirectToAction(nameof(Index));
+            }
             await _eventService.DeleteEventAsync(id);
             TempData["Message"] = "Event deleted successfully.";
             return RedirectToAction(nameof(Index));
         }
+
+
     }
 }

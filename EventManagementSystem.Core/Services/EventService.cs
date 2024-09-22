@@ -1,5 +1,6 @@
 ﻿using EventMaganementSystem.Data;
 using EventManagementSystem.Core.Contracts;
+using EventManagementSystem.Core.Models.Events;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -37,7 +38,7 @@ namespace EventManagementSystem.Core.Services
 
         public async Task<List<Event>> GetAllEventsAsync()
         {
-            return await _context.Events.ToListAsync();
+            return await _context.Events.Include(e => e.Venue).ToListAsync();
         }
 
         public async Task<Event> GetEventByIdAsync(int id)
@@ -51,5 +52,11 @@ namespace EventManagementSystem.Core.Services
             _context.Events.Update(events);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> HasTicketsAsync(int eventId)
+        {
+            return await _context.Tickets.AnyAsync(t => t.EventId == eventId);
+        }
+
     }
 }

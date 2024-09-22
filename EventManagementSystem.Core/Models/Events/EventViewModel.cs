@@ -16,10 +16,11 @@ namespace EventManagementSystem.Core.Models.Events
         public string Description { get; set; }
         public DateTime Date { get; set; }
         
-        public string OrganizerId {  get; set; }
+        public string? Location { get; set; }
+        public string? OrganizerId {  get; set; }
         public int VenueId {  get; set; }
-        // Add other properties as needed
+       
 
-        public List<VenueViewModel> Venues { get; set; }
+        public List<VenueViewModel>? Venues { get; set; }
     }
 }

@@ -17,7 +17,7 @@
 
     <div class="form-group">
         <label asp-for="Date"></label>
-        <input asp-for="Date" type="date" class="form-control" />
+        <input asp-for="Date" type="datetime-local" class="form-control" value="@Model.Date.ToString("yyyy-MM-ddTHH:mm")" />
         <span asp-validation-for="Date" class="text-danger"></span>
     </div>
 
@@ -31,6 +31,8 @@
 
     <button type="submit" class="btn btn-primary" >Create</button>
 </form>
+
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
