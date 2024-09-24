@@ -1,4 +1,5 @@
 ﻿using EventManagementSystem.Infrastructure.Constants;
+using EventManagementSystem.Infrastructure.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -37,5 +38,7 @@ namespace EventManagementSystem.Infrastructure.Entities
         public ICollection<Ticket> Tickets { get; set; }
         public ICollection<Reservation> Reservations { get; set; }
         public ICollection<Feedback> Feedbacks { get; set; }
+
+        public ICollection<EventInvitation> Invitations { get; set; }
     }
 }

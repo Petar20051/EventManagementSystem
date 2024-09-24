@@ -1,0 +1,93 @@
+﻿@using EventManagementSystem.Infrastructure.Data.Entities
+@model IEnumerable<EventInvitation>
+
+@{
+    ViewBag.Title = "Your Invitations";
+}
+
+<h2>Your Invitations</h2>
+
+<!-- Display sent invitations -->
+<h3>Sent Invitations</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Event</th>
+            <th>Receiver</th>
+            <th>Invitation Date</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invitation in Model.Where(i => i.SenderId == ViewBag.UserId))
+        {
+            <tr>
+                <td>@invitation.Event.Name</td>
+                <td>@invitation.Receiver.UserName</td>
+                <td>@invitation.InvitationDate.ToString("MM/dd/yyyy")</td>
+                <td>@invitation.Status</td>
+                <td>
+                    <a href="@Url.Action("Details", new { id = invitation.Id })" class="btn btn-info">Details</a>
+                    <a href="@Url.Action("Delete", new { id = invitation.Id })" class="btn btn-danger">Cancel</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a href="@Url.Action("Create")" class="btn btn-primary">Send New Invitation</a>
+<!-- Display received invitations -->
+<h3>Received Invitations</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Event</th>
+            <th>Sender</th>
+            <th>Invitation Date</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invitation in Model.Where(i => i.ReceiverId == ViewBag.UserId && (int)i.Status!=1))
+        {
+            <tr>
+                <td>@invitation.Event.Name</td>
+                <td>@invitation.Sender.UserName</td>
+                <td>@invitation.InvitationDate.ToString("MM/dd/yyyy")</td>
+                <td>@invitation.Status</td>
+                <td>
+                    <form method="post" asp-action="ConfirmInvitation" asp-route-id="@invitation.Id" style="display:inline;">
+                        <button type="submit" class="btn btn-success">Confirm</button>
+                    </form>
+                    <a href="@Url.Action("Details", new { id = invitation.Id })" class="btn btn-info">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Display confirmed invitations -->
+<h3>Confirmed Invitations</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Event</th>
+            <th>Sender</th>
+            <th>Receiver</th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var invitation in Model.Where(i => (int)i.Status == 1 && i.ReceiverId == ViewBag.UserId))
+        {
+            <tr>
+                <td>@invitation.Event.Name</td>
+                <td>@invitation.Sender.UserName</td>
+                <td>@invitation.Receiver.UserName</td>
+                
+            </tr>
+        }
+    </tbody>
+</table>
+

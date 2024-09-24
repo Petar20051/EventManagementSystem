@@ -4,6 +4,7 @@ using EventMaganementSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(EventDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240923092743_Create")]
+    partial class Create
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,42 +56,6 @@ namespace EventManagementSystem.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CreditCardDetails");
-                });
-
-            modelBuilder.Entity("EventManagementSystem.Infrastructure.Data.Entities.EventInvitation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("InvitationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ReceiverId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("SenderId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("EventInvitations");
                 });
 
             modelBuilder.Entity("EventManagementSystem.Infrastructure.Entities.ApplicationUser", b =>
@@ -617,33 +584,6 @@ namespace EventManagementSystem.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("EventManagementSystem.Infrastructure.Data.Entities.EventInvitation", b =>
-                {
-                    b.HasOne("EventManagementSystem.Infrastructure.Entities.Event", "Event")
-                        .WithMany("Invitations")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EventManagementSystem.Infrastructure.Entities.ApplicationUser", "Receiver")
-                        .WithMany("ReceivedInvitations")
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("EventManagementSystem.Infrastructure.Entities.ApplicationUser", "Sender")
-                        .WithMany("SentInvitations")
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
-                });
-
             modelBuilder.Entity("EventManagementSystem.Infrastructure.Entities.Discount", b =>
                 {
                     b.HasOne("EventManagementSystem.Infrastructure.Entities.Event", "Event")
@@ -853,11 +793,7 @@ namespace EventManagementSystem.Infrastructure.Migrations
 
                     b.Navigation("Payments");
 
-                    b.Navigation("ReceivedInvitations");
-
                     b.Navigation("Reservations");
-
-                    b.Navigation("SentInvitations");
 
                     b.Navigation("Tickets");
                 });
@@ -865,8 +801,6 @@ namespace EventManagementSystem.Infrastructure.Migrations
             modelBuilder.Entity("EventManagementSystem.Infrastructure.Entities.Event", b =>
                 {
                     b.Navigation("Feedbacks");
-
-                    b.Navigation("Invitations");
 
                     b.Navigation("Reservations");
 

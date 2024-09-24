@@ -31,6 +31,8 @@ builder.Services.AddTransient<IProfileService, ProfileService>();
 builder.Services.AddTransient<IEventService, EventService>();
 builder.Services.AddScoped<IVenueService, VenueService>();
 builder.Services.AddScoped<IUserEventService, UserEventService>();
+builder.Services.AddScoped<IEventInvitationService, EventInvitationService>();
+
 
 
 var app = builder.Build();

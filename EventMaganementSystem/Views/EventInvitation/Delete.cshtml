@@ -1,0 +1,23 @@
+﻿@using EventManagementSystem.Infrastructure.Data.Entities
+@model EventInvitation
+
+@{
+    ViewBag.Title = "Cancel Invitation";
+}
+
+<h2>Cancel Invitation</h2>
+
+<div>
+    <h4>Are you sure you want to cancel this invitation?</h4>
+    <p>Event: @Model.Event.Name</p>
+    <p>Receiver: @Model.Receiver.UserName</p>
+    <p>Invitation Date: @Model.InvitationDate.ToString("MM/dd/yyyy")</p>
+</div>
+
+@using (Html.BeginForm("DeleteConfirmed", "EventInvitation", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.Id)
+    <input type="submit" value="Cancel Invitation" class="btn btn-danger" />
+}
+
+<a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>

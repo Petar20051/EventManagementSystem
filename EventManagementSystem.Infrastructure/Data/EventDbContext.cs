@@ -28,6 +28,7 @@ namespace EventMaganementSystem.Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<UserEvent> UserEvents { get; set; }
 
+        public DbSet<EventInvitation> EventInvitations { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -52,6 +53,26 @@ namespace EventMaganementSystem.Data
 
             modelBuilder.Entity<UserEvent>()
                 .HasKey(ue => new { ue.UserId, ue.EventId });
+
+            modelBuilder.Entity<EventInvitation>()
+            .HasOne(ei => ei.Sender)
+            .WithMany(u => u.SentInvitations)
+            .HasForeignKey(ei => ei.SenderId)
+            .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete if user is deleted
+
+            // Configure one-to-many relationship between User and ReceivedInvitations
+            modelBuilder.Entity<EventInvitation>()
+                .HasOne(ei => ei.Receiver)
+                .WithMany(u => u.ReceivedInvitations)
+                .HasForeignKey(ei => ei.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete if user is deleted
+
+            // Configure one-to-many relationship between Event and Invitations
+            modelBuilder.Entity<EventInvitation>()
+                .HasOne(ei => ei.Event)
+                .WithMany(e => e.Invitations)
+                .HasForeignKey(ei => ei.EventId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Event>()
        .HasOne(e => e.Venue)

@@ -1,4 +1,5 @@
 ﻿using EventManagementSystem.Infrastructure.Constants;
+using EventManagementSystem.Infrastructure.Data.Entities;
 using EventManagementSystem.Infrastructure.Data.Enums;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
@@ -13,8 +14,11 @@ namespace EventManagementSystem.Infrastructure.Entities
         public ICollection<Reservation> Reservations { get; set; }
         public ICollection<Payment> Payments { get; set; }
         public ICollection<Notification> Notifications { get; set; }
-        public SponsorshipTier? SponsorshipTier { get; set; }  
+        public SponsorshipTier? SponsorshipTier { get; set; }
 
+        public ICollection<EventInvitation> SentInvitations { get; set; }
+
+        public ICollection<EventInvitation> ReceivedInvitations { get; set; }
         public decimal SponsoredAmount { get; set; }
     }
 }

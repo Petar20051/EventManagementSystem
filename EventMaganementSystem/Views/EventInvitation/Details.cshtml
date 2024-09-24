@@ -1,0 +1,19 @@
+﻿@using EventManagementSystem.Infrastructure.Data.Entities
+@model EventInvitation
+
+@{
+    ViewBag.Title = "Invitation Details";
+}
+
+<h2>Invitation Details</h2>
+
+<div>
+    <h4>Event: @Model.Event.Name</h4>
+    <h4>Sender: @Model.Sender.UserName</h4>
+    <h4>Receiver: @Model.Receiver.UserName</h4>
+    <h4>Invitation Date: @Model.InvitationDate.ToString("MM/dd/yyyy")</h4>
+    <h4>Status: @Model.Status</h4>
+</div>
+
+<a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+

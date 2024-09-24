@@ -1,0 +1,31 @@
+﻿@using EventManagementSystem.Infrastructure.Data.Entities
+@model EventInvitation
+
+@{
+    ViewBag.Title = "Send Invitation";
+}
+
+<h2>Send Invitation</h2>
+
+@using (Html.BeginForm("Create", "EventInvitation", FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.LabelFor(model => model.EventId, "Select Event")
+        @Html.DropDownListFor(model => model.EventId, (SelectList)ViewBag.EventList, "-- Select Event --", new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ReceiverId, "Select Receiver")
+        @Html.DropDownListFor(model => model.ReceiverId, (SelectList)ViewBag.UserList, "-- Select Receiver --", new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.InvitationDate)
+        @Html.TextBoxFor(model => model.InvitationDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+    </div>
+
+    <input type="submit" value="Send Invitation" class="btn btn-primary" />
+}
+
+<a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+

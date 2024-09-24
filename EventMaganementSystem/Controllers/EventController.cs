@@ -29,13 +29,14 @@ namespace EventMaganementSystem.Controllers
         public async Task<IActionResult> Index()
         {
             var eventItems = await _eventService.GetAllEventsAsync();
+            ViewBag.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var eventViewModels = eventItems.Select(e => new EventViewModel
             {
                 Id = e.Id,
                 Name = e.Name,
                 Date = e.Date,
                 Description = e.Description,
-                Location = e.Venue != null ? e.Venue.Name : "Unknown Location"  
+                Location = e.Venue != null ? e.Venue.Address : "Unknown Location"  
             }).ToList();
 
             return View(eventViewModels);
