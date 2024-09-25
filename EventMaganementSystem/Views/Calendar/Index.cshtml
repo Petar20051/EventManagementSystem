@@ -1,0 +1,100 @@
+﻿@using EventManagementSystem.Infrastructure.Entities
+@model List<Event>
+
+@{
+    ViewData["Title"] = "Calendar";
+
+    // Ensure ViewData["events"] is not null before casting
+    var events = ViewData["events"] as List<Event>;
+    var length = events?.Count() ?? 0; // Use null conditional operator with a default value
+}
+
+<table id="todoTable" style="display:none;">
+    <!-- Hide the table as we only need it for data loading -->
+    @for (int i = 0; i < length; i++)
+    {
+        <tr>
+            <td>@Html.Encode(events[i].Id)</td>
+            <td>@Html.Encode(events[i].Name)</td>
+            <td>@Html.Encode(events[i].Date.ToString("yyyy-MM-dd"))</td> <!-- Format date here -->
+        </tr>
+    }
+</table>
+
+<div class="calendarContainer">
+    <div id="calendar"></div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.1.0/main.min.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.1.0/main.min.js"></script>
+
+<style>
+    /* Add some basic styles for event names */
+    .fc-event {
+        background-color: #007bff; /* Bootstrap primary color */
+        border: 1px solid #0056b3; /* Darker blue for border */
+        color: white;
+        cursor: pointer; /* Show pointer cursor on hover */
+        border-radius: 5px; /* Rounded corners */
+        padding: 5px; /* Some padding for the event */
+        text-align: center; /* Center text */
+    }
+
+        .fc-event:hover {
+            background-color: #0056b3; /* Darken on hover */
+        }
+</style>
+
+<script>
+    let eventsArr = loadData();
+    let calendar = initCalendar();
+
+    function loadData() {
+        let eventsArr = [];
+
+        let todoTable = document.getElementById("todoTable");
+        let trElem = todoTable.getElementsByTagName("tr");
+        console.log(trElem);
+        for (let tr of trElem) {
+            console.log(tr);
+            let tdElems = tr.getElementsByTagName("td");
+            if (tdElems.length > 0) { // Ensure there are <td> elements
+                let eventId = tdElems[0].innerText;
+                let eventName = tdElems[1].innerText;
+                let eventDate = tdElems[2].innerText; // Ensure this is in the format 'YYYY-MM-DD'
+
+                let eventObj = {
+                    id: eventId,
+                    title: eventName,
+                    start: eventDate,
+                    url: `/Events/Details/${eventId}` // Set URL to redirect to event details
+                };
+
+                eventsArr.push(eventObj);
+            }
+        }
+
+        return eventsArr;
+    }
+
+    function initCalendar() {
+        var calendarEl = document.getElementById('calendar');
+
+        let calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: eventsArr, // Pass the events array to FullCalendar
+            eventClick: function (info) {
+                window.location.href = info.event.url; // Redirect on event click
+            }
+        });
+
+        calendar.render();
+
+        return calendar;
+    }
+</script>

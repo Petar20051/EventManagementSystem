@@ -35,6 +35,7 @@ builder.Services.AddScoped<IEventInvitationService, EventInvitationService>();
 
 
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
