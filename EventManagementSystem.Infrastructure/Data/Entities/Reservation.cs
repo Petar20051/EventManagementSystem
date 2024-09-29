@@ -28,5 +28,9 @@ namespace EventManagementSystem.Infrastructure.Entities
 
         [DataType(DataType.DateTime)]
         public DateTime? PaymentDate { get; set; }
+
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Attendees count must be at least 1.")]
+        public int AttendeesCount { get; set; }
     }
 }

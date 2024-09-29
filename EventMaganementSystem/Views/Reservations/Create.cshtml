@@ -1,29 +1,35 @@
-﻿@using EventManagementSystem.Infrastructure.Entities
-@model Reservation
+﻿@using EventManagementSystem.Core.Models.Reservation
+@model ReservationViewModel
 
 @{
     ViewData["Title"] = "Create Reservation";
 }
 
-<h2>Create Reservation</h2>
+<h1>Create Reservation</h1>
 
 <form asp-action="Create" method="post">
     <div class="form-group">
-        <label asp-for="UserId" class="control-label"></label>
-        <input asp-for="UserId" class="form-control" />
-        <span asp-validation-for="UserId" class="text-danger"></span>
-    </div>
-    <div class="form-group">
         <label asp-for="EventId" class="control-label"></label>
-        <input asp-for="EventId" class="form-control" />
+        <select asp-for="EventId" class="form-control" asp-items="@(new SelectList(Model.Events, "Id", "Name"))">
+            <option value="">Select an Event</option>
+        </select>
         <span asp-validation-for="EventId" class="text-danger"></span>
     </div>
     <div class="form-group">
+        <label asp-for="AttendeesCount" class="control-label"></label>
+        <input asp-for="AttendeesCount" class="form-control" />
+        <span asp-validation-for="AttendeesCount" class="text-danger"></span>
+    </div>
+    <div class="form-group">
         <label asp-for="ReservationDate" class="control-label"></label>
-        <input asp-for="ReservationDate" class="form-control" type="datetime-local" />
+        <input asp-for="ReservationDate" type="datetime-local" value="Date.Now()" class="form-control" />
         <span asp-validation-for="ReservationDate" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-success">Create</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
 

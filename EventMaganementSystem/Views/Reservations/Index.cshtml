@@ -2,37 +2,36 @@
 @model IEnumerable<Reservation>
 
 @{
-    ViewData["Title"] = "Reservations";
+    ViewData["Title"] = "Reservations List";
 }
 
-<h2>Reservations</h2>
+<h1>Reservations</h1>
 
-<a asp-controller="Reservations" asp-action="Create" class="btn btn-primary">Create New Reservation</a>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Reservation</a>
+</p>
 
 <table class="table">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>User ID</th>
-            <th>Event ID</th>
+            <th>Event</th>
+            <th>Attendees Count</th>
             <th>Reservation Date</th>
-            <th>Actions</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var reservation in Model)
         {
             <tr>
-                <td>@reservation.Id</td>
-                <td>@reservation.UserId</td>
-                <td>@reservation.EventId</td>
+                <td>@reservation.Event.Name</td>
+                <td>@reservation.AttendeesCount</td>
                 <td>@reservation.ReservationDate.ToShortDateString()</td>
                 <td>
-                    <a asp-controller="Reservations" asp-action="Edit" asp-route-id="@reservation.Id" class="btn btn-warning">Edit</a>
-                    <a asp-controller="Reservations" asp-action="Delete" asp-route-id="@reservation.Id" class="btn btn-danger">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@reservation.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@reservation.Id" class="btn btn-danger">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-

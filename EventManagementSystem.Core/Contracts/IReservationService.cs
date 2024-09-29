@@ -13,6 +13,7 @@ namespace EventManagementSystem.Core.Contracts
         Task<Reservation> GetReservationByIdAsync(int id);
         Task<IEnumerable<Reservation>> GetAllReservationsAsync();
         Task<bool> DeleteReservationAsync(int id);
+        Task<Reservation> UpdateReservationAsync(Reservation updatedReservation);
     }
 
 }
