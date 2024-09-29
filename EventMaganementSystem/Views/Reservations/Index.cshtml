@@ -30,7 +30,10 @@
                 <td>
                     <a asp-action="Edit" asp-route-id="@reservation.Id" class="btn btn-warning">Edit</a>
                     <a asp-action="Delete" asp-route-id="@reservation.Id" class="btn btn-danger">Delete</a>
+                    <a asp-action="ChoosePaymentMethod" asp-controller="Payments" asp-route-reservationId="@reservation.Id" class="btn btn-primary">Pay</a>
+                   
                 </td>
+          
             </tr>
         }
     </tbody>

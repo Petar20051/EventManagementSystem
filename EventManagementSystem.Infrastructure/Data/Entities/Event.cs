@@ -1,5 +1,6 @@
 ﻿using EventManagementSystem.Infrastructure.Constants;
 using EventManagementSystem.Infrastructure.Data.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,6 +23,8 @@ namespace EventManagementSystem.Infrastructure.Entities
         [Required(ErrorMessage = ValidationConstants.RequiredField)]
         public DateTime Date { get; set; }
 
+        [Required]
+        public decimal TicketPrice { get; set; }
         public string Description { get; set; }
 
         [Required(ErrorMessage = ValidationConstants.RequiredField)]

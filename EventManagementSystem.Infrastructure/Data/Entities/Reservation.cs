@@ -32,5 +32,7 @@ namespace EventManagementSystem.Infrastructure.Entities
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Attendees count must be at least 1.")]
         public int AttendeesCount { get; set; }
+
+        public decimal TotalAmount { get; set; }
     }
 }

@@ -1,0 +1,17 @@
+﻿@using EventManagementSystem.Infrastructure.Entities
+@model Reservation
+
+<h1>Complete Your Payment</h1>
+<p>Total Amount: @Model.TotalAmount.ToString("C")</p>
+
+<form asp-action="Pay" method="post">
+    <input type="hidden" name="reservationId" value="@Model.Id" />
+    <div>
+        <label>Select Payment Method:</label>
+        <select name="paymentMethod">
+            <option value="paypal">PayPal</option>
+            <option value="stripe">Stripe</option>
+        </select>
+    </div>
+    <button type="submit">Proceed to Payment</button>
+</form>

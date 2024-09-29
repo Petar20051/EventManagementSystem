@@ -11,26 +11,38 @@ namespace EventMaganementSystem.Controllers
     {
         private readonly IStripePaymentService _stripePaymentService;
         private readonly IPayPalPaymentService _payPalPaymentService;
+        private readonly IReservationService _reservationService;
 
-        public PaymentsController(IStripePaymentService stripePaymentService, IPayPalPaymentService payPalPaymentService)
+        public PaymentsController(IStripePaymentService stripePaymentService, IPayPalPaymentService payPalPaymentService,IReservationService reservationService)
         {
             _stripePaymentService = stripePaymentService;
             _payPalPaymentService = payPalPaymentService;
+            _reservationService = reservationService;
         }
 
         // Action for choosing a payment method
         [HttpGet]
-        public IActionResult ChoosePaymentMethod(int reservationId, decimal amount, PaymentFor paymentFor)
+        public async Task<IActionResult> ChoosePaymentMethod(int reservationId)
         {
+            var reservation = await _reservationService.GetReservationByIdAsync(reservationId);
+
+            // Ensure that reservation is not null before accessing its properties
+            if (reservation == null)
+            {
+                // Return a 404 Not Found response if the reservation does not exist
+                return NotFound($"Reservation with ID {reservationId} not found.");
+            }
+
             var model = new PaymentViewModel
             {
                 ReservationId = reservationId,
-                Amount = amount,
-                PaymentFor = paymentFor
+                Amount = reservation.TotalAmount, // Ensure TotalAmount is a property of your Reservation class
+                PaymentFor = PaymentFor.Ticket // Use the desired payment type
             };
 
             return View(model); // Return view for choosing PayPal or Stripe
         }
+
 
         // Action for processing the payment method
         [HttpPost]
