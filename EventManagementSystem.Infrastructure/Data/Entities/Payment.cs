@@ -22,7 +22,13 @@ namespace EventManagementSystem.Infrastructure.Entities
         public DateTime PaymentDate { get; set; }
 
         [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        public PaymentType PaymentType { get; set; }  
+        public PaymentType PaymentType { get; set; }
+
+        [Required]
+        public int ReservationId { get; set; }
+
+        [ForeignKey(nameof(ReservationId))]
+        public Reservation Reservation { get; set; }
 
         [Required(ErrorMessage = ValidationConstants.RequiredField)]
         public PaymentFor PaymentFor { get; set; }  

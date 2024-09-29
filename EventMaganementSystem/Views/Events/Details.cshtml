@@ -1,0 +1,17 @@
+﻿@using EventManagementSystem.Core.Models.Events
+@using System.Security.Claims
+@model EventDetailsViewModel
+
+<h2>@Model.Name</h2>
+<p>Date: @Model.Date</p>
+<p>Location: @Model.Location</p>
+
+@if (User.FindFirstValue(ClaimTypes.NameIdentifier)==Model.OrganizerId)
+{
+    <a asp-action="AttendeeList"  class="btn btn-primary">
+        View Attendees
+    </a>
+}
+
+
+

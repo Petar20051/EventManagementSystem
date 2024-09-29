@@ -1,0 +1,10 @@
+﻿@{
+    ViewData["Title"] = "Payment Failed";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>Unfortunately, your payment could not be processed. Please try again later.</p>
+
+<a href="@Url.Action("ChoosePaymentMethod", "Payments")">Retry Payment</a>
+

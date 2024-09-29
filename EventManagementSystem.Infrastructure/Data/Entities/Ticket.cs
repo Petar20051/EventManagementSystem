@@ -17,5 +17,9 @@ namespace EventManagementSystem.Infrastructure.Entities
         public string HolderId { get; set; }
         [ForeignKey(nameof(HolderId))]
         public ApplicationUser Holder { get; set; }
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime PurchaseDate { get; set; } = DateTime.Now;
     }
 }

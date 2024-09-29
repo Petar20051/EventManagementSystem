@@ -32,6 +32,11 @@ builder.Services.AddTransient<IEventService, EventService>();
 builder.Services.AddScoped<IVenueService, VenueService>();
 builder.Services.AddScoped<IUserEventService, UserEventService>();
 builder.Services.AddScoped<IEventInvitationService, EventInvitationService>();
+builder.Services.AddScoped<IAttendeeService, AttendeeService>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+builder.Services.AddTransient<IPayPalPaymentService, PayPalPaymentService>();
+builder.Services.AddTransient<IStripePaymentService, StripePaymentService>();
 
 
 

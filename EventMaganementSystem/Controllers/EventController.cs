@@ -17,13 +17,14 @@ namespace EventMaganementSystem.Controllers
         private readonly IEventService _eventService;
         private readonly IVenueService _venueService;
         private readonly  IUserEventService _userEventService;
+        private readonly IAttendeeService _attendeeService;
 
-        public EventsController(IEventService eventService, IVenueService venueService,IUserEventService userEventService)
+        public EventsController(IEventService eventService, IVenueService venueService,IUserEventService userEventService, IAttendeeService attendeeService)
         {
             _eventService = eventService;
             _venueService = venueService;
             _userEventService = userEventService;
-
+            _attendeeService = attendeeService;
         }
 
         public async Task<IActionResult> Index()
@@ -167,6 +168,52 @@ namespace EventMaganementSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            // Fetch the event
+            var eventDetails = await _eventService.GetEventByIdAsync(id);
+
+            // Check if the event was found
+            if (eventDetails == null)
+            {
+                // Return a NotFound view or an appropriate response
+                return NotFound("Event not found");
+            }
+
+            // Check if the venue is null
+            var venueName = eventDetails.Venue != null ? eventDetails.Venue.Name : "Venue information not available";
+
+            // Create the ViewModel
+            var model = new EventDetailsViewModel
+            {
+                Id = eventDetails.Id,
+                Name = eventDetails.Name,
+                Date = eventDetails.Date,
+                Description = eventDetails.Description,
+                Location = venueName,  // Assign venue name or a default message
+                OrganizerId = eventDetails.OrganizerId
+            };
+
+            // Return the view with the model
+            return View(model);
+        }
+
+
+        public async Task<IActionResult> AttendeeList(int eventId)
+        {
+            // Get the organizer's ID (logged-in user's ID)
+            var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Use the service to get the attendee list
+            var attendees = await _attendeeService.GetAttendeesForEventAsync(eventId, organizerId);
+
+            if (attendees == null)
+            {
+                return NotFound(); // Event not found or user is not the organizer
+            }
+
+            return View(attendees); // Pass the attendees list to the view
+        }
 
     }
 }

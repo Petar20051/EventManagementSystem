@@ -1,0 +1,38 @@
+﻿@using EventManagementSystem.Infrastructure.Entities
+@model IEnumerable<Reservation>
+
+@{
+    ViewData["Title"] = "Reservations";
+}
+
+<h2>Reservations</h2>
+
+<a asp-controller="Reservations" asp-action="Create" class="btn btn-primary">Create New Reservation</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>User ID</th>
+            <th>Event ID</th>
+            <th>Reservation Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.Id</td>
+                <td>@reservation.UserId</td>
+                <td>@reservation.EventId</td>
+                <td>@reservation.ReservationDate.ToShortDateString()</td>
+                <td>
+                    <a asp-controller="Reservations" asp-action="Edit" asp-route-id="@reservation.Id" class="btn btn-warning">Edit</a>
+                    <a asp-controller="Reservations" asp-action="Delete" asp-route-id="@reservation.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

@@ -8,17 +8,25 @@ namespace EventManagementSystem.Infrastructure.Entities
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
+        [Required]
         public int EventId { get; set; }
+
         [ForeignKey(nameof(EventId))]
         public Event Event { get; set; }
 
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
+        [Required]
         public string UserId { get; set; }
-        [ForeignKey(nameof (UserId))]
+
+        [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; }
 
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        public DateTime ReservationDate { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime ReservationDate { get; set; } = DateTime.Now;
+
+        public bool IsPaid { get; set; } = false; // Default to unpaid until payment is confirmed
+
+        [DataType(DataType.DateTime)]
+        public DateTime? PaymentDate { get; set; }
     }
 }

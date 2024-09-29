@@ -1,0 +1,21 @@
+﻿@using EventManagementSystem.Core.Models
+@model PaymentViewModel
+
+@{
+    ViewData["Title"] = "Choose Payment Method";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>Select a payment method to proceed:</p>
+
+<div>
+    <form asp-action="ProcessPayment" method="post">
+        <input type="hidden" asp-for="ReservationId" />
+        <input type="hidden" asp-for="Amount" />
+        <input type="hidden" asp-for="PaymentFor" />
+
+        <button type="submit" name="paymentMethod" value="Stripe">Pay with Stripe</button>
+        <button type="submit" name="paymentMethod" value="PayPal">Pay with PayPal</button>
+    </form>
+</div>

@@ -48,6 +48,11 @@ namespace EventMaganementSystem.Data
             modelBuilder.Entity<Payment>()
                 .Property(e => e.Amount)
                 .HasColumnType("decimal(18, 2)");
+            modelBuilder.Entity<Payment>()
+       .HasOne(p => p.Reservation)
+       .WithMany()
+       .HasForeignKey(p => p.ReservationId)
+       .OnDelete(DeleteBehavior.Restrict);
 
 
 
