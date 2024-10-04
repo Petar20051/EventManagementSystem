@@ -10,6 +10,6 @@ namespace EventManagementSystem.Core.Contracts
 {
     public interface IStripePaymentService
     {
-        Task<Session> CreateStripeSession(decimal amount, string userId, int reservationId, PaymentFor paymentFor);
+        Task<string> CreateCheckoutSession(decimal amount, int reservationId);
     }
 }

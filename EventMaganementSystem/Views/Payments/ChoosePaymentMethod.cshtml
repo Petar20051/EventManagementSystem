@@ -1,21 +1,64 @@
-﻿
+﻿@using EventManagementSystem.Core.Models
 @model PaymentViewModel
 
-@{
-    ViewData["Title"] = "Choose Payment Method";
-}
-
-<h2>@ViewData["Title"]</h2>
-
+<h2>Choose Payment Method</h2>
 <p>Select a payment method to proceed:</p>
 
 <div>
-    <form asp-action="ProcessPayment" method="post">
-        <input type="hidden" asp-for="ReservationId" />
-        <input type="hidden" asp-for="Amount" />
-        <input type="hidden" asp-for="PaymentFor" />
-
-        <button type="submit" name="paymentMethod" value="Stripe">Pay with Stripe</button>
-        <button type="submit" name="paymentMethod" value="PayPal">Pay with PayPal</button>
-    </form>
+    <button id="checkout-button">Checkout with Stripe</button>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripe = Stripe('pk_live_51Q3z9qAyZhmNLHmvpIAU3MsipvkDzLEiVdoOrzb6pzXoFiQ0RCJ8wFqytmK3edEaIjuiZ5hxfS30jQojZuWP1jdF00RJFp6rO0');
+        document.getElementById('checkout-button').addEventListener('click', function () {
+            fetch('/Payments/CreateCheckoutSession', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    reservationId: '@Model.ReservationId',
+                    amount: '@Model.Amount'
+                })
+            })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (sessionId) {
+                return stripe.redirectToCheckout({ sessionId: sessionId.id });
+            });
+        });
+    </script>
 </div>
+
+<div id="paypal-button-container"></div>
+<script src="https://www.paypal.com/sdk/js?client-id=AQJtcURwJWCJb6KJcoC1RQ23ehZuEdzvlwRzSSCm_jqnBhY1PTBeJede2FV9Ej_HspNALK-biHjjMAwF"></script>
+<script>
+    paypal.Buttons({
+        createOrder: function (data, actions) {
+            return fetch('/Payments/CreateOrder', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    reservationId: '@Model.ReservationId',
+                    amount: '@Model.Amount'
+                })
+            }).then(function (response) {
+                return response.json();
+            }).then(function (orderData) {
+                return orderData.id;
+            });
+        },
+        onApprove: function (data, actions) {
+            return fetch('/Payments/CaptureOrder?orderId=' + data.orderID, {
+                method: 'post'
+            }).then(function (res) {
+                return res.json();
+            }).then(function (orderData) {
+                window.location.href = '/Payments/PaymentSuccess';
+            });
+        }
+    }).render('#paypal-button-container');
+</script>
+

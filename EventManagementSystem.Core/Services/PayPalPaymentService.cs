@@ -1,76 +1,53 @@
-﻿using PayPal.Api;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using EventManagementSystem.Core.Contracts;
 using Microsoft.Extensions.Configuration;
-using EventManagementSystem.Core.Models;
-using EventManagementSystem.Core.Contracts;
-using EventManagementSystem.Infrastructure.Data.Enums;
-using PayPal;
-using System.Globalization;
+using PayPalCheckoutSdk.Core;
+using PayPalCheckoutSdk.Orders;
+using PayPalHttp;
 
 public class PayPalPaymentService : IPayPalPaymentService
 {
-    private readonly APIContext _apiContext;
+    private readonly PayPalHttpClient _client;
 
-    public PayPalPaymentService(IConfiguration configuration)
+    public PayPalPaymentService(IConfiguration config)
     {
-        var clientId = configuration["PayPal:ClientId"];
-        var clientSecret = configuration["PayPal:ClientSecret"];
-        var oauthTokenCredential = new OAuthTokenCredential(clientId, clientSecret);
-        var accessToken = oauthTokenCredential.GetAccessToken();
-
-        _apiContext = new APIContext(accessToken)
-        {
-            Config = new Dictionary<string, string>
-                {
-                    { "mode", "sandbox" } // Change to "live" in production
-                }
-        };
+        var environment = new SandboxEnvironment(config["PayPal:ClientId"], config["PayPal:Secret"]);
+        _client = new PayPalHttpClient(environment);
     }
 
-    public async Task<Payment> CreatePayPalPaymentAsync(decimal amount, string currency, string userId, int reservationId, PaymentFor paymentFor)
+    public async Task<string> CreateOrderAsync(decimal amount, int reservationId)
     {
-        // Ensure that the amount is valid and currency is correct
-        amount = 1;
-        if (amount <= 0)
-            throw new ArgumentException("Amount must be greater than zero.");
-
-        var payment = new Payment
+        var order = new OrderRequest
         {
-            intent = "sale",
-            payer = new Payer { payment_method = "paypal" },
-            transactions = new List<Transaction>
-        {
-            new Transaction
+            CheckoutPaymentIntent = "CAPTURE",
+            PurchaseUnits = new List<PurchaseUnitRequest>
             {
-                description = $"Payment for reservation {reservationId}",
-                invoice_number = Guid.NewGuid().ToString(),
-                amount = new Amount
+                new PurchaseUnitRequest
                 {
-                    currency = currency,
-                    total = amount.ToString("F2", CultureInfo.InvariantCulture) // Correctly format the amount
+                    AmountWithBreakdown = new AmountWithBreakdown
+                    {
+                        CurrencyCode = "USD",
+                        Value = amount.ToString()
+                    }
                 }
-            }
-        },
-            redirect_urls = new RedirectUrls
-            {
-                return_url = "http://your-return-url.com", // Add your return URL
-                cancel_url = "http://your-cancel-url.com"  // Add your cancel URL
             }
         };
 
-        try
-        {
-            var createdPayment = await Task.Run(() => payment.Create(_apiContext));
-            return createdPayment;
-        }
-        catch (PaymentsException ex)
-        {
-            Console.WriteLine($"Error creating payment: {ex.Message}");
-            Console.WriteLine($"Response: {ex.Response}");
-            
-            throw;
-        }
+        var request = new OrdersCreateRequest();
+        request.Prefer("return=representation");
+        request.RequestBody(order);
+
+        var response = await _client.Execute(request);
+        var result = response.Result<Order>();
+
+        return result.Id;
+    }
+
+    public async Task<bool> CaptureOrderAsync(string orderId)
+    {
+        var request = new OrdersCaptureRequest(orderId);
+        request.RequestBody(new OrderActionRequest());
+        var response = await _client.Execute(request);
+
+        return response.StatusCode == System.Net.HttpStatusCode.Created;
     }
 }
-

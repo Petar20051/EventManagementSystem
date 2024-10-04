@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Stripe;
+﻿using Stripe;
 using EventManagementSystem.Core.Contracts;
 using Stripe.Checkout;
 

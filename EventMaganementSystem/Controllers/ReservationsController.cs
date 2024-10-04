@@ -161,30 +161,7 @@ namespace EventMaganementSystem.Controllers
             return View(reservation); // Return the view with the reservation details
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Pay(int reservationId, string paymentMethod)
-        {
-            var reservatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var reservation = await _reservationService.GetReservationByIdAsync(reservationId);
-            if (reservation == null) return NotFound();
-
-            if (paymentMethod == "paypal")
-            {
-                var approvalUrl = await _payPalPaymentService.CreatePayPalPaymentAsync(10,"USD",reservatorId,reservationId,PaymentFor.Ticket);
-               return RedirectToAction("Index");
-
-            }
-            else if (paymentMethod == "stripe")
-            {
-                
-                var chargeId = await _stripePaymentService.CreateStripeSession(10, reservatorId,reservationId, PaymentFor.Ticket );
-                reservation.IsPaid = true; // Mark as paid
-                await _reservationService.UpdateReservationAsync(reservation); // Update reservation
-                return RedirectToAction("PaymentSuccess");
-            }
-
-            return RedirectToAction("PaymentCancel");
-        }
+        
 
         [HttpGet]
         public IActionResult PaymentSuccess()

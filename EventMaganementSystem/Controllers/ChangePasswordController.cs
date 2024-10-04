@@ -34,7 +34,7 @@ namespace EventMaganementSystem.Controllers
             if (user == null) return RedirectToAction("Index", "Home");
 
             var result = await _profileService.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
-            if (result.Succeeded) return RedirectToAction("Index", "ManageProfile"); // Ensure this is correct
+            if (result.Succeeded) return RedirectToAction("Index", "ManageProfile"); 
 
             foreach (var error in result.Errors)
             {

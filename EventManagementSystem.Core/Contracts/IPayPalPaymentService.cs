@@ -13,7 +13,8 @@ namespace EventManagementSystem.Core.Contracts
    
         public interface IPayPalPaymentService
         {
-            Task<PayPal.Api.Payment> CreatePayPalPaymentAsync(decimal amount, string currency, string userId, int reservationId, PaymentFor paymentFor);
+        Task<string> CreateOrderAsync(decimal amount, int reservationId);
+        Task<bool> CaptureOrderAsync(string orderId);
         }
 }
 
