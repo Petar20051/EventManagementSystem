@@ -7,6 +7,7 @@ using EventManagementSystem.Core.Models.Payments;
 using System.Security.Claims;
 using EventManagementSystem.Core.Services;
 using Stripe;
+using Microsoft.EntityFrameworkCore;
 
 public class PaymentsController : Controller
 {
@@ -14,17 +15,20 @@ public class PaymentsController : Controller
     private readonly IReservationService _reservationService;
     private readonly IPaymentService _paymentService;
     private readonly IUserService _userService;
+    private readonly ITicketService _ticketService;
 
     public PaymentsController(
         IStripePaymentService stripePaymentService,
         IReservationService reservationService,
         IPaymentService paymentService,
-        IUserService userService)
+        IUserService userService,
+        ITicketService ticketService)
     {
         _stripePaymentService = stripePaymentService;
         _reservationService = reservationService;
         _paymentService = paymentService;
         _userService = userService;
+        _ticketService = ticketService;
     }
 
     [HttpGet]
@@ -113,7 +117,16 @@ public class PaymentsController : Controller
                 Status = "Completed"
             };
 
-            await _paymentService.RecordPaymentAsync(payment); // Assuming this is your method for recording payments
+            await _paymentService.RecordPaymentAsync(payment);
+
+            var ticket = new Ticket
+            {
+                EventId = reservation.EventId,
+                HolderId = reservation.UserId,
+                PurchaseDate = DateTime.Now
+            };
+
+            await _ticketService.CreateTicketAsync(reservation.EventId, reservation.UserId, DateTime.Now);
 
             return RedirectToAction("PaymentSuccess");
         }

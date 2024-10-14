@@ -21,5 +21,7 @@ namespace EventManagementSystem.Infrastructure.Entities
         [Required]
         [DataType(DataType.DateTime)]
         public DateTime PurchaseDate { get; set; } = DateTime.Now;
+
+        public string? QRCodeSvg { get; set; }
     }
 }

@@ -14,13 +14,19 @@
     <p><strong>Sponsorship Tier:</strong> @Model?.SponsorshipTier?.ToString()</p>
 </div>
 
-<h3>Your Tickets</h3>
+<h3>Tickets</h3>
 @if (Model?.Tickets != null && Model.Tickets.Any())
 {
     <ul>
         @foreach (var ticket in Model.Tickets)
         {
-            <li>Ticket ID: @ticket.Id - Event: @ticket.Event?.Name ?? "Unknown Event"</li>
+            <li>
+                <form action="@Url.Action("MyTickets", "Ticket")" method="get" style="display:inline;">
+                    <button type="submit" class="btn btn-primary">
+                      My Tickets
+                    </button>
+                </form>
+            </li>
         }
     </ul>
 }
@@ -28,7 +34,6 @@ else
 {
     <p>You have no tickets.</p>
 }
-
 <h3>Update Profile Information</h3>
 
 <div>
