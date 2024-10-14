@@ -1,0 +1,106 @@
+﻿@using EventManagementSystem.Core.Models.Payments
+@model ProcessPaymentViewModel
+
+@{
+    ViewData["Title"] = "Process Payment";
+}
+
+<h2>Process Payment</h2>
+
+<div class="alert alert-info">
+    You are paying for Reservation ID: @Model.ReservationId
+    <br />
+    Total Amount: $@Model.Amount
+</div>
+
+<form asp-action="ProcessPayment" method="post" id="payment-form">
+    <input type="hidden" name="PaymentMethodId" id="paymentMethodId" />
+    <input type="hidden" name="Amount" value="@Model.Amount" />
+    <input type="hidden" name="ReservationId" value="@Model.ReservationId" />
+
+    <!-- Section to choose from stored credit cards -->
+    @if (Model.StoredCards != null && Model.StoredCards.Any())
+    {
+        <h4>Choose a saved card</h4>
+        <div>
+            @foreach (var card in Model.StoredCards)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="SelectedCardId" value="@card.CardId" id="storedCard_@card.CardId" />
+                    <label class="form-check-label" for="storedCard_@card.CardId">
+                        **** **** **** @card.Last4Digits (Expires: @card.ExpirationDate)
+                    </label>
+                </div>
+            }
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="SelectedCardId" value="new" id="newCardOption" checked />
+            <label class="form-check-label" for="newCardOption">Use a new card</label>
+        </div>
+    }
+    else
+    {
+        <h4>Add a new card</h4>
+    }
+
+    <!-- Stripe Elements: For adding new credit card -->
+    <div id="card-element" class="mb-3">
+        <!-- Stripe.js will inject the credit card form fields here -->
+    </div>
+    <div id="card-errors" role="alert"></div>
+
+    <button type="submit" class="btn btn-primary mt-3">Submit Payment</button>
+</form>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    var stripe = Stripe('@ViewBag.StripePublishableKey');
+    var elements = stripe.elements();
+    var cardElement = elements.create('card', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#32325d',
+                '::placeholder': {
+                    color: '#aab7c4',
+                },
+            },
+            invalid: {
+                color: '#fa755a',
+            },
+        },
+    });
+
+    // Mount the Stripe Elements card field
+    cardElement.mount('#card-element');
+
+    // Handle form submission
+    var form = document.getElementById('payment-form');
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Check if user selected to use a stored card or add a new card
+        var selectedCard = document.querySelector('input[name="SelectedCardId"]:checked').value;
+
+        if (selectedCard === 'new') {
+            // If user is using a new card, create the payment method
+            stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement,
+            }).then(function (result) {
+                if (result.error) {
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = result.error.message;
+                } else {
+                    // Set the payment method ID and submit the form
+                    document.getElementById('paymentMethodId').value = result.paymentMethod.id;
+                    form.submit();
+                }
+            });
+        } else {
+            // If using a stored card, just submit the form with the selected card's ID
+            document.getElementById('paymentMethodId').value = selectedCard;
+            form.submit();
+        }
+    });
+</script>

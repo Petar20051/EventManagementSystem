@@ -1,5 +1,5 @@
-﻿@using EventManagementSystem.Infrastructure.Entities
-@model IEnumerable<Reservation>
+﻿@using EventManagementSystem.Core.Models.Reservation
+@model IEnumerable<ReservationViewModel>
 
 @{
     ViewData["Title"] = "Reservations List";
@@ -17,6 +17,8 @@
             <th>Event</th>
             <th>Attendees Count</th>
             <th>Reservation Date</th>
+            <th>Total Amount</th>
+            <th>Status</th>
             <th></th>
         </tr>
     </thead>
@@ -24,16 +26,34 @@
         @foreach (var reservation in Model)
         {
             <tr>
-                <td>@reservation.Event.Name</td>
+                <td>@reservation.EventName</td>
                 <td>@reservation.AttendeesCount</td>
                 <td>@reservation.ReservationDate.ToShortDateString()</td>
+                <td>@reservation.TotalAmount</td> <!-- Display total amount -->
+
+                <td>
+                    @if (reservation.IsPaid)
+                    {
+                        <span class="badge bg-success">Paid</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Not Paid</span>
+                    }
+                </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@reservation.Id" class="btn btn-warning">Edit</a>
                     <a asp-action="Delete" asp-route-id="@reservation.Id" class="btn btn-danger">Delete</a>
-                    <a asp-action="ChoosePaymentMethod" asp-controller="Payments" asp-route-reservationId="@reservation.Id" class="btn btn-primary">Pay</a>
-                   
+
+                    @if (!reservation.IsPaid)
+                    {
+                        <a asp-action="ProcessPayment" asp-controller="Payments" asp-route-reservationId="@reservation.Id" class="btn btn-primary">Pay</a>
+                    }
+                    else
+                    {
+                        <a asp-action="ViewPaymentDetails" asp-controller="Payments" asp-route-reservationId="@reservation.Id" class="btn btn-secondary">View Payment</a>
+                    }
                 </td>
-          
             </tr>
         }
     </tbody>

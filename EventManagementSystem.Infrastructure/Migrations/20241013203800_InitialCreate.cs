@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace EventManagementSystem.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialize : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -30,9 +32,9 @@ namespace EventManagementSystem.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
                     SponsorshipTier = table.Column<int>(type: "int", nullable: true),
-                    SponsoredAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    StripeCustomerId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SponsoredAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -51,35 +53,6 @@ namespace EventManagementSystem.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CreditCardDetails",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CardNumber = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
-                    ExpiryDate = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
-                    CardHolderName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CVV = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CreditCardDetails", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PayPalDetails",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PayPalEmail = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PayPalDetails", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -204,6 +177,31 @@ namespace EventManagementSystem.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CreditCardDetails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CardNumber = table.Column<string>(type: "nvarchar(16)", maxLength: 16, nullable: false),
+                    CardHolderName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ExpirationMonth = table.Column<int>(type: "int", nullable: false),
+                    ExpirationYear = table.Column<int>(type: "int", nullable: false),
+                    CVV = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDefault = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CreditCardDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CreditCardDetails_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Notifications",
                 columns: table => new
                 {
@@ -226,43 +224,6 @@ namespace EventManagementSystem.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PaymentType = table.Column<int>(type: "int", nullable: false),
-                    PaymentFor = table.Column<int>(type: "int", nullable: false),
-                    CreditCardDetailsId = table.Column<int>(type: "int", nullable: false),
-                    PayPalDetailsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Payments_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Payments_CreditCardDetails_CreditCardDetailsId",
-                        column: x => x.CreditCardDetailsId,
-                        principalTable: "CreditCardDetails",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Payments_PayPalDetails_PayPalDetailsId",
-                        column: x => x.PayPalDetailsId,
-                        principalTable: "PayPalDetails",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Events",
                 columns: table => new
                 {
@@ -270,11 +231,20 @@ namespace EventManagementSystem.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    VenueId = table.Column<int>(type: "int", nullable: false)
+                    TicketPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VenueId = table.Column<int>(type: "int", nullable: false),
+                    OrganizerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Events", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Events_AspNetUsers_OrganizerId",
+                        column: x => x.OrganizerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Events_Venues_VenueId",
                         column: x => x.VenueId,
@@ -306,6 +276,41 @@ namespace EventManagementSystem.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Discounts_Events_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Events",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EventInvitations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ReceiverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EventId = table.Column<int>(type: "int", nullable: false),
+                    InvitationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventInvitations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EventInvitations_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EventInvitations_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EventInvitations_Events_EventId",
                         column: x => x.EventId,
                         principalTable: "Events",
                         principalColumn: "Id",
@@ -348,7 +353,11 @@ namespace EventManagementSystem.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EventId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ReservationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    ReservationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsPaid = table.Column<bool>(type: "bit", nullable: false),
+                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AttendeesCount = table.Column<int>(type: "int", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -374,7 +383,8 @@ namespace EventManagementSystem.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EventId = table.Column<int>(type: "int", nullable: false),
-                    HolderId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    HolderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PurchaseDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -417,6 +427,57 @@ namespace EventManagementSystem.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Payments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ReservationId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreditCardDetailsId = table.Column<int>(type: "int", nullable: false),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payments_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Payments_Reservations_ReservationId",
+                        column: x => x.ReservationId,
+                        principalTable: "Reservations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "1", null, "Guest", "GUEST" },
+                    { "2", null, "Organizer", "ORGANIZER" },
+                    { "3", null, "Sponsor", "SPONSOR" },
+                    { "4", null, "Admin", "ADMIN" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Venues",
+                columns: new[] { "Id", "Address", "Capacity", "Name" },
+                values: new object[,]
+                {
+                    { 1, "City Center", 500, "Conference Hall A" },
+                    { 2, "Tech Park", 150, "Workshop Room B" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -457,6 +518,11 @@ namespace EventManagementSystem.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CreditCardDetails_UserId",
+                table: "CreditCardDetails",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Discounts_EventId",
                 table: "Discounts",
                 column: "EventId");
@@ -465,6 +531,26 @@ namespace EventManagementSystem.Infrastructure.Migrations
                 name: "IX_Discounts_SponsorId",
                 table: "Discounts",
                 column: "SponsorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventInvitations_EventId",
+                table: "EventInvitations",
+                column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventInvitations_ReceiverId",
+                table: "EventInvitations",
+                column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventInvitations_SenderId",
+                table: "EventInvitations",
+                column: "SenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Events_OrganizerId",
+                table: "Events",
+                column: "OrganizerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_VenueId",
@@ -487,19 +573,14 @@ namespace EventManagementSystem.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_CreditCardDetailsId",
+                name: "IX_Payments_ApplicationUserId",
                 table: "Payments",
-                column: "CreditCardDetailsId");
+                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_PayPalDetailsId",
+                name: "IX_Payments_ReservationId",
                 table: "Payments",
-                column: "PayPalDetailsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Payments_UserId",
-                table: "Payments",
-                column: "UserId");
+                column: "ReservationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reservations_EventId",
@@ -546,7 +627,13 @@ namespace EventManagementSystem.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "CreditCardDetails");
+
+            migrationBuilder.DropTable(
                 name: "Discounts");
+
+            migrationBuilder.DropTable(
+                name: "EventInvitations");
 
             migrationBuilder.DropTable(
                 name: "Feedbacks");
@@ -558,9 +645,6 @@ namespace EventManagementSystem.Infrastructure.Migrations
                 name: "Payments");
 
             migrationBuilder.DropTable(
-                name: "Reservations");
-
-            migrationBuilder.DropTable(
                 name: "Tickets");
 
             migrationBuilder.DropTable(
@@ -570,16 +654,13 @@ namespace EventManagementSystem.Infrastructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "CreditCardDetails");
-
-            migrationBuilder.DropTable(
-                name: "PayPalDetails");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Reservations");
 
             migrationBuilder.DropTable(
                 name: "Events");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Venues");

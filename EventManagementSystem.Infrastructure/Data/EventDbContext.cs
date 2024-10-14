@@ -21,7 +21,6 @@ namespace EventMaganementSystem.Data
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<CreditCardDetails> CreditCardDetails { get; set; }
-        public DbSet<PayPalDetails> PayPalDetails { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Discount> Discounts { get; set; }
@@ -53,6 +52,14 @@ namespace EventMaganementSystem.Data
        .WithMany()
        .HasForeignKey(p => p.ReservationId)
        .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Event>()
+       .Property(e => e.TicketPrice)
+       .HasColumnType("decimal(18, 2)");
+
+            modelBuilder.Entity<Reservation>()
+                .Property(r => r.TotalAmount)
+                .HasColumnType("decimal(18, 2)");
 
 
 

@@ -5,13 +5,13 @@
 namespace EventManagementSystem.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Fixing : Migration
+    public partial class FixedUser : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "PhoneNumber",
+                name: "StripeCustomerId",
                 table: "AspNetUsers",
                 type: "nvarchar(max)",
                 nullable: true,
@@ -23,7 +23,7 @@ namespace EventManagementSystem.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "PhoneNumber",
+                name: "StripeCustomerId",
                 table: "AspNetUsers",
                 type: "nvarchar(max)",
                 nullable: false,

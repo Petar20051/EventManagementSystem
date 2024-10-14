@@ -19,6 +19,7 @@ namespace EventManagementSystem.Infrastructure.Entities
         public ICollection<EventInvitation> SentInvitations { get; set; }
 
         public ICollection<EventInvitation> ReceivedInvitations { get; set; }
+        public string? StripeCustomerId { get; set; }
         public decimal SponsoredAmount { get; set; }
     }
 }

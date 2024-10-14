@@ -1,5 +1,7 @@
 ﻿using EventManagementSystem.Infrastructure.Constants;
+using EventManagementSystem.Infrastructure.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EventManagementSystem.Infrastructure.Data.Entities
 {
@@ -7,20 +9,18 @@ namespace EventManagementSystem.Infrastructure.Data.Entities
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        [StringLength(ValidationConstants.CardNumberLength, ErrorMessage = ValidationConstants.InvalidCardNumber)]
-        public string CardNumber { get; set; }
+        [Required]
+        public string UserId { get; set; }  // Foreign key to the user
 
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        [StringLength(ValidationConstants.ExpiryDateLength, ErrorMessage = ValidationConstants.InvalidExpiryDate)]
-        public string ExpiryDate { get; set; }
+        [Required]
+        public string PaymentMethodId { get; set; } // Stripe's tokenized PaymentMethod ID
 
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        [MaxLength(ValidationConstants.NameMaxLength, ErrorMessage = ValidationConstants.MaxLengthError)]
-        public string CardHolderName { get; set; }
+        public string CardBrand { get; set; } // E.g., Visa, Mastercard
+        public string CardNumber { get; set; } // E.g., "4242"
 
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        [StringLength(ValidationConstants.CVVLength, ErrorMessage = ValidationConstants.InvalidCVV)]
-        public string CVV { get; set; }
+        public string ExpirationMonth { get; set; }
+        public string ExpirationYear { get; set; }
+
+        public bool IsDefault { get; set; }
     }
 }

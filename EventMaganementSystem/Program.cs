@@ -4,6 +4,7 @@ using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EventMaganementSystem.Data;
+using EventManagementSystem.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,10 +35,10 @@ builder.Services.AddScoped<IUserEventService, UserEventService>();
 builder.Services.AddScoped<IEventInvitationService, EventInvitationService>();
 builder.Services.AddScoped<IAttendeeService, AttendeeService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
-//builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 builder.Services.AddScoped<IStripePaymentService, StripePaymentService>();
-builder.Services.AddScoped<IPayPalPaymentService, PayPalPaymentService>();
-
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 var app = builder.Build();

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(EventDbContext))]
-    [Migration("20240929194015_Ade")]
-    partial class Ade
+    [Migration("20241013203952_FixedUser")]
+    partial class FixedUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,25 +35,34 @@ namespace EventManagementSystem.Infrastructure.Migrations
 
                     b.Property<string>("CVV")
                         .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CardHolderName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("CardNumber")
                         .IsRequired()
                         .HasMaxLength(16)
                         .HasColumnType("nvarchar(16)");
 
-                    b.Property<string>("ExpiryDate")
+                    b.Property<int>("ExpirationMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExpirationYear")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("CreditCardDetails");
                 });
@@ -144,6 +153,9 @@ namespace EventManagementSystem.Infrastructure.Migrations
                     b.Property<int?>("SponsorshipTier")
                         .HasColumnType("int");
 
+                    b.Property<string>("StripeCustomerId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -221,6 +233,9 @@ namespace EventManagementSystem.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<decimal>("TicketPrice")
+                        .HasColumnType("decimal(18, 2)");
+
                     b.Property<int>("VenueId")
                         .HasColumnType("int");
 
@@ -294,23 +309,6 @@ namespace EventManagementSystem.Infrastructure.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("EventManagementSystem.Infrastructure.Entities.PayPalDetails", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("PayPalEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PayPalDetails");
-                });
-
             modelBuilder.Entity("EventManagementSystem.Infrastructure.Entities.Payment", b =>
                 {
                     b.Property<int>("Id")
@@ -322,37 +320,35 @@ namespace EventManagementSystem.Infrastructure.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18, 2)");
 
-                    b.Property<int>("CreditCardDetailsId")
-                        .HasColumnType("int");
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("PayPalDetailsId")
+                    b.Property<int>("CreditCardDetailsId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PaymentFor")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PaymentType")
-                        .HasColumnType("int");
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReservationId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreditCardDetailsId");
-
-                    b.HasIndex("PayPalDetailsId");
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ReservationId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Payments");
                 });
@@ -379,6 +375,9 @@ namespace EventManagementSystem.Infrastructure.Migrations
 
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -636,6 +635,17 @@ namespace EventManagementSystem.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("EventManagementSystem.Infrastructure.Data.Entities.CreditCardDetails", b =>
+                {
+                    b.HasOne("EventManagementSystem.Infrastructure.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EventManagementSystem.Infrastructure.Data.Entities.EventInvitation", b =>
                 {
                     b.HasOne("EventManagementSystem.Infrastructure.Entities.Event", "Event")
@@ -732,17 +742,9 @@ namespace EventManagementSystem.Infrastructure.Migrations
 
             modelBuilder.Entity("EventManagementSystem.Infrastructure.Entities.Payment", b =>
                 {
-                    b.HasOne("EventManagementSystem.Infrastructure.Data.Entities.CreditCardDetails", "CreditCardDetails")
-                        .WithMany()
-                        .HasForeignKey("CreditCardDetailsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EventManagementSystem.Infrastructure.Entities.PayPalDetails", "PayPalDetails")
-                        .WithMany()
-                        .HasForeignKey("PayPalDetailsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("EventManagementSystem.Infrastructure.Entities.ApplicationUser", null)
+                        .WithMany("Payments")
+                        .HasForeignKey("ApplicationUserId");
 
                     b.HasOne("EventManagementSystem.Infrastructure.Entities.Reservation", "Reservation")
                         .WithMany()
@@ -750,19 +752,7 @@ namespace EventManagementSystem.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EventManagementSystem.Infrastructure.Entities.ApplicationUser", "User")
-                        .WithMany("Payments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreditCardDetails");
-
-                    b.Navigation("PayPalDetails");
-
                     b.Navigation("Reservation");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EventManagementSystem.Infrastructure.Entities.Reservation", b =>

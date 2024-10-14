@@ -73,7 +73,9 @@ namespace EventMaganementSystem.Controllers
                     Description = model.Description,
                     Date = model.Date,
                     VenueId = (int)model.VenueId,
-                    OrganizerId = organizerId
+                    OrganizerId = organizerId,
+                    TicketPrice = model.TicketPrice,
+
                 };
 
                 await _eventService.AddEventAsync(eventItem);

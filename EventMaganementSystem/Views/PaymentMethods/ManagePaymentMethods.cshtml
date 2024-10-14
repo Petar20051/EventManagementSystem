@@ -1,0 +1,40 @@
+﻿@using EventManagementSystem.Core.Models.Payments
+@model IEnumerable<StoredPaymentMethodViewModel>
+
+<h2>Manage Payment Methods</h2>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Card Holder Name</th>
+                <th>Card Ending In</th>
+                <th>Expiration Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var card in Model)
+            {
+                <tr>
+                    <td>@card.CardHolderName</td>
+                    <td>**** @card.Last4Digits</td>
+                    <td>@card.ExpirationDate</td>
+                    <td>
+                        <form method="post" asp-action="DeletePaymentMethod" asp-route-id="@card.Id">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>You have no saved payment methods.</p>
+}
+
+<a class="btn btn-primary" asp-action="AddPaymentMethod">Add New Payment Method</a>

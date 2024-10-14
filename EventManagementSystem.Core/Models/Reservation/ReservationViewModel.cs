@@ -27,5 +27,10 @@ namespace EventManagementSystem.Core.Models.Reservation
         public DateTime ReservationDate { get; set; }
 
         public IEnumerable<Event> Events { get; set; } = new List<Event>();
+
+        // Payment-related fields
+        public bool IsPaid { get; set; } // To track payment status
+
+        public decimal TotalAmount { get; set; }
     }
 }

@@ -73,17 +73,24 @@ namespace EventManagementSystem.Core.Services
         // Update an existing reservation
         public async Task<Reservation> UpdateReservationAsync(Reservation updatedReservation)
         {
+            // Find the existing reservation by Id
             var existingReservation = await _context.Reservations.FindAsync(updatedReservation.Id);
+
             if (existingReservation == null)
             {
                 throw new InvalidOperationException("Reservation not found.");
             }
 
-            existingReservation.AttendeesCount = updatedReservation.AttendeesCount;
-            existingReservation.ReservationDate = updatedReservation.ReservationDate;
+            // Update only the necessary fields
+            existingReservation.IsPaid = updatedReservation.IsPaid;  // Update payment status
+            existingReservation.PaymentDate = updatedReservation.PaymentDate; // Optionally update payment date
 
-            await _context.SaveChangesAsync();
-            return existingReservation;
+            // You can update other fields as needed, but here we're just focusing on payment status
+            // e.g., existingReservation.TotalAmount, etc., can remain unchanged
+
+            await _context.SaveChangesAsync();  // Persist changes to the database
+
+            return existingReservation;  // Return the updated reservation
         }
 
         // Delete a reservation

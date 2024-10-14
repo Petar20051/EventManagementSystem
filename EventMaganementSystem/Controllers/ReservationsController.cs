@@ -12,14 +12,12 @@ namespace EventMaganementSystem.Controllers
     {
         private readonly IReservationService _reservationService;
         private readonly IEventService _eventService;
-        private readonly IPayPalPaymentService _payPalPaymentService;
         private readonly IStripePaymentService _stripePaymentService;
 
-        public ReservationsController(IReservationService reservationService, IEventService eventService, IPayPalPaymentService payPalPaymentService, IStripePaymentService stripePaymentService)
+        public ReservationsController(IReservationService reservationService, IEventService eventService, IStripePaymentService stripePaymentService)
         {
             _reservationService = reservationService;
             _eventService = eventService;
-            _payPalPaymentService = payPalPaymentService;
             _stripePaymentService = stripePaymentService;
         }
 
@@ -55,6 +53,7 @@ namespace EventMaganementSystem.Controllers
                 AttendeesCount = viewModel.AttendeesCount,
                 ReservationDate = DateTime.Now,
                 UserId = reservatorId
+                
                 // You can set other properties here as needed
             };
             
@@ -68,9 +67,23 @@ namespace EventMaganementSystem.Controllers
         // GET: Reservations/Index
         public async Task<IActionResult> Index()
         {
+            // Fetch reservations from the service (this returns a list of Reservation entities)
             var reservations = await _reservationService.GetAllReservationsAsync();
-            
-            return View(reservations);
+
+            // Map Reservation entities to ReservationViewModel
+            var reservationViewModels = reservations.Select(r => new ReservationViewModel
+            {
+                Id = r.Id,
+                EventId = r.EventId,
+                EventName = r.Event.Name,  // Assuming the Reservation has a related Event entity
+                AttendeesCount = r.AttendeesCount,
+                ReservationDate = r.ReservationDate,
+                IsPaid = r.IsPaid,
+                TotalAmount = r.Event.TicketPrice * r.AttendeesCount // Assuming TicketPrice is part of Event
+            }).ToList();
+
+            // Pass the ViewModel to the view
+            return View(reservationViewModels);
         }
 
         // GET: Reservations/Delete/5

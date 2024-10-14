@@ -9,30 +9,16 @@ namespace EventManagementSystem.Infrastructure.Entities
     public class Payment
     {
         public int Id { get; set; }
-
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        public string UserId { get; set; }
-        [ForeignKey(nameof(UserId))]
-        public ApplicationUser User { get; set; }
-
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        public decimal Amount { get; set; }
-
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        public DateTime PaymentDate { get; set; }
-
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        public PaymentType PaymentType { get; set; }
-
-        [Required]
         public int ReservationId { get; set; }
+        public string UserId { get; set; }
+        public decimal Amount { get; set; }
+        public string PaymentMethod { get; set; }
+        public DateTime PaymentDate { get; set; }
+        public string Status { get; set; }
 
         [ForeignKey(nameof(ReservationId))]
         public Reservation Reservation { get; set; }
 
-        [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        public PaymentFor PaymentFor { get; set; }  
-        public CreditCardDetails CreditCardDetails { get; set; }
-        public PayPalDetails PayPalDetails { get; set; }
+        public int CreditCardDetailsId { get; set; }
     }
 }
