@@ -36,8 +36,6 @@ public class StripePaymentService : IStripePaymentService
 
     public async Task<string> CreateStripeCustomerAsync(string userId ,string email, string userName)
     {
-        
-
         var options = new CustomerCreateOptions
         {
            

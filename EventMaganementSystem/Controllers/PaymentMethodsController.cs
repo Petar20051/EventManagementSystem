@@ -14,6 +14,7 @@ namespace EventMaganementSystem.Controllers
         private readonly IStripePaymentService _stripePaymentService;
         private readonly IUserService _userService;
         private readonly StripeSettings _stripeOptions;
+       
 
         public PaymentMethodsController(IPaymentService paymentService, IStripePaymentService stripePaymentService, IUserService userService, IOptions<StripeSettings> stripeOptions)
         {
@@ -54,8 +55,10 @@ namespace EventMaganementSystem.Controllers
             {
                 var user = await _userService.GetUserByIdAsync(userId);
                 customerId = await _stripePaymentService.CreateStripeCustomerAsync(userId, user.Email, user.UserName);
+               _userService.SaveStripeCustomerIdAsync(userId, customerId);
+              
             }
-
+            
             // Attach the payment method to the customer
             await _stripePaymentService.AttachPaymentMethodAsync(customerId, inputModel.PaymentMethodId);
 
@@ -65,13 +68,10 @@ namespace EventMaganementSystem.Controllers
         // GET: Manage saved payment methods
         public async Task<IActionResult> ManagePaymentMethods()
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the logged-in user ID
+            var paymentMethods = await _stripePaymentService.GetStoredCardsAsync(userId);
 
-            // Fetch the user's stored payment methods
-            var storedCards = await _paymentService.GetUserPaymentMethodsAsync(userId);
-
-            // Pass the stored payment methods to the view
-            return View(storedCards);
+            return View(paymentMethods);
         }
 
         // POST: Delete a payment method (e.g., credit card)

@@ -1,5 +1,6 @@
 ﻿using EventManagementSystem.Infrastructure.Constants;
 using EventManagementSystem.Infrastructure.Data.Entities;
+using EventManagementSystem.Infrastructure.Data.Enums;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace EventManagementSystem.Infrastructure.Entities
 
         [Required]
         public decimal TicketPrice { get; set; }
+
         public string Description { get; set; }
 
         [Required(ErrorMessage = ValidationConstants.RequiredField)]
@@ -38,10 +40,12 @@ namespace EventManagementSystem.Infrastructure.Entities
         [ForeignKey(nameof(OrganizerId))]
         public ApplicationUser Organizer { get; set; }
 
-        public ICollection<Ticket> Tickets { get; set; }
-        public ICollection<Reservation> Reservations { get; set; }
-        public ICollection<Feedback> Feedbacks { get; set; }
+        public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
+        public ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+        public ICollection<EventInvitation> Invitations { get; set; } = new List<EventInvitation>();
 
-        public ICollection<EventInvitation> Invitations { get; set; }
+        [Required(ErrorMessage = ValidationConstants.RequiredField)]
+        public EventTypes EventType { get; set; } // Enum for event type
     }
 }

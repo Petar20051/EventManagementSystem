@@ -1,4 +1,5 @@
-﻿@model EventManagementSystem.Core.Models.Events.CreateEventViewModel
+﻿@using EventManagementSystem.Infrastructure.Data.Enums
+@model EventManagementSystem.Core.Models.Events.CreateEventViewModel
 @Html.AntiForgeryToken()
 
 <h2>Create Event</h2>
@@ -9,7 +10,13 @@
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
-
+    <div class="form-group">
+        <label asp-for="EventType" class="control-label"></label>
+        <select asp-for="EventType" class="form-control" asp-items="Html.GetEnumSelectList<EventTypes>()">
+            <option value="">Select Event Type</option>
+        </select>
+        <span asp-validation-for="EventType" class="text-danger"></span>
+    </div>
     <div class="form-group">
         <label asp-for="Description"></label>
         <textarea asp-for="Description" class="form-control"></textarea>

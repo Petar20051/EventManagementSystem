@@ -75,6 +75,7 @@ namespace EventMaganementSystem.Controllers
                     VenueId = (int)model.VenueId,
                     OrganizerId = organizerId,
                     TicketPrice = model.TicketPrice,
+                    EventType=model.EventType
 
                 };
 

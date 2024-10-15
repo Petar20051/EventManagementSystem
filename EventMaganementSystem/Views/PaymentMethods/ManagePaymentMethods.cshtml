@@ -1,5 +1,5 @@
 ﻿@using EventManagementSystem.Core.Models.Payments
-@model IEnumerable<StoredPaymentMethodViewModel>
+@model IEnumerable<CardViewModel>
 
 <h2>Manage Payment Methods</h2>
 
@@ -22,7 +22,7 @@
                     <td>**** @card.Last4Digits</td>
                     <td>@card.ExpirationDate</td>
                     <td>
-                        <form method="post" asp-action="DeletePaymentMethod" asp-route-id="@card.Id">
+                        <form method="post" asp-action="DeletePaymentMethod" asp-route-id="@card.CardId">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-danger">Delete</button>
                         </form>

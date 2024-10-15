@@ -1,4 +1,5 @@
 ﻿using EventManagementSystem.Core.Models.Venue;
+using EventManagementSystem.Infrastructure.Data.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace EventManagementSystem.Core.Models.Events
     {
         public string Name { get; set; }
         public string Description { get; set; }
+        public EventTypes EventType { get; set; }
         public DateTime Date { get; set; }
         public int? VenueId { get; set; }
         public List<VenueViewModel>? Venues { get; set; }
