@@ -23,7 +23,7 @@ namespace EventManagementSystem.Core.Services
         public async Task AddEventAsync(Event events)
         {
             _context.Events.Add(events);
-        await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteEventAsync(int id)
@@ -43,7 +43,7 @@ namespace EventManagementSystem.Core.Services
 
         public async Task<Event> GetEventByIdAsync(int id)
         {
-            var eventbyid= await _context.Events.FindAsync(id);
+            var eventbyid = await _context.Events.FindAsync(id);
             return eventbyid;
         }
 
@@ -58,5 +58,63 @@ namespace EventManagementSystem.Core.Services
             return await _context.Tickets.AnyAsync(t => t.EventId == eventId);
         }
 
+        public async Task<List<AttendeeInfo>> GetAttendeesForEventAsync(int eventId)
+        {
+            var reservations = await _context.Reservations.Where(r => r.EventId == eventId && r.IsPaid == true).ToListAsync();
+            var users = reservations.Select(r => new AttendeeInfo
+            {
+                UserEmail = r.User.UserName,
+                AttendeeCount = r.AttendeesCount
+            }
+                ).ToList();
+            return users;
+
+        }
+        public async Task<List<Event>> SearchEventsAsync(string searchTerm, DateTime? startDate, DateTime? endDate, string location, string eventType, decimal? minPrice, decimal? maxPrice)
+        {
+            var query = _context.Events.Include(e => e.Venue).AsQueryable();
+
+            // Search by term (event name or description)
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(e => e.Name.Contains(searchTerm) || e.Description.Contains(searchTerm));
+            }
+
+            // Filter by date range
+            if (startDate.HasValue)
+            {
+                query = query.Where(e => e.Date >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(e => e.Date <= endDate.Value);
+            }
+
+            // Filter by location
+            if (!string.IsNullOrEmpty(location))
+            {
+                query = query.Where(e => e.Venue.Address.Contains(location));
+            }
+
+            // Filter by event type
+            //if (!string.IsNullOrEmpty(eventType))
+            //{
+            //    query = query.Where(e => e.Type.Name == eventType);
+            //}
+
+            // Filter by price range
+            if (minPrice.HasValue)
+            {
+                query = query.Where(e => e.TicketPrice >= minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(e => e.TicketPrice <= maxPrice.Value);
+            }
+
+            return await query.ToListAsync();
+        }
     }
 }

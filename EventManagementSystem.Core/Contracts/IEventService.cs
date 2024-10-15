@@ -20,5 +20,10 @@ namespace EventManagementSystem.Core.Contracts
     Task<List<Event>> GetAllEventsAsync();
 
     Task<bool> HasTicketsAsync(int eventId);
+
+        Task<List<AttendeeInfo>> GetAttendeesForEventAsync(int eventId);
+
+        Task<List<Event>> SearchEventsAsync(string searchTerm, DateTime? startDate, DateTime? endDate, string location, string eventType, decimal? minPrice, decimal? maxPrice);
+
     }
 }

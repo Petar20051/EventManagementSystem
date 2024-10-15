@@ -10,5 +10,6 @@ namespace EventManagementSystem.Core.Contracts
     public interface IVenueService
     {
         Task<List<Venue>> GetAllVenuesAsync();
+        Task<Venue> GetVenueByIdAsync(int venueId);
     }
 }

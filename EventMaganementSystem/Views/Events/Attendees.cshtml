@@ -1,21 +1,22 @@
 ﻿@using EventManagementSystem.Core.Models.Events
-@model List<AttendeeViewModel>
+@model List<AttendeeInfo>
 
-<h2>Attendee List</h2>
+<h2>Attendees List</h2>
 
-<table class="table">
+<table>
     <thead>
         <tr>
-            <th>User Name</th>
-            <th>Email</th>
+            <th>User Email</th>
+            <th>Attendee Count</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var attendee in Model)
+
         {
             <tr>
-                <td>@attendee.UserName</td>
-                <td>@attendee.Email</td>
+                <td>@attendee.UserEmail</td>
+                <td>@attendee.AttendeeCount</td>
             </tr>
         }
     </tbody>

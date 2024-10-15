@@ -23,6 +23,10 @@ namespace EventManagementSystem.Core.Services
         {
             return await _context.Venues.ToListAsync();
         }
+        public async Task<Venue> GetVenueByIdAsync(int venueId)
+        {
+            return await _context.Venues.FirstOrDefaultAsync(v => v.Id == venueId);
+        }
     }
 
 }

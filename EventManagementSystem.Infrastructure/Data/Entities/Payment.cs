@@ -9,16 +9,17 @@ namespace EventManagementSystem.Infrastructure.Entities
     public class Payment
     {
         public int Id { get; set; }
-        public int ReservationId { get; set; }
+        
         public string UserId { get; set; }
         public decimal Amount { get; set; }
         public string PaymentMethod { get; set; }
         public DateTime PaymentDate { get; set; }
         public string Status { get; set; }
 
+        public int ReservationId { get; set; }
+
         [ForeignKey(nameof(ReservationId))]
         public Reservation Reservation { get; set; }
 
-        public int CreditCardDetailsId { get; set; }
     }
 }

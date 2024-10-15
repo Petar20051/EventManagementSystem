@@ -9,6 +9,6 @@ namespace EventManagementSystem.Core.Contracts
 {
     public interface IUserEventService
     {
-        Task AddUserEventAsync(UserEvent userEvent);
+        Task AddUserEventAsync(string userId, int eventId);
     }
 }

@@ -16,19 +16,22 @@ public class PaymentsController : Controller
     private readonly IPaymentService _paymentService;
     private readonly IUserService _userService;
     private readonly ITicketService _ticketService;
+    private readonly IUserEventService _userEventService;
 
     public PaymentsController(
         IStripePaymentService stripePaymentService,
         IReservationService reservationService,
         IPaymentService paymentService,
         IUserService userService,
-        ITicketService ticketService)
+        ITicketService ticketService,
+        IUserEventService userEventService)
     {
         _stripePaymentService = stripePaymentService;
         _reservationService = reservationService;
         _paymentService = paymentService;
         _userService = userService;
         _ticketService = ticketService;
+        _userEventService = userEventService;
     }
 
     [HttpGet]
@@ -63,7 +66,7 @@ public class PaymentsController : Controller
             Amount = reservation.TotalAmount,  // Assuming reservation has TotalAmount
             StoredCards = storedCards  // Pass the user's stored payment methods
         };
-
+        await _userEventService.AddUserEventAsync(userId, reservation.EventId);
         // Return the view with the populated view model
         return View(paymentViewModel);
     }

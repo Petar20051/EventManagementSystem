@@ -17,14 +17,14 @@ namespace EventMaganementSystem.Controllers
         private readonly IEventService _eventService;
         private readonly IVenueService _venueService;
         private readonly  IUserEventService _userEventService;
-        private readonly IAttendeeService _attendeeService;
+        
 
-        public EventsController(IEventService eventService, IVenueService venueService,IUserEventService userEventService, IAttendeeService attendeeService)
+        public EventsController(IEventService eventService, IVenueService venueService,IUserEventService userEventService)
         {
             _eventService = eventService;
             _venueService = venueService;
             _userEventService = userEventService;
-            _attendeeService = attendeeService;
+            
         }
 
         public async Task<IActionResult> Index()
@@ -80,13 +80,8 @@ namespace EventMaganementSystem.Controllers
 
                 await _eventService.AddEventAsync(eventItem);
 
-                var userEvent = new UserEvent
-                {
-                    UserId = organizerId,
-                    EventId = eventItem.Id
-                };
-
-                await _userEventService.AddUserEventAsync(userEvent);
+                
+                await _userEventService.AddUserEventAsync(organizerId,eventItem.Id);
                 TempData["Message"] = "Event created successfully.";
                 return RedirectToAction(nameof(Index));
             }
@@ -174,7 +169,7 @@ namespace EventMaganementSystem.Controllers
         {
             // Fetch the event
             var eventDetails = await _eventService.GetEventByIdAsync(id);
-
+            var venuedetails = await _venueService.GetVenueByIdAsync(eventDetails.VenueId);
             // Check if the event was found
             if (eventDetails == null)
             {
@@ -183,7 +178,7 @@ namespace EventMaganementSystem.Controllers
             }
 
             // Check if the venue is null
-            var venueName = eventDetails.Venue != null ? eventDetails.Venue.Name : "Venue information not available";
+            var venueName = venuedetails.Name;
 
             // Create the ViewModel
             var model = new EventDetailsViewModel
@@ -192,7 +187,8 @@ namespace EventMaganementSystem.Controllers
                 Name = eventDetails.Name,
                 Date = eventDetails.Date,
                 Description = eventDetails.Description,
-                Location = venueName,  // Assign venue name or a default message
+                Location = venueName,
+                Address=venuedetails.Address,
                 OrganizerId = eventDetails.OrganizerId
             };
 
@@ -201,20 +197,23 @@ namespace EventMaganementSystem.Controllers
         }
 
 
-        public async Task<IActionResult> AttendeeList(int eventId)
+        [HttpGet]
+        public async Task<IActionResult> Attendees(int eventId)
         {
-            // Get the organizer's ID (logged-in user's ID)
-            var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            // Use the service to get the attendee list
-            var attendees = await _attendeeService.GetAttendeesForEventAsync(eventId, organizerId);
-
-            if (attendees == null)
+            var attendees = await _eventService.GetAttendeesForEventAsync(eventId);
+            if (attendees == null || !attendees.Any())
             {
-                return NotFound(); // Event not found or user is not the organizer
+                return NotFound("No attendees found for this event.");
             }
 
-            return View(attendees); // Pass the attendees list to the view
+            return View(attendees);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Search(string searchTerm, DateTime? startDate, DateTime? endDate, string location, string eventType, decimal? minPrice, decimal? maxPrice)
+        {
+            var events = await _eventService.SearchEventsAsync(searchTerm, startDate, endDate, location, eventType, minPrice, maxPrice);
+            return View(events);
         }
 
     }

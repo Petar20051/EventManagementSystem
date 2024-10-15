@@ -49,7 +49,7 @@ namespace EventManagementSystem.Core.Services
 
             // Create the reservation and update venue capacity
             _context.Reservations.Add(reservation);
-            eventEntity.Venue.Capacity--;
+            eventEntity.Venue.Capacity=eventEntity.Venue.Capacity-reservation.AttendeesCount;
 
             await _context.SaveChangesAsync();
             return reservation;

@@ -18,9 +18,14 @@ namespace EventManagementSystem.Core.Services
             _context = context;
         }
 
-        public async Task AddUserEventAsync(UserEvent userEvent)
+        public async Task AddUserEventAsync(string userId, int eventId)
         {
-            await _context.UserEvents.AddAsync(userEvent);
+            var userEvent = new UserEvent
+            {
+                UserId = userId,
+                EventId = eventId
+            };
+            _context.UserEvents.Add(userEvent);
             await _context.SaveChangesAsync();
         }
     }
