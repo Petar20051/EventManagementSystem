@@ -1,0 +1,14 @@
+﻿@using EventManagementSystem.Core.Models.Sponsorship
+@model SponsorshipDashboardViewModel
+
+<h2>Your Sponsorship Tier: @Model.CurrentTier</h2>
+<p>Your total sponsorship amount: @Model.SponsoredAmount</p>
+
+<h3>Benefits of @Model.CurrentTier Sponsorship:</h3>
+<ul>
+    @foreach (var benefit in Model.Benefits)
+    {
+        <li>@benefit.Description</li>
+    }
+</ul>
+

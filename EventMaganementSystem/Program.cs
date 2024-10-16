@@ -26,6 +26,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<EventDbContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddAuthorization(options =>
+{
+    // Define a policy that requires the "Organizer" role
+    options.AddPolicy("OrganizerPolicy", policy => policy.RequireRole("Organizer"));
+});
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddTransient<IProfileService, ProfileService>();
@@ -59,6 +65,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication(); // Ensure authentication middleware is added
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",

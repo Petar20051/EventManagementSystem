@@ -59,7 +59,7 @@ namespace EventMaganementSystem.Controllers
                 if (result.Succeeded)
                 {
                     TempData["Message"] = "You are now an Organizer!";
-                    return RedirectToAction("ManageProfile", "Account");
+                    return RedirectToAction("Index");
                 }
                 else
                 {
@@ -72,7 +72,7 @@ namespace EventMaganementSystem.Controllers
                 TempData["Error"] = "You are already an Organizer.";
             }
 
-            return RedirectToAction("ManageProfile", "Account");
+            return RedirectToAction("Index");
         }
     }
 }

@@ -4,6 +4,7 @@ using EventManagementSystem.Core.Models.Venue;
 using EventManagementSystem.Core.Services;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NPOI.SS.Formula.Functions;
@@ -16,15 +17,15 @@ namespace EventMaganementSystem.Controllers
     {
         private readonly IEventService _eventService;
         private readonly IVenueService _venueService;
-        private readonly  IUserEventService _userEventService;
-        
+        private readonly IUserEventService _userEventService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public EventsController(IEventService eventService, IVenueService venueService,IUserEventService userEventService)
+        public EventsController(IEventService eventService, IVenueService venueService, IUserEventService userEventService, UserManager<ApplicationUser> userManager)
         {
             _eventService = eventService;
             _venueService = venueService;
             _userEventService = userEventService;
-            
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
@@ -37,12 +38,14 @@ namespace EventMaganementSystem.Controllers
                 Name = e.Name,
                 Date = e.Date,
                 Description = e.Description,
-                Location = e.Venue != null ? e.Venue.Address : "Unknown Location"  
+                Location = e.Venue != null ? e.Venue.Address : "Unknown Location"
             }).ToList();
 
             return View(eventViewModels);
         }
+
         [HttpGet]
+        [Authorize(Roles = "Organizer")]
         public async Task<IActionResult> Create()
         {
             var venues = await _venueService.GetAllVenuesAsync();
@@ -59,11 +62,10 @@ namespace EventMaganementSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Organizer")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateEventViewModel model)
         {
-           
-
             if (ModelState.IsValid)
             {
                 var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -75,14 +77,11 @@ namespace EventMaganementSystem.Controllers
                     VenueId = (int)model.VenueId,
                     OrganizerId = organizerId,
                     TicketPrice = model.TicketPrice,
-                    EventType=model.EventType
-
+                    EventType = model.EventType
                 };
 
                 await _eventService.AddEventAsync(eventItem);
-
-                
-                await _userEventService.AddUserEventAsync(organizerId,eventItem.Id);
+                await _userEventService.AddUserEventAsync(organizerId, eventItem.Id);
                 TempData["Message"] = "Event created successfully.";
                 return RedirectToAction(nameof(Index));
             }
@@ -98,19 +97,25 @@ namespace EventMaganementSystem.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Organizer")]
         public async Task<IActionResult> Edit(int id)
         {
             var eventItem = await _eventService.GetEventByIdAsync(id);
             if (eventItem == null) return NotFound();
+
             var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (eventItem.OrganizerId != organizerId)
+            {
+                return Forbid(); // User is not the organizer
+            }
+
             var model = new EventViewModel
             {
                 Id = eventItem.Id,
                 Name = eventItem.Name,
                 Date = eventItem.Date,
                 Description = eventItem.Description,
-                VenueId = eventItem.VenueId, 
-                OrganizerId = organizerId
+                VenueId = eventItem.VenueId
             };
 
             var venues = await _venueService.GetAllVenuesAsync();
@@ -124,12 +129,19 @@ namespace EventMaganementSystem.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Organizer")]
         public async Task<IActionResult> Edit(EventViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var eventItem = await _eventService.GetEventByIdAsync(model.Id);
                 if (eventItem == null) return NotFound();
+
+                var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (eventItem.OrganizerId != organizerId)
+                {
+                    return Forbid(); // User is not the organizer
+                }
 
                 eventItem.Name = model.Name;
                 eventItem.Description = model.Description;
@@ -141,7 +153,6 @@ namespace EventMaganementSystem.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Repopulate venues if the model state is invalid
             var venues = await _venueService.GetAllVenuesAsync();
             model.Venues = venues.Select(venue => new VenueViewModel
             {
@@ -151,16 +162,27 @@ namespace EventMaganementSystem.Controllers
 
             return View(model);
         }
+
         [HttpPost]
+        [Authorize(Roles = "Organizer")]
         public async Task<IActionResult> Delete(int id)
         {
-            
+            var eventItem = await _eventService.GetEventByIdAsync(id);
+            if (eventItem == null) return NotFound();
+
+            var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (eventItem.OrganizerId != organizerId)
+            {
+                return Forbid(); // User is not the organizer
+            }
+
             var hasTickets = await _eventService.HasTicketsAsync(id);
             if (hasTickets)
             {
                 TempData["ErrorMessage"] = "Cannot delete the event because there are tickets associated with it.";
                 return RedirectToAction(nameof(Index));
             }
+
             await _eventService.DeleteEventAsync(id);
             TempData["Message"] = "Event deleted successfully.";
             return RedirectToAction(nameof(Index));
@@ -168,20 +190,11 @@ namespace EventMaganementSystem.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            // Fetch the event
             var eventDetails = await _eventService.GetEventByIdAsync(id);
             var venuedetails = await _venueService.GetVenueByIdAsync(eventDetails.VenueId);
-            // Check if the event was found
-            if (eventDetails == null)
-            {
-                // Return a NotFound view or an appropriate response
-                return NotFound("Event not found");
-            }
+            if (eventDetails == null) return NotFound("Event not found");
 
-            // Check if the venue is null
             var venueName = venuedetails.Name;
-
-            // Create the ViewModel
             var model = new EventDetailsViewModel
             {
                 Id = eventDetails.Id,
@@ -189,18 +202,25 @@ namespace EventMaganementSystem.Controllers
                 Date = eventDetails.Date,
                 Description = eventDetails.Description,
                 Location = venueName,
-                Address=venuedetails.Address,
+                Address = venuedetails.Address,
                 OrganizerId = eventDetails.OrganizerId
             };
 
-            // Return the view with the model
             return View(model);
         }
 
-
         [HttpGet]
+        [Authorize(Roles = "Organizer")]
         public async Task<IActionResult> Attendees(int eventId)
         {
+            var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var eventItem = await _eventService.GetEventByIdAsync(eventId);
+
+            if (eventItem == null || eventItem.OrganizerId != organizerId)
+            {
+                return Forbid(); // Only the organizer can view attendees
+            }
+
             var attendees = await _eventService.GetAttendeesForEventAsync(eventId);
             if (attendees == null || !attendees.Any())
             {
@@ -216,6 +236,5 @@ namespace EventMaganementSystem.Controllers
             var events = await _eventService.SearchEventsAsync(searchTerm, startDate, endDate, location, eventType, minPrice, maxPrice);
             return View(events);
         }
-
     }
 }

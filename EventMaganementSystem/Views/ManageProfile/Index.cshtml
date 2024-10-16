@@ -1,4 +1,7 @@
 ﻿﻿@using EventManagementSystem.Core.Models.Account
+@using EventManagementSystem.Infrastructure.Entities
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
 @model ManageProfileViewModel
 
 <h2 class="text-center">Manage Profile</h2>
@@ -18,8 +21,6 @@
 @if (Model?.Tickets != null && Model.Tickets.Any())
 {
     <ul>
-        @foreach (var ticket in Model.Tickets)
-        {
             <li>
                 <form action="@Url.Action("MyTickets", "Ticket")" method="get" style="display:inline;">
                     <button type="submit" class="btn btn-primary">
@@ -27,7 +28,6 @@
                     </button>
                 </form>
             </li>
-        }
     </ul>
 }
 else
@@ -39,18 +39,28 @@ else
 <div>
     <button type="button" class="btn btn-secondary" onclick="window.location.href='@Url.Action("Index", "ChangePassword")'">Change Password</button>
 </div>
-@if (!User.IsInRole("Organizer"))
+@if (User.Identity.IsAuthenticated)
 {
-    <h3>Become an Organizer</h3>
-    <form asp-action="BecomeOrganizer" method="post">
-        <button type="submit" class="btn btn-primary">Become Organizer</button>
-    </form>
+    var user = await UserManager.GetUserAsync(User);
+    if (user != null && !await UserManager.IsInRoleAsync(user, "Organizer"))
+    {
+        <h3>Become an Organizer</h3>
+        <form asp-action="BecomeOrganizer" method="post">
+            <button type="submit" class="btn btn-primary">Become Organizer</button>
+        </form>
+    }
+    else
+    {
+        <h3>Organizer Status:</h3>
+        <p>You are already an organizer.</p>
+    }
 }
 else
 {
-    <h3>Organizer Status:</h3>
-    <p>You are already an organizer.</p>
-}<!-- TempData Messages -->
+    <p>You need to log in to become an organizer.</p>
+}
+
+<!-- TempData Messages -->
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-success">@TempData["Message"]</div>
