@@ -118,7 +118,7 @@ namespace EventMaganementSystem.Areas.Identity.Pages.Account
                    
 
                     var userId = await _userManager.GetUserIdAsync(user);
-                    return RedirectToAction("Login", "Account", new { area = "Identity" });
+                    return Redirect("/Identity/Account/Login");
 
                 }
                 foreach (var error in result.Errors)
