@@ -24,6 +24,6 @@ namespace EventManagementSystem.Core.Contracts
         Task<List<AttendeeInfo>> GetAttendeesForEventAsync(int eventId);
 
         Task<List<Event>> SearchEventsAsync(string searchTerm, DateTime? startDate, DateTime? endDate, string location, string eventType, decimal? minPrice, decimal? maxPrice);
-
+        Task<List<Event>> GetAllAvailableEventsAsync();
     }
 }

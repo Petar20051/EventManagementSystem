@@ -116,5 +116,12 @@ namespace EventManagementSystem.Core.Services
 
             return await query.ToListAsync();
         }
+        public async Task<List<Event>> GetAllAvailableEventsAsync()
+        {
+            return await _context.Events
+                .Include(e => e.Venue)
+                .Include(e => e.Organizer)
+                .ToListAsync();
+        }
     }
 }

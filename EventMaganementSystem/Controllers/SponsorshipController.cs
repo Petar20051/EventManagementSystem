@@ -1,9 +1,13 @@
 ﻿using EventManagementSystem.Core.Contracts;
+using EventManagementSystem.Core.Models.Events;
+using EventManagementSystem.Core.Models.Payments;
 using EventManagementSystem.Core.Models.Sponsorship;
 using EventManagementSystem.Infrastructure.Data.Enums;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace EventMaganementSystem.Controllers
@@ -14,14 +18,16 @@ namespace EventMaganementSystem.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPaymentService _paymentService;
         private readonly IStripePaymentService _stripePaymentService;
+        private readonly IEventService _eventService;
 
         public SponsorshipController(ISponsorshipService sponsorshipService, UserManager<ApplicationUser> userManager,
-                                     IPaymentService paymentService, IStripePaymentService stripePaymentService)
+                                     IPaymentService paymentService, IStripePaymentService stripePaymentService,IEventService eventService)
         {
             _sponsorshipService = sponsorshipService;
             _userManager = userManager;
             _paymentService = paymentService;
             _stripePaymentService = stripePaymentService;
+            _eventService = eventService;
         }
 
         [HttpPost]
@@ -82,7 +88,34 @@ namespace EventMaganementSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SponsorDashboard()
+public async Task<IActionResult> ProcessSponsorship(int eventId)
+{
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    if (string.IsNullOrEmpty(userId))
+    {
+        TempData["ErrorMessage"] = "User is not authenticated.";
+        return RedirectToAction("Login", "Account"); // Redirect to login if user is not authenticated.
+    }
+
+    // Retrieve the user's saved cards or payment options.
+    var savedCards = await _stripePaymentService.GetStoredCardsAsync(userId);
+
+            // Create the view model with the event ID and available payment methods.
+            var model = new ProcessSponsorshipViewModel
+            {
+                EventId = eventId,
+                Cards = savedCards.Select(card => new CardViewModel
+                {
+                    CardId = card.CardId,
+                    Last4Digits = card.Last4Digits
+                }).ToList()
+            };
+
+            return View(model);
+}
+
+        [HttpGet]
+        public async Task<IActionResult> SponsorshipDashboard()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
@@ -98,6 +131,25 @@ namespace EventMaganementSystem.Controllers
 
             return View(model);
         }
+        [HttpGet]
+        public async Task<IActionResult> SponsorEventList()
+        {
+            // Use your service to fetch the list of events
+            var events = await _eventService.GetAllAvailableEventsAsync();
+
+            // Map the events to the ExtendedEventViewModel with null checks
+            var model = events.Select(e => new ExtendedEventViewModel
+            {
+                Id = e.Id,
+                Name = e.Name ?? "No Name Available", // Fallback if Name is null
+                Date = e.Date,
+                Venue = e.Venue?.Name ?? "No Venue Assigned", // Fallback if Venue is null
+                Description = e.Description ?? "No Description Available",
+                OrganizerEmail = e.Organizer?.Email ?? "No Contact Info"
+            }).ToList();
+
+            return View(model);
+        }
     }
 }
-}
+
