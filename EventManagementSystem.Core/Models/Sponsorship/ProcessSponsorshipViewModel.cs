@@ -11,7 +11,7 @@ namespace EventManagementSystem.Core.Models.Sponsorship
     public class ProcessSponsorshipViewModel
     {
         [Required(ErrorMessage = "Please enter a sponsorship amount.")]
-        [Range(1, double.MaxValue, ErrorMessage = "The amount must be greater than zero.")]
+        [Range(0, double.MaxValue, ErrorMessage = "The amount must be greater than zero.")]
         public decimal Amount { get; set; }
 
         [Required(ErrorMessage = "Please select a payment method.")]

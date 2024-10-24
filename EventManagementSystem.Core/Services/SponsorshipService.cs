@@ -54,7 +54,7 @@ namespace EventManagementSystem.Core.Services
         {
             if (sponsoredAmount >= 1)
             {
-                return SponsorshipTier.Gold;
+                return SponsorshipTier.Bronze;
             }
             if (sponsoredAmount >= 20)
             {
@@ -62,7 +62,7 @@ namespace EventManagementSystem.Core.Services
             }
             if (sponsoredAmount >= 100)
             {
-                return SponsorshipTier.Bronze;
+                return SponsorshipTier.Gold;
             }
             return SponsorshipTier.None;
         }

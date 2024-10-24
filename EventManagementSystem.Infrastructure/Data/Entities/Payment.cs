@@ -16,7 +16,7 @@ namespace EventManagementSystem.Infrastructure.Entities
         public DateTime PaymentDate { get; set; }
         public string Status { get; set; }
 
-        public int ReservationId { get; set; }
+        public int? ReservationId { get; set; }
 
         [ForeignKey(nameof(ReservationId))]
         public Reservation Reservation { get; set; }

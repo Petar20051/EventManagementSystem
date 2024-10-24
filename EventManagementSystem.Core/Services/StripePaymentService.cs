@@ -63,6 +63,7 @@ public class StripePaymentService : IStripePaymentService
             Customer = customerId,
             PaymentMethod = paymentMethodId,
             Confirm = true,
+            PaymentMethodTypes = new List<string> { "card" }, // Specify the payment method types
             ReturnUrl = "https://localhost:7056/Payments/PaymentSuccess" // Add your return URL here
         };
 
@@ -71,6 +72,7 @@ public class StripePaymentService : IStripePaymentService
 
         return paymentIntent.Status;
     }
+
     public async Task<List<CardViewModel>> GetStoredCardsAsync(string userId)
     {
         var customerId = await _userService.GetStripeCustomerIdAsync(userId);
