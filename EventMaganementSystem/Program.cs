@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using EventMaganementSystem.Data;
 using EventManagementSystem.Core;
+using EventMaganementSystem;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,8 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<ISponsorshipService, SponsorshipService>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddSignalR();
 
 
 var app = builder.Build();
@@ -67,6 +70,10 @@ app.UseRouting();
 app.UseAuthentication(); // Ensure authentication middleware is added
 app.UseAuthorization();
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ChatHub>("/chathub");
+});
 
 app.MapControllerRoute(
     name: "default",

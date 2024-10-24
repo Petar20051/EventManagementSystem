@@ -1,0 +1,83 @@
+﻿@using EventManagementSystem.Core.Models
+@model FeedbackViewModel
+@{
+    ViewData["Title"] = "Event Feedback";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3>@Model.EventName - @ViewData["Title"]</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Feedback List -->
+                    <h4 class="mb-4">Feedback for @Model.EventName</h4>
+                    <ul id="messagesList" class="list-group mb-4">
+                        @if (Model.Feedbacks != null && Model.Feedbacks.Any())
+                        {
+                            @foreach (var feedback in Model.Feedbacks)
+                            {
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>@feedback.User?.UserName</strong>
+                                        <small class="text-muted">@feedback.FeedbackDate.ToString("g")</small>
+                                    </div>
+                                    <p class="mb-0">@feedback.FeedbackContent</p>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item text-muted">No feedback available for this event.</li>
+                        }
+                    </ul>
+
+                    <!-- Feedback Form -->
+                    <h4 class="mb-3">Leave Your Feedback</h4>
+                    <div class="input-group">
+                        <textarea id="messageInput" class="form-control" rows="3" placeholder="Write your feedback here..."></textarea>
+                        <button id="sendButton" class="btn btn-primary mt-2">Submit Feedback</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub?eventId=@Model.EventId")
+            .build();
+
+        connection.on("ReceiveMessage", (user, message, date) => {
+            const msg = `${user}: ${message}`;
+            const li = document.createElement("li");
+            li.classList.add("list-group-item");
+            li.innerHTML = `<div class="d-flex justify-content-between">
+                                        <strong>${user}</strong>
+                                        <small class="text-muted">${new Date(date).toLocaleString()}</small>
+                                    </div>
+                                    <p class="mb-0">${message}</p>`;
+            document.getElementById("messagesList").appendChild(li);
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+
+        document.getElementById("sendButton").addEventListener("click", () => {
+            const message = document.getElementById("messageInput").value;
+            const eventId = @Model.EventId;
+
+            if (message) {
+                connection.invoke("SendMessage", eventId, message)
+                    .catch(err => console.error(err.toString()));
+                document.getElementById("messageInput").value = '';
+            } else {
+                alert("Please enter a message.");
+            }
+        });
+    </script>
+}

@@ -1,5 +1,6 @@
 ﻿using EventManagementSystem.Core.Models.Events;
 using EventManagementSystem.Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -25,5 +26,7 @@ namespace EventManagementSystem.Core.Contracts
 
         Task<List<Event>> SearchEventsAsync(string searchTerm, DateTime? startDate, DateTime? endDate, string location, string eventType, decimal? minPrice, decimal? maxPrice);
         Task<List<Event>> GetAllAvailableEventsAsync();
+        Task<Event> GetEventDetailsAsync(int eventId);
+        
     }
 }

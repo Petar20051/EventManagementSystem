@@ -123,5 +123,12 @@ namespace EventManagementSystem.Core.Services
                 .Include(e => e.Organizer)
                 .ToListAsync();
         }
+
+        public async Task<Event> GetEventDetailsAsync(int eventId)
+        {
+            return await _context.Events
+                .Where(e => e.Id == eventId)
+                .FirstOrDefaultAsync();
+        }
     }
 }
