@@ -69,7 +69,7 @@ namespace EventMaganementSystem.Controllers
             model.EventName = eventDetails?.Name ?? "Event"; // Ensure EventName is loaded.
             model.Feedbacks = (await _feedbackService.GetFeedbacksByEventIdAsync(model.EventId)).ToList();
 
-            ViewData["Title"] = model.EventName ?? "Event Feedback";
+          
             return View(model);
         }
     }

@@ -1,0 +1,14 @@
+﻿@using EventManagementSystem.Infrastructure.Entities
+@model IEnumerable<Notification>
+
+<h2>Your Notifications</h2>
+
+<ul>
+    @foreach (var notification in Model)
+    {
+        <li>
+            <strong>@notification.Type</strong>: @notification.Message <br />
+            <small>@notification.NotificationDate.ToLocalTime()</small>
+        </li>
+    }
+</ul>

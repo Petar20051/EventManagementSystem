@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using EventMaganementSystem.Data;
 using EventManagementSystem.Core;
 using EventMaganementSystem;
+using EventManagementSystem;
+using Microsoft.AspNet.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,8 +50,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<ISponsorshipService, SponsorshipService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<INotificationHub, NotificationHubService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddSignalR();
-
 
 var app = builder.Build();
 

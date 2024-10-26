@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<h2>Admin Panel</h2>
+
+@if (TempData["Message"] != null)
+{
+    <p class="text-success">@TempData["Message"]</p>
+}
+
+<h3>Send General Notification</h3>
+<form asp-action="SendGeneralNotification" method="post">
+    <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Send Notification</button>
+</form>
+
+<h3>Send System Alert</h3>
+<form asp-action="SendSystemAlert" method="post">
+    <div class="form-group">
+        <label for="alertMessage">Alert Message</label>
+        <textarea id="alertMessage" name="alertMessage" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-danger mt-2">Send Alert</button>
+</form>
+

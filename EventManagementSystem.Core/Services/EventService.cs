@@ -2,6 +2,7 @@
 using EventManagementSystem.Core.Contracts;
 using EventManagementSystem.Core.Models.Events;
 using EventManagementSystem.Infrastructure.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,16 +15,30 @@ namespace EventManagementSystem.Core.Services
     public class EventService : IEventService
     {
         private readonly EventDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly INotificationService _notificationService;
 
-        public EventService(EventDbContext context)
+        public EventService(EventDbContext context, UserManager<ApplicationUser> userManager, INotificationService notificationService)
         {
             _context = context;
+            _userManager = userManager;
+            _notificationService = notificationService;
         }
 
         public async Task AddEventAsync(Event events)
         {
+            // Add the new event to the database
             _context.Events.Add(events);
             await _context.SaveChangesAsync();
+
+            // Retrieve all users to send the notification
+            var users = await _userManager.Users.ToListAsync();
+
+            // Notify each user about the new event
+            foreach (var user in users)
+            {
+                await _notificationService.NotifyNewEventAsync(user.Id, events.Name);
+            }
         }
 
         public async Task DeleteEventAsync(int id)
