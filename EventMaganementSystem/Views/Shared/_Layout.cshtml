@@ -79,6 +79,27 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+
+    <!-- SignalR connection and notification handling -->
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub")
+            .build();
+
+        connection.start()
+            .then(() => console.log("Connected to ChatHub"))
+            .catch(err => console.error("Error connecting to ChatHub:", err.toString()));
+
+        connection.on("ReceiveNotification", (message, type) => {
+            console.log("Notification received:", message);
+            displayNotification(message, type);
+        });
+
+        function displayNotification(message, type) {
+            alert(`Message: ${message}`);
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

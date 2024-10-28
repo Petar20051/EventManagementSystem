@@ -7,7 +7,7 @@ using EventMaganementSystem.Data;
 using EventManagementSystem.Core;
 using EventMaganementSystem;
 using EventManagementSystem;
-using Microsoft.AspNet.SignalR;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 

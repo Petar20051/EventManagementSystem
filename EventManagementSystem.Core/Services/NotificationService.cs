@@ -43,22 +43,22 @@ namespace EventManagementSystem.Core.Services
 
         public async Task NotifyNewEventAsync(string userId, string eventName)
         {
-            await _notificationHub.NotifyNewEventAsync(userId, eventName);
+            await CreateNotificationAsync(userId, $"A new event, {eventName}, has been added! Check it out now.", NotificationType.NewEventCreated);
         }
 
         public async Task NotifyEventReminderAsync(string userId, string eventName, DateTime eventTime)
         {
-            await _notificationHub.NotifyEventReminderAsync(userId, eventName, eventTime);
+            await CreateNotificationAsync(userId, $"Reminder: The event {eventName} is happening tomorrow at {eventTime}. We look forward to seeing you there!", NotificationType.EventReminder);
         }
 
         public async Task NotifyGeneralAnnouncementAsync(string userId, string content)
         {
-            await _notificationHub.NotifyGeneralAnnouncementAsync(userId, content);
+            await CreateNotificationAsync(userId, $"Important Update: {content}", NotificationType.General);
         }
 
         public async Task NotifySystemAlertAsync(string userId, string alertContent)
         {
-            await _notificationHub.NotifySystemAlertAsync(userId, alertContent);
+            await CreateNotificationAsync(userId, $"System Alert: {alertContent}. Please review this information.", NotificationType.SystemAlert);
         }
 
         public async Task<List<Notification>> GetUserNotificationsAsync(string userId)

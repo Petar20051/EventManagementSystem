@@ -1,7 +1,7 @@
 ﻿using EventMaganementSystem;
 using EventManagementSystem.Core.Contracts;
 using EventManagementSystem.Infrastructure.Data.Enums;
-using Microsoft.AspNet.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,10 +21,9 @@ namespace EventManagementSystem
 
         public async Task SendNotificationAsync(string userId, string message, NotificationType type)
         {
-            await _chatHubContext.Clients.User(userId).SendNotificationAsync("ReceiveNotification", message, type);
+            await _chatHubContext.Clients.User(userId).SendAsync("ReceiveNotification", message, type);
         }
 
-        // Implement other methods for each notification type
         public async Task NotifyNewEventAsync(string userId, string eventName)
         {
             string message = $"A new event, {eventName}, has been added! Check it out now.";
