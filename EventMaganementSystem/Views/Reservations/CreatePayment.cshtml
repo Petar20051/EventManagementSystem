@@ -1,8 +1,9 @@
-﻿@using EventManagementSystem.Infrastructure.Entities
-@model Reservation
+﻿
+@using EventManagementSystem.Core.Models.Reservation
+@model ReservationViewModel
 
 <h1>Complete Your Payment</h1>
-<p>Total Amount: @Model.TotalAmount.ToString("C")</p>
+<p>Total Amount: @Model.DiscountedAmount</p>
 
 <form asp-action="Pay" method="post">
     <input type="hidden" name="reservationId" value="@Model.Id" />

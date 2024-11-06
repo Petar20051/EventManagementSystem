@@ -18,8 +18,9 @@
             <th>Attendees Count</th>
             <th>Reservation Date</th>
             <th>Total Amount</th>
+            <th>Discounted Amount</th> <!-- New column for discounted amount -->
             <th>Status</th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -29,7 +30,8 @@
                 <td>@reservation.EventName</td>
                 <td>@reservation.AttendeesCount</td>
                 <td>@reservation.ReservationDate.ToShortDateString()</td>
-                <td>@reservation.TotalAmount</td> <!-- Display total amount -->
+                <td>@reservation.TotalAmount.ToString("C")</td> <!-- Display total amount in currency format -->
+                <td>@reservation.DiscountedAmount</td> <!-- Display discounted amount in currency format -->
 
                 <td>
                     @if (reservation.IsPaid)

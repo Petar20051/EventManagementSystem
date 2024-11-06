@@ -2,6 +2,7 @@
 using EventManagementSystem.Core.Models.Reservation;
 using EventManagementSystem.Infrastructure.Data.Enums;
 using EventManagementSystem.Infrastructure.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PayPal.Api;
 using System.Security.Claims;
@@ -13,12 +14,16 @@ namespace EventMaganementSystem.Controllers
         private readonly IReservationService _reservationService;
         private readonly IEventService _eventService;
         private readonly IStripePaymentService _stripePaymentService;
+        private readonly IUserService _userService;
+        private readonly IDiscountService _discountService;
 
-        public ReservationsController(IReservationService reservationService, IEventService eventService, IStripePaymentService stripePaymentService)
+        public ReservationsController(IReservationService reservationService, IEventService eventService, IStripePaymentService stripePaymentService,IUserService userService, IDiscountService discountService)
         {
             _reservationService = reservationService;
             _eventService = eventService;
             _stripePaymentService = stripePaymentService;
+            _userService = userService;
+            _discountService = discountService;
         }
 
         // GET: Reservations/Create
@@ -69,20 +74,35 @@ namespace EventMaganementSystem.Controllers
         {
             // Fetch reservations from the service (this returns a list of Reservation entities)
             var reservations = await _reservationService.GetAllReservationsAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var reservator = await _userService.GetUserByIdAsync(userId);
 
-            // Map Reservation entities to ReservationViewModel
-            var reservationViewModels = reservations.Select(r => new ReservationViewModel
+            var reservationViewModels = new List<ReservationViewModel>();
+
+            // Process each reservation asynchronously
+            foreach (var reservation in reservations)
             {
-                Id = r.Id,
-                EventId = r.EventId,
-                EventName = r.Event.Name,  // Assuming the Reservation has a related Event entity
-                AttendeesCount = r.AttendeesCount,
-                ReservationDate = r.ReservationDate,
-                IsPaid = r.IsPaid,
-                TotalAmount = r.Event.TicketPrice * r.AttendeesCount // Assuming TicketPrice is part of Event
-            }).ToList();
+                // Calculate total amount and apply discount
+                decimal totalAmount = reservation.Event.TicketPrice * reservation.AttendeesCount;
+                decimal discountedAmount = await _discountService.ApplyDiscountAsync(reservator.SponsorshipTier, totalAmount);
 
-            // Pass the ViewModel to the view
+                // Map to ReservationViewModel
+                var viewModel = new ReservationViewModel
+                {
+                    Id = reservation.Id,
+                    EventId = reservation.EventId,
+                    EventName = reservation.Event.Name,
+                    AttendeesCount = reservation.AttendeesCount,
+                    ReservationDate = reservation.ReservationDate,
+                    IsPaid = reservation.IsPaid,
+                    TotalAmount = totalAmount,
+                    DiscountedAmount = discountedAmount
+                };
+
+                reservationViewModels.Add(viewModel);
+            }
+
+            // Pass the ViewModel list to the view
             return View(reservationViewModels);
         }
 

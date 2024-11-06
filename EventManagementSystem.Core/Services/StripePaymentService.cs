@@ -5,19 +5,23 @@ using Stripe.Checkout;
 using EventManagementSystem.Core.Models.Payments;
 using Microsoft.Extensions.Options;
 using EventManagementSystem.Core;
+using EventManagementSystem.Core.Services;
+using Microsoft.Extensions.Logging;
 
 public class StripePaymentService : IStripePaymentService
 {
     private readonly IUserService _userService;
     private readonly StripeSettings _stripeOptions;
+    private readonly IDiscountService _discountService;
 
-    public StripePaymentService(IUserService userService, IOptions<StripeSettings> stripeOptions)
+    public StripePaymentService(IUserService userService, IOptions<StripeSettings> stripeOptions,IDiscountService discountService)
     {
         _userService = userService;
         _stripeOptions = stripeOptions.Value;
 
         // Set the Stripe secret key from configuration (user secrets)
         StripeConfiguration.ApiKey = _stripeOptions.SecretKey;
+        _discountService = discountService;
     }
 
     public async Task AddPaymentMethodAsync(string stripeCustomerId, string stripeToken)
@@ -50,15 +54,17 @@ public class StripePaymentService : IStripePaymentService
     public async Task<string> ProcessPaymentAsync(decimal amount, string paymentMethodId, string userId)
     {
         var customerId = await _userService.GetStripeCustomerIdAsync(userId);
+        var user= await _userService.GetUserByIdAsync(userId);
 
         if (string.IsNullOrEmpty(customerId))
         {
             throw new Exception("Stripe customer ID not found.");
         }
+        decimal discountedAmount = await _discountService.ApplyDiscountAsync(user.SponsorshipTier,  amount);
 
         var options = new PaymentIntentCreateOptions
         {
-            Amount = (long)(amount * 100), // Convert amount to cents
+            Amount = (long)(discountedAmount * 100), // Convert amount to cents
             Currency = "usd", // Use your currency code here
             Customer = customerId,
             PaymentMethod = paymentMethodId,

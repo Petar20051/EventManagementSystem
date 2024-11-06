@@ -53,6 +53,7 @@ builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<INotificationHub, NotificationHubService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddSignalR();
+builder.Services.AddScoped<IDiscountService,DiscountService>();
 
 var app = builder.Build();
 

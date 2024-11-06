@@ -32,5 +32,6 @@ namespace EventManagementSystem.Core.Models.Reservation
         public bool IsPaid { get; set; } // To track payment status
 
         public decimal TotalAmount { get; set; }
+        public decimal? DiscountedAmount { get; set; }
     }
 }
