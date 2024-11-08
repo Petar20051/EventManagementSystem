@@ -5,54 +5,56 @@
     ViewData["Title"] = "Process Payment";
 }
 
-<h2>Process Payment</h2>
+<div class="container mt-5">
+    <h2 class="text-center mb-4" style="color: #004080;">@ViewData["Title"]</h2>
 
-<div class="alert alert-info">
-    You are paying for Reservation ID: @Model.ReservationId
-    <br />
-    Total Amount: $@Model.Amount
-</div>
+    <div class="card shadow-sm p-4" style="max-width: 700px; margin: 0 auto;">
+        <!-- Alert for Reservation and Amount -->
+        <div class="alert alert-info text-center">
+            <p>You are paying for <strong>Reservation ID:</strong> @Model.ReservationId</p>
+            <p><strong>Total Amount:</strong> $@Model.Amount</p>
+        </div>
 
-<form asp-action="ProcessPayment" method="post" id="payment-form">
-    <input type="hidden" name="PaymentMethodId" id="paymentMethodId" />
-    <input type="hidden" name="Amount" value="@Model.Amount" />
-    <input type="hidden" name="ReservationId" value="@Model.ReservationId" />
+        <form asp-action="ProcessPayment" method="post" id="payment-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="PaymentMethodId" id="paymentMethodId" />
+            <input type="hidden" name="Amount" value="@Model.Amount" />
+            <input type="hidden" name="ReservationId" value="@Model.ReservationId" />
 
-    <!-- Section to choose from stored credit cards -->
-    @if (Model.StoredCards != null && Model.StoredCards.Any())
-    {
-        <h4>Choose a saved card</h4>
-        <div>
-            @foreach (var card in Model.StoredCards)
+            <!-- Stored Cards Section -->
+            @if (Model.StoredCards != null && Model.StoredCards.Any())
             {
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="SelectedCardId" value="@card.CardId" id="storedCard_@card.CardId" />
-                    <label class="form-check-label" for="storedCard_@card.CardId">
-                        **** **** **** @card.Last4Digits (Expires: @card.ExpirationDate)
-                    </label>
+                <h4 class="mb-3" style="color: #004080;">Choose a Saved Card</h4>
+                <div class="mb-4">
+                    @foreach (var card in Model.StoredCards)
+                    {
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="SelectedCardId" value="@card.CardId" id="storedCard_@card.CardId" />
+                            <label class="form-check-label" for="storedCard_@card.CardId">
+                                **** **** **** @card.Last4Digits (Expires: @card.ExpirationDate)
+                            </label>
+                        </div>
+                    }
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="SelectedCardId" value="new" id="newCardOption" checked />
+                        <label class="form-check-label" for="newCardOption">Use a New Card</label>
+                    </div>
                 </div>
             }
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="SelectedCardId" value="new" id="newCardOption" checked />
-            <label class="form-check-label" for="newCardOption">Use a new card</label>
-        </div>
-    }
-    else
-    {
-        <h4>Add a new card</h4>
-    }
+            <h4 class="mb-3" style="color: #004080;">No Saved Cards Available</h4>
+            <p class="text-muted">You don't have any saved payment methods. Please add a new card.</p>
+            <a href="@Url.Action("AddPaymentMethod", "PaymentMethods")" class="btn btn-primary mt-3" style="background-color: #004080;">
+                Add a New Card
+            </a>
 
-    <!-- Stripe Elements: For adding new credit card -->
-    <div id="card-element" class="mb-3">
-        <!-- Stripe.js will inject the credit card form fields here -->
+            <button type="submit" class="btn btn-primary w-100">Submit Payment</button>
+        </form>
     </div>
-    <div id="card-errors" role="alert"></div>
+</div>
 
-    <button type="submit" class="btn btn-primary mt-3">Submit Payment</button>
-</form>
-
+<!-- Include Stripe.js -->
 <script src="https://js.stripe.com/v3/"></script>
+
 <script>
     var stripe = Stripe('@ViewBag.StripePublishableKey');
     var elements = stripe.elements();
@@ -104,3 +106,51 @@
         }
     });
 </script>
+
+<style>
+    .container {
+        max-width: 800px;
+    }
+
+    .card {
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+
+    h2 {
+        font-weight: bold;
+    }
+
+    h4 {
+        font-weight: bold;
+    }
+
+    .btn-primary {
+        background-color: #004080;
+        border: none;
+        color: #ffffff;
+        padding: 12px;
+        font-size: 1rem;
+        font-weight: bold;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #003366;
+        }
+
+    #card-element {
+        background-color: #ffffff;
+    }
+
+    .form-check-label {
+        color: #6c757d;
+    }
+
+    .alert-info {
+        background-color: #e9f7fd;
+        border-color: #b8e2f2;
+        color: #004080;
+    }
+</style>

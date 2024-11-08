@@ -10,10 +10,79 @@
     <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' rel='stylesheet' />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background for better contrast */
+        }
+
+        .mb-3 {
+            margin-bottom: 0rem !important;
+        }
+
+        .full-width-section {
+            padding: 36px 0;
+        }
+
+        .border-bottom {
+            border-bottom: 0px solid #dee2e6 !important;
+        }
+        .navbar {
+            background-color: #343a40; /* Dark blue for the navbar */
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: #ffffff !important; /* White text for navbar links */
+        }
+
+            .navbar-brand:hover,
+            .nav-link:hover {
+                color: #d1e7dd !important; /* Light color on hover */
+            }
+
+
+        .footer {
+            background-color: #343a40; /* Dark footer */
+            color: white; /* White text */
+        }
+
+            .footer a {
+                color: #ffffff; /* White links in footer */
+            }
+
+                .footer a:hover {
+                    color: #d1e7dd; /* Light color on hover in footer */
+                }
+
+        .card {
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+                border-color: #0056b3;
+            }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+            .btn-danger:hover {
+                background-color: #c82333;
+                border-color: #bd2131;
+            }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">EventMaganementSystem</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -23,10 +92,10 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="ManageProfile" asp-action="Index">Manage Profile</a>
@@ -44,26 +113,25 @@
                             <a class="nav-link" asp-controller="Reservations" asp-action="Index">Reservations</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="PaymentMethods" asp-action="AddPaymentMethod" class="btn btn-primary">
+                            <a class="nav-link" asp-controller="PaymentMethods" asp-action="AddPaymentMethod">
                                 Add Payment Method
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Sponsorship" asp-action="SponsorshipDashboard" class="btn btn-primary">
-                               Sponsorship Status
+                            <a class="nav-link " asp-controller="Sponsorship" asp-action="SponsorshipDashboard">
+                                Sponsorship Status
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Sponsorship" asp-action="SponsorEventList" class="btn btn-primary">
+                            <a class="nav-link " asp-controller="Sponsorship" asp-action="SponsorEventList">
                                 Sponsor Event
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Notifications" asp-action="Index" class="btn btn-primary">
+                            <a class="nav-link " asp-controller="Notifications" asp-action="Index">
                                 Notifications
                             </a>
                         </li>
-                       
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

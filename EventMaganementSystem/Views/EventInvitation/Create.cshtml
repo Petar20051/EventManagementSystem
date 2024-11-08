@@ -5,27 +5,86 @@
     ViewBag.Title = "Send Invitation";
 }
 
-<h2>Send Invitation</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Send Invitation</h3>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("Create", "EventInvitation", FormMethod.Post))
+                    {
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(model => model.EventId, "Select Event", new { @class = "form-label" })
+                            @Html.DropDownListFor(model => model.EventId, (SelectList)ViewBag.EventList, "-- Select Event --", new { @class = "form-control" })
+                        </div>
 
-@using (Html.BeginForm("Create", "EventInvitation", FormMethod.Post))
-{
-    <div class="form-group">
-        @Html.LabelFor(model => model.EventId, "Select Event")
-        @Html.DropDownListFor(model => model.EventId, (SelectList)ViewBag.EventList, "-- Select Event --", new { @class = "form-control" })
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(model => model.ReceiverId, "Select Receiver", new { @class = "form-label" })
+                            @Html.DropDownListFor(model => model.ReceiverId, (SelectList)ViewBag.UserList, "-- Select Receiver --", new { @class = "form-control" })
+                        </div>
+
+                        <div class="form-group mb-4">
+                            @Html.LabelFor(model => model.InvitationDate, "Invitation Date", new { @class = "form-label" })
+                            @Html.TextBoxFor(model => model.InvitationDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        </div>
+
+                        <input type="submit" value="Send Invitation" class="btn btn-primary w-100 mb-3" />
+                    }
+                    <a href="@Url.Action("Index")" class="btn btn-secondary w-100">Back to List</a>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.ReceiverId, "Select Receiver")
-        @Html.DropDownListFor(model => model.ReceiverId, (SelectList)ViewBag.UserList, "-- Select Receiver --", new { @class = "form-control" })
-    </div>
+<style>
+    .card {
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        background-color: #ffffff;
+    }
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.InvitationDate)
-        @Html.TextBoxFor(model => model.InvitationDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
-    </div>
+    .card-header {
+        font-size: 1.25em;
+        font-weight: bold;
+    }
 
-    <input type="submit" value="Send Invitation" class="btn btn-primary" />
-}
+    .form-label {
+        font-weight: 600;
+        color: #333;
+    }
 
-<a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+    .form-control {
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        transition: border-color 0.3s;
+    }
+    .form-control:focus {
+        border-color: #004080;
+        box-shadow: 0 0 5px rgba(0, 64, 128, 0.2);
+    }
 
+    .btn-primary {
+        background-color: #004080;
+        border: none;
+        color: #ffffff;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #003366;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: #ffffff;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+</style>

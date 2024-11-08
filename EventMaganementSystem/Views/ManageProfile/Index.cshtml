@@ -1,73 +1,122 @@
-﻿﻿@using EventManagementSystem.Core.Models.Account
+﻿@using EventManagementSystem.Core.Models.Account
 @using EventManagementSystem.Infrastructure.Entities
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<ApplicationUser> UserManager
 @model ManageProfileViewModel
 
-<h2 class="text-center">Manage Profile</h2>
+<div class="container mt-5">
+    <h2 class="text-center mb-4" style="color: #004080;">Manage Profile</h2>
 
+    <!-- Profile Information Card -->
+    <div class="card shadow-sm p-4 mb-4">
+        <h3 class="card-title" style="color: #004080;">Profile Information</h3>
+        <p><strong>Username:</strong> @Model.UserName.Substring(0, Model.UserName.IndexOf('@'))</p>
+        <p><strong>Email:</strong> @Model.UserName</p>
+        <p><strong>Sponsored Amount:</strong> @Model?.SponsoredAmount.ToString("C")</p>
+        <p><strong>Sponsorship Tier:</strong> @Model?.SponsorshipTier?.ToString()</p>
+    </div>
 
-<div class="profile-info">
-    <p>
-        <strong>Username:</strong> @Model.UserName.Substring(0, Model.UserName.IndexOf('@'))
-    </p>
+    <!-- Tickets Section -->
+    <div class="card shadow-sm p-4 mb-4">
+        <h3 class="card-title" style="color: #004080;">Tickets</h3>
+        @if (Model?.Tickets != null && Model.Tickets.Any())
+        {
+            <ul class="list-unstyled">
+                <li>
+                    <form action="@Url.Action("MyTickets", "Ticket")" method="get" style="display:inline;">
+                        <button type="submit" class="btn btn-primary">My Tickets</button>
+                    </form>
+                </li>
+            </ul>
+        }
+        else
+        {
+            <p>You have no tickets.</p>
+        }
+    </div>
 
-    <p><strong>Email:</strong> @Model.UserName</p>
-    <p><strong>Sponsored Amount:</strong> @Model?.SponsoredAmount.ToString("C")</p>
-    <p><strong>Sponsorship Tier:</strong> @Model?.SponsorshipTier?.ToString()</p>
-</div>
+    <!-- Update Profile Section -->
+    <div class="card shadow-sm p-4 mb-4">
+        <h3 class="card-title" style="color: #004080;">Update Profile Information</h3>
+        <button type="button" class="btn btn-secondary mb-3" onclick="window.location.href='@Url.Action("Index", "ChangePassword")'">Change Password</button>
 
-<h3>Tickets</h3>
-@if (Model?.Tickets != null && Model.Tickets.Any())
-{
-    <ul>
-            <li>
-                <form action="@Url.Action("MyTickets", "Ticket")" method="get" style="display:inline;">
-                    <button type="submit" class="btn btn-primary">
-                      My Tickets
-                    </button>
+        @if (User.Identity.IsAuthenticated)
+        {
+            var user = await UserManager.GetUserAsync(User);
+            if (user != null && !await UserManager.IsInRoleAsync(user, "Organizer"))
+            {
+                <h3>Become an Organizer</h3>
+                <form asp-action="BecomeOrganizer" method="post">
+                    <button type="submit" class="btn btn-primary">Become Organizer</button>
                 </form>
-            </li>
-    </ul>
-}
-else
-{
-    <p>You have no tickets.</p>
-}
-<h3>Update Profile Information</h3>
+            }
+            else
+            {
+                <h4>Organizer Status:</h4>
+                <p>You are already an organizer.</p>
+            }
+        }
+        else
+        {
+            <p>You need to log in to become an organizer.</p>
+        }
+    </div>
 
-<div>
-    <button type="button" class="btn btn-secondary" onclick="window.location.href='@Url.Action("Index", "ChangePassword")'">Change Password</button>
+    <!-- TempData Messages -->
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success mt-3">@TempData["Message"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger mt-3">@TempData["Error"]</div>
+    }
 </div>
-@if (User.Identity.IsAuthenticated)
-{
-    var user = await UserManager.GetUserAsync(User);
-    if (user != null && !await UserManager.IsInRoleAsync(user, "Organizer"))
-    {
-        <h3>Become an Organizer</h3>
-        <form asp-action="BecomeOrganizer" method="post">
-            <button type="submit" class="btn btn-primary">Become Organizer</button>
-        </form>
+
+<style>
+    .container {
+        max-width: 800px;
     }
-    else
-    {
-        <h3>Organizer Status:</h3>
-        <p>You are already an organizer.</p>
+
+    .card {
+        border-radius: 8px;
+        background-color: #f8f9fa;
     }
-}
-else
-{
-    <p>You need to log in to become an organizer.</p>
-}
 
-<!-- TempData Messages -->
-@if (TempData["Message"] != null)
-{
-    <div class="alert alert-success">@TempData["Message"]</div>
-}
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
 
+    p, ul {
+        color: #6c757d;
+        font-size: 1rem;
+    }
 
+    .btn-primary {
+        background-color: #004080;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            background-color: #003366;
+        }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+    .alert {
+        font-weight: 600;
+        text-align: center;
+    }
+</style>

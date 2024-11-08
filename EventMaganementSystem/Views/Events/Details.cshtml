@@ -2,20 +2,60 @@
 @using System.Security.Claims
 @model EventDetailsViewModel
 
-<h2>@Model.Name</h2>
-<p>Date: @Model.Date</p>
-<p>Location: @Model.Location</p>
-<p>Address: @Model.Address</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4">
+                <h2 class="text-center mb-4" style="color: #004080;">@Model.Name</h2>
 
-@if (User.FindFirstValue(ClaimTypes.NameIdentifier)==Model.OrganizerId)
-{
-    <a asp-action="Attendees"  class="btn btn-primary">
-        View Attendees
-    </a>
-}
-<a asp-controller="EventFeedback" asp-action="Index" asp-route-eventId="@Model.Id" class="btn btn-primary mt-3">
-    Leave Feedback
-</a>
+                <div class="mb-3">
+                    <p><strong>Date:</strong> @Model.Date.ToString("MMMM dd, yyyy")</p>
+                    <p><strong>Location:</strong> @Model.Location</p>
+                    <p><strong>Address:</strong> @Model.Address</p>
+                </div>
 
+                <div class="text-center mt-4">
+                    @if (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.OrganizerId)
+                    {
+                        <a asp-action="Attendees" class="btn btn-primary mb-3 w-100">
+                            View Attendees
+                        </a>
+                    }
+                    <a asp-controller="EventFeedback" asp-action="Index" asp-route-eventId="@Model.Id" class="btn btn-primary w-100">
+                        Leave Feedback
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        background-color: #ffffff;
+    }
+
+    h2 {
+        font-weight: bold;
+    }
+
+    p {
+        font-size: 1.1em;
+        color: #333;
+    }
+
+    .btn-primary {
+        background-color: #004080;
+        border: none;
+        color: #ffffff;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #003366;
+    }
+</style>
 
 

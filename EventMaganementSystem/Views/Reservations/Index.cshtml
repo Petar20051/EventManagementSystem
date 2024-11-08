@@ -5,58 +5,130 @@
     ViewData["Title"] = "Reservations List";
 }
 
-<h1>Reservations</h1>
+<style>
+    .container {
+        max-width: 900px;
+    }
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Create New Reservation</a>
-</p>
+    .card {
+        border-radius: 8px;
+    }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Event</th>
-            <th>Attendees Count</th>
-            <th>Reservation Date</th>
-            <th>Total Amount</th>
-            <th>Discounted Amount</th> <!-- New column for discounted amount -->
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var reservation in Model)
-        {
-            <tr>
-                <td>@reservation.EventName</td>
-                <td>@reservation.AttendeesCount</td>
-                <td>@reservation.ReservationDate.ToShortDateString()</td>
-                <td>@reservation.TotalAmount.ToString("C")</td> <!-- Display total amount in currency format -->
-                <td>@reservation.DiscountedAmount</td> <!-- Display discounted amount in currency format -->
+    .table {
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+    }
 
-                <td>
-                    @if (reservation.IsPaid)
-                    {
-                        <span class="badge bg-success">Paid</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Not Paid</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@reservation.Id" class="btn btn-warning">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@reservation.Id" class="btn btn-danger">Delete</a>
+    th {
+        font-weight: bold;
+    }
 
-                    @if (!reservation.IsPaid)
-                    {
-                        <a asp-action="ProcessPayment" asp-controller="Payments" asp-route-reservationId="@reservation.Id" class="btn btn-primary">Pay</a>
-                    }
-                    else
-                    {
-                        <a asp-action="ViewPaymentDetails" asp-controller="Payments" asp-route-reservationId="@reservation.Id" class="btn btn-secondary">View Payment</a>
-                    }
-                </td>
-            </tr>
+    .btn {
+        font-weight: bold;
+        border-radius: 5px; /* Adding rounded corners */
+        padding: 8px 12px; /* More padding for a better touch target */
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        transition: background-color 0.3s;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
         }
-    </tbody>
-</table>
+
+    .btn-warning {
+        background-color: #ffc107;
+        border: none;
+        transition: background-color 0.3s;
+    }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+        transition: background-color 0.3s;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        transition: background-color 0.3s;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+</style>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4" style="color: #004080;">@ViewData["Title"]</h1>
+
+    <p class="text-center mb-4">
+        <a asp-action="Create" class="btn btn-primary">Create New Reservation</a>
+    </p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr style="background-color: #004080; color: white;">
+                        <th>Event</th>
+                        <th>Attendees Count</th>
+                        <th>Reservation Date</th>
+                        <th>Total Amount</th>
+                        <th>Discounted Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var reservation in Model)
+                    {
+                        <tr>
+                            <td>@reservation.EventName</td>
+                            <td>@reservation.AttendeesCount</td>
+                            <td>@reservation.ReservationDate.ToShortDateString()</td>
+                            <td>@reservation.TotalAmount.ToString("C")</td>
+                            <td>@reservation.DiscountedAmount"лв."</td>
+
+                            <td>
+                                @if (reservation.IsPaid)
+                                {
+                                    <span class="badge bg-success">Paid</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Not Paid</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@reservation.Id" class="btn btn-warning btn-sm">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@reservation.Id" class="btn btn-danger btn-sm">Delete</a>
+
+                                @if (!reservation.IsPaid)
+                                {
+                                    <a asp-action="ProcessPayment" asp-controller="Payments" asp-route-reservationId="@reservation.Id" class="btn btn-primary btn-sm">Pay</a>
+                                }
+                                else
+                                {
+                                    <a asp-action="ViewPaymentDetails" asp-controller="Payments" asp-route-reservationId="@reservation.Id" class="btn btn-secondary btn-sm">View Payment</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -2,14 +2,53 @@
     ViewData["Title"] = "Payment Failed";
 }
 
-<div class="container text-center mt-5">
+<div class="container text-center mt-5" style="max-width: 600px;">
     <div class="card shadow-sm p-4">
         <div class="card-body">
             <i class="fas fa-times-circle fa-5x text-danger mb-3"></i>
-            <h1 class="card-title">Payment Failed</h1>
-            <p class="card-text">Unfortunately, your payment could not be processed. Please try again or contact support if the issue persists.</p>
-            <a href="/Payments/ChoosePaymentMethod" class="btn btn-danger mt-3">Retry Payment</a>
+            <h1 class="card-title" style="color: #dc3545; font-weight: bold;">@ViewData["Title"]</h1>
+            <p class="card-text mt-3" style="color: #6c757d; font-size: 1.1em;">
+                Unfortunately, your payment could not be processed. Please try again or contact support if the issue persists.
+            </p>
+            <a href="/Payments/ProcessPayment" class="btn btn-primary mt-4" style="background-color: #004080;">
+                Retry Payment
+            </a>
         </div>
     </div>
 </div>
 
+<!-- Optional FontAwesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    .container {
+        max-width: 600px;
+    }
+
+    .card {
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+
+    .card-title {
+        font-size: 2rem;
+        color: #dc3545; /* Red color for failure */
+    }
+
+    .btn-primary {
+        background-color: #004080;
+        color: white;
+        padding: 12px 24px;
+        font-size: 1.1em;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #003366;
+    }
+
+    .text-danger {
+        color: #dc3545;
+    }
+</style>

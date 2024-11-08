@@ -1,21 +1,69 @@
 ﻿@using EventManagementSystem.Core.Models.Account
 @model ChangePasswordViewModel
 
-<form asp-action="Index" method="post">
-    <div class="form-group">
-        <label asp-for="CurrentPassword">Current Password</label>
-        <input asp-for="CurrentPassword" class="form-control" />
-        <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card p-4 shadow-sm">
+                <h2 class="text-center mb-4" style="color: #004080;">Change Password</h2>
+
+                <form asp-action="Index" method="post">
+                    <div class="form-group mb-3">
+                        <label asp-for="CurrentPassword" class="form-label">Current Password</label>
+                        <input asp-for="CurrentPassword" class="form-control" type="password" />
+                        <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="NewPassword" class="form-label">New Password</label>
+                        <input asp-for="NewPassword" class="form-control" type="password" />
+                        <span asp-validation-for="NewPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label">Confirm New Password</label>
+                        <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Change Password</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="NewPassword">New Password</label>
-        <input asp-for="NewPassword" class="form-control" />
-        <span asp-validation-for="NewPassword" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="ConfirmPassword">Confirm New Password</label>
-        <input asp-for="ConfirmPassword" class="form-control" />
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Change Password</button>
-</form>
+</div>
+
+<style>
+    .card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control {
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        transition: border-color 0.3s;
+    }
+    .form-control:focus {
+        border-color: #004080;
+        box-shadow: 0 0 5px rgba(0, 64, 128, 0.2);
+    }
+
+    .btn-primary {
+        background-color: #004080;
+        border: none;
+        color: #ffffff;
+        font-weight: 600;
+        transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+        background-color: #003366;
+    }
+</style>

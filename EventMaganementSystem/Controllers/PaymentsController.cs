@@ -144,4 +144,10 @@ public class PaymentsController : Controller
         ViewBag.Message = "Payment successful!";
         return View();
     }
+
+    public IActionResult PaymentFailed()
+    {
+        ViewBag.Message = "Payment failed!";
+        return View();
+    }
 }

@@ -5,34 +5,87 @@
     ViewData["Title"] = "Edit Reservation";
 }
 
-<h1>Edit Reservation</h1>
+<div class="container mt-5" style="max-width: 700px;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="text-center mb-0">@ViewData["Title"]</h2>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="Id" />
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-    <div class="form-group">
-        <label asp-for="EventId" class="control-label"></label>
-        <select asp-for="EventId" class="form-control" asp-items="@(new SelectList(Model.Events, "Id", "Name", Model.EventId))">
-            <option value="">Select an Event</option>
-        </select>
-        <span asp-validation-for="EventId" class="text-danger"></span>
+                <!-- Event Selection Section -->
+                <div class="form-group mb-4">
+                    <label asp-for="EventId" class="form-label" style="font-weight: bold;">Event</label>
+                    <select asp-for="EventId" class="form-select" asp-items="@(new SelectList(Model.Events, "Id", "Name", Model.EventId))">
+                        <option value="">Select an Event</option>
+                    </select>
+                    <span asp-validation-for="EventId" class="text-danger"></span>
+                </div>
+
+                <!-- Attendees Count Section -->
+                <div class="form-group mb-4">
+                    <label asp-for="AttendeesCount" class="form-label" style="font-weight: bold;">Attendees Count</label>
+                    <input asp-for="AttendeesCount" class="form-control" placeholder="Enter number of attendees" />
+                    <span asp-validation-for="AttendeesCount" class="text-danger"></span>
+                </div>
+
+                <!-- Reservation Date Section -->
+                <div class="form-group mb-4">
+                    <label asp-for="ReservationDate" class="form-label" style="font-weight: bold;">Reservation Date</label>
+                    <input asp-for="ReservationDate" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="ReservationDate" class="text-danger"></span>
+                </div>
+
+                <!-- Submit and Back Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="AttendeesCount" class="control-label"></label>
-        <input asp-for="AttendeesCount" class="form-control" />
-        <span asp-validation-for="AttendeesCount" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="ReservationDate" class="control-label"></label>
-        <input asp-for="ReservationDate" class="form-control" />
-        <span asp-validation-for="ReservationDate" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-</form>
+</div>
 
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<style>
+    .container {
+        max-width: 700px;
+    }
+
+    .card {
+        border-radius: 8px;
+    }
+
+    .card-header {
+        background-color: #004080;
+        font-weight: bold;
+    }
+
+    .form-label {
+        color: #004080;
+    }
+
+    .btn-primary {
+        background-color: #004080;
+        border: none;
+        font-weight: bold;
+    }
+
+    .btn-primary:hover {
+        background-color: #003366;
+    }
+
+    .btn-outline-secondary {
+        font-weight: bold;
+    }
+
+    .text-danger {
+        font-weight: bold;
+    }
+</style>
 

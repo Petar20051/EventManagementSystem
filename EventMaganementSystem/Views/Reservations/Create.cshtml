@@ -5,25 +5,25 @@
     ViewData["Title"] = "Create Reservation";
 }
 
-<div class="container mt-5">
+<div class="container mt-5" style="max-width: 700px;">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
-            <h2 class="text-center mb-0">Create Reservation</h2>
+            <h2 class="text-center mb-0">@ViewData["Title"]</h2>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
             <form asp-action="Create" method="post">
                 <!-- Event Selection Section -->
-                <div class="form-group mb-3">
-                    <label class="form-label">Event</label>
+                <div class="form-group mb-4">
+                    <label class="form-label" style="font-weight: bold;">Event</label>
                     @if (Model.EventId.HasValue)
                     {
-                        <!-- Display the chosen event name as plain text if eventId is provided -->
-                        <p class="form-control-plaintext"><strong>@Model.Events.FirstOrDefault(e => e.Id == Model.EventId)?.Name</strong></p>
+                        <p class="form-control-plaintext">
+                            <strong>@Model.Events.FirstOrDefault(e => e.Id == Model.EventId)?.Name</strong>
+                        </p>
                         <input type="hidden" asp-for="EventId" />
                     }
                     else
                     {
-                        <!-- Show dropdown list if no event is preselected -->
                         <select asp-for="EventId" class="form-select" asp-items="@(new SelectList(Model.Events, "Id", "Name"))">
                             <option value="">Select an Event</option>
                         </select>
@@ -32,15 +32,15 @@
                 </div>
 
                 <!-- Attendees Count Section -->
-                <div class="form-group mb-3">
-                    <label asp-for="AttendeesCount" class="form-label">Attendees Count</label>
+                <div class="form-group mb-4">
+                    <label asp-for="AttendeesCount" class="form-label" style="font-weight: bold;">Attendees Count</label>
                     <input asp-for="AttendeesCount" class="form-control" placeholder="Enter number of attendees" />
                     <span asp-validation-for="AttendeesCount" class="text-danger"></span>
                 </div>
 
                 <!-- Reservation Date Section -->
-                <div class="form-group mb-3">
-                    <label asp-for="ReservationDate" class="form-label">Reservation Date</label>
+                <div class="form-group mb-4">
+                    <label asp-for="ReservationDate" class="form-label" style="font-weight: bold;">Reservation Date</label>
                     <input asp-for="ReservationDate" type="datetime-local" class="form-control" readonly />
                     <span asp-validation-for="ReservationDate" class="text-danger"></span>
                 </div>
@@ -57,5 +57,44 @@
 
 @section Scripts {
     @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }}
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<style>
+    .container {
+        max-width: 700px;
+    }
+
+    .card {
+        border-radius: 8px;
+    }
+
+    .card-header {
+        background-color: #004080;
+        font-weight: bold;
+    }
+
+    .btn-primary {
+        background-color: #004080;
+        border: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #003366;
+    }
+
+    .btn-outline-secondary {
+        font-weight: bold;
+    }
+
+    .form-group label {
+        color: #004080;
+        font-size: 1rem;
+    }
+
+    .form-control-plaintext {
+        color: #343a40;
+    }
+</style>

@@ -1,23 +1,46 @@
 ﻿@using EventManagementSystem.Core.Models.Events
 @model List<AttendeeInfo>
 
-<h2>Attendees List</h2>
+<div class="container mt-5">
+    <h2 class="text-center mb-4" style="color: #004080;">Attendees List</h2>
 
-<table>
-    <thead>
-        <tr>
-            <th>User Email</th>
-            <th>Attendee Count</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var attendee in Model)
-
-        {
+    <table class="table table-bordered table-hover shadow-sm">
+        <thead class="table-primary">
             <tr>
-                <td>@attendee.UserEmail</td>
-                <td>@attendee.AttendeeCount</td>
+                <th>User Email</th>
+                <th>Attendee Count</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var attendee in Model)
+            {
+                <tr>
+                    <td>@attendee.UserEmail</td>
+                    <td>@attendee.AttendeeCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+    }
+
+    .table {
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
+
+    .table-primary {
+        background-color: #004080; /* Theme color for header */
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    h2 {
+        font-weight: bold;
+    }
+</style>

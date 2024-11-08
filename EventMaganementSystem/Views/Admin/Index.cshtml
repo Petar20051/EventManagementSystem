@@ -2,28 +2,64 @@
     ViewData["Title"] = "Admin Panel";
 }
 
-<h2>Admin Panel</h2>
+<h2 class="text-center mb-4">Admin Panel</h2>
 
 @if (TempData["Message"] != null)
 {
-    <p class="text-success">@TempData["Message"]</p>
+    <p class="text-success text-center">@TempData["Message"]</p>
 }
 
-<h3>Send General Notification</h3>
-<form asp-action="SendGeneralNotification" method="post">
+<!-- Send General Notification Section -->
+<h3 class="mt-5">Send General Notification</h3>
+<form asp-action="SendGeneralNotification" method="post" class="mb-4">
     <div class="form-group">
-        <label for="message">Message</label>
-        <textarea id="message" name="message" class="form-control"></textarea>
+        <label for="message" class="form-label">Message</label>
+        <textarea id="message" name="message" class="form-control" rows="3" placeholder="Enter your notification message here..."></textarea>
     </div>
     <button type="submit" class="btn btn-primary mt-2">Send Notification</button>
 </form>
 
-<h3>Send System Alert</h3>
+<!-- Send System Alert Section -->
+<h3 class="mt-5">Send System Alert</h3>
 <form asp-action="SendSystemAlert" method="post">
     <div class="form-group">
-        <label for="alertMessage">Alert Message</label>
-        <textarea id="alertMessage" name="alertMessage" class="form-control"></textarea>
+        <label for="alertMessage" class="form-label">Alert Message</label>
+        <textarea id="alertMessage" name="alertMessage" class="form-control" rows="3" placeholder="Enter your alert message here..."></textarea>
     </div>
     <button type="submit" class="btn btn-danger mt-2">Send Alert</button>
 </form>
 
+<style>
+    body {
+        background-color: #f8f9fa; /* Light background for better contrast */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Clean and modern font */
+    }
+
+    h2 {
+        color: #007bff; /* Primary color for the header */
+        font-weight: bold; /* Make the header bold */
+    }
+
+    h3 {
+        color: #343a40; /* Dark color for section titles */
+        border-bottom: 2px solid #007bff; /* Underline section titles with primary color */
+        padding-bottom: 10px; /* Add padding below the title */
+    }
+
+    .form-label {
+        font-weight: 600; /* Bold label for better visibility */
+    }
+
+    .btn {
+        border-radius: 5px; /* Rounded buttons for a modern look */
+        transition: background-color 0.3s ease; /* Smooth transition for button hover */
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3; /* Darken primary button on hover */
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333; /* Darken danger button on hover */
+    }
+</style>

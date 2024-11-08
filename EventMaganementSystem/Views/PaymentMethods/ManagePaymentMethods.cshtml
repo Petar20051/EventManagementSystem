@@ -1,40 +1,81 @@
 ﻿@using EventManagementSystem.Core.Models.Payments
 @model IEnumerable<CardViewModel>
 
-<h2>Manage Payment Methods</h2>
+<h2 class="text-center mb-4" style="color: #004080;">Manage Payment Methods</h2>
 
 @if (Model.Any())
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Card Holder Name</th>
-                <th>Card Ending In</th>
-                <th>Expiration Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var card in Model)
-            {
-                <tr>
-                    <td>@card.CardHolderName</td>
-                    <td>**** @card.Last4Digits</td>
-                    <td>@card.ExpirationDate</td>
-                    <td>
-                        <form method="post" asp-action="DeletePaymentMethod" asp-route-id="@card.CardId">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                    </td>
+    <div class="card shadow-sm p-4 mb-4" style="max-width: 800px; margin: 0 auto;">
+        <table class="table table-hover">
+            <thead>
+                <tr style="background-color: #004080; color: #ffffff;">
+                    <th>Card Ending In</th>
+                    <th>Expiration Date</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var card in Model)
+                {
+                    <tr>
+                        <td>**** @card.Last4Digits</td>
+                        <td>@card.ExpirationDate</td>
+                        <td>
+                            <form method="post" asp-action="DeletePaymentMethod" asp-route-id="@card.CardId" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 else
 {
-    <p>You have no saved payment methods.</p>
+    <p class="text-center text-muted">You have no saved payment methods.</p>
 }
 
-<a class="btn btn-primary" asp-action="AddPaymentMethod">Add New Payment Method</a>
+<div class="text-center">
+    <a class="btn btn-primary" asp-action="AddPaymentMethod" style="background-color: #004080;">Add New Payment Method</a>
+</div>
+
+<style>
+    .container {
+        max-width: 900px;
+    }
+
+    h2 {
+        font-weight: bold;
+        color: #004080;
+    }
+
+    .table {
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    thead th {
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .btn-primary {
+        background-color: #004080;
+        border: none;
+        color: white;
+        font-weight: bold;
+    }
+
+    .btn-primary:hover {
+        background-color: #003366;
+    }
+
+    .btn-danger {
+        font-weight: bold;
+    }
+</style>
+

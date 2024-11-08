@@ -5,19 +5,66 @@
     ViewBag.Title = "Cancel Invitation";
 }
 
-<h2>Cancel Invitation</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <h2 class="text-center" style="color: #dc3545;">Cancel Invitation</h2>
+                <div class="mt-4">
+                    <h4 class="text-center">Are you sure you want to cancel this invitation?</h4>
+                    <p class="text-center">Event: <strong>@Model.Event.Name</strong></p>
+                    <p class="text-center">Receiver: <strong>@Model.Receiver.UserName</strong></p>
+                    <p class="text-center">Invitation Date: <strong>@Model.InvitationDate.ToString("MM/dd/yyyy")</strong></p>
+                </div>
 
-<div>
-    <h4>Are you sure you want to cancel this invitation?</h4>
-    <p>Event: @Model.Event.Name</p>
-    <p>Receiver: @Model.Receiver.UserName</p>
-    <p>Invitation Date: @Model.InvitationDate.ToString("MM/dd/yyyy")</p>
+                @using (Html.BeginForm("DeleteConfirmed", "EventInvitation", FormMethod.Post))
+                {
+                    @Html.HiddenFor(model => model.Id)
+                    <div class="text-center mt-4">
+                        <input type="submit" value="Cancel Invitation" class="btn btn-danger w-100 mb-3" />
+                    </div>
+                }
+
+                <a href="@Url.Action("Index")" class="btn btn-secondary w-100">Back to List</a>
+            </div>
+        </div>
+    </div>
 </div>
 
-@using (Html.BeginForm("DeleteConfirmed", "EventInvitation", FormMethod.Post))
-{
-    @Html.HiddenFor(model => model.Id)
-    <input type="submit" value="Cancel Invitation" class="btn btn-danger" />
-}
+<style>
+    .card {
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        background-color: #ffffff;
+    }
 
-<a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+    h2 {
+        font-weight: bold;
+    }
+
+    p {
+        font-size: 1.1em;
+        color: #333;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+        font-weight: 600;
+        color: #ffffff;
+        transition: background-color 0.3s ease;
+    }
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: #ffffff;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+</style>

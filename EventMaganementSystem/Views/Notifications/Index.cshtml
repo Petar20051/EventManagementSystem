@@ -1,14 +1,85 @@
 ﻿@using EventManagementSystem.Infrastructure.Entities
 @model IEnumerable<Notification>
 
-<h2>Your Notifications</h2>
+<div class="container mt-5">
+    <h2 class="text-center mb-4" style="color: #004080;">Your Notifications</h2>
 
-<ul>
-    @foreach (var notification in Model)
-    {
-        <li>
-            <strong>@notification.Type</strong>: @notification.Message <br />
-            <small>@notification.NotificationDate.ToLocalTime()</small>
-        </li>
+    <div class="row">
+        <!-- Event Reminder Notifications -->
+        <div class="col-md-3">
+            <h5 class="text-center" style="color: #007bff;">Event Reminders</h5>
+            <div class="list-group">
+                @foreach (var notification in Model.Where(n => n.Type.ToString() == "EventReminder"))
+                {
+                    <div class="list-group-item shadow-sm mb-3" style="border-radius: 8px;">
+                        <p class="mb-1" style="color: #6c757d;">@notification.Message</p>
+                        <small class="text-muted">@notification.NotificationDate.ToLocalTime().ToString("MMMM dd, yyyy HH:mm")</small>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- General Notifications -->
+        <div class="col-md-3">
+            <h5 class="text-center" style="color: #28a745;">General</h5>
+            <div class="list-group">
+                @foreach (var notification in Model.Where(n => n.Type.ToString() == "General"))
+                {
+                    <div class="list-group-item shadow-sm mb-3" style="border-radius: 8px;">
+                        <p class="mb-1" style="color: #6c757d;">@notification.Message</p>
+                        <small class="text-muted">@notification.NotificationDate.ToLocalTime().ToString("MMMM dd, yyyy HH:mm")</small>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- System Alerts -->
+        <div class="col-md-3">
+            <h5 class="text-center" style="color: #dc3545;">System Alerts</h5>
+            <div class="list-group">
+                @foreach (var notification in Model.Where(n => n.Type.ToString() == "SystemAlert"))
+                {
+                    <div class="list-group-item shadow-sm mb-3" style="border-radius: 8px;">
+                        <p class="mb-1" style="color: #6c757d;">@notification.Message</p>
+                        <small class="text-muted">@notification.NotificationDate.ToLocalTime().ToString("MMMM dd, yyyy HH:mm")</small>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- New Event Created Notifications -->
+        <div class="col-md-3">
+            <h5 class="text-center" style="color: #ffc107;">New Events Created</h5>
+            <div class="list-group">
+                @foreach (var notification in Model.Where(n => n.Type.ToString() == "NewEventCreated"))
+                {
+                    <div class="list-group-item shadow-sm mb-3" style="border-radius: 8px;">
+                        <p class="mb-1" style="color: #6c757d;">@notification.Message</p>
+                        <small class="text-muted">@notification.NotificationDate.ToLocalTime().ToString("MMMM dd, yyyy HH:mm")</small>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 1200px;
     }
-</ul>
+
+    .list-group-item {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border: 1px solid #e0e0e0;
+        transition: box-shadow 0.3s;
+    }
+
+        .list-group-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+    h2, h5 {
+        font-weight: bold;
+    }
+</style>

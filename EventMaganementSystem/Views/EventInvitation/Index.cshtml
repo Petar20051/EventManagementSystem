@@ -5,89 +5,144 @@
     ViewBag.Title = "Your Invitations";
 }
 
-<h2>Your Invitations</h2>
+<div class="container mt-5">
+    <h2 class="text-center mb-4" style="color: #004080;">Your Invitations</h2>
 
-<!-- Display sent invitations -->
-<h3>Sent Invitations</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Event</th>
-            <th>Receiver</th>
-            <th>Invitation Date</th>
-            <th>Status</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var invitation in Model.Where(i => i.SenderId == ViewBag.UserId))
-        {
+    <!-- Display sent invitations -->
+    <h3 class="mt-4" style="color: #333;">Sent Invitations</h3>
+    <table class="table table-bordered table-hover shadow-sm">
+        <thead class="table-primary">
             <tr>
-                <td>@invitation.Event.Name</td>
-                <td>@invitation.Receiver.UserName</td>
-                <td>@invitation.InvitationDate.ToString("MM/dd/yyyy")</td>
-                <td>@invitation.Status</td>
-                <td>
-                    <a href="@Url.Action("Details", new { id = invitation.Id })" class="btn btn-info">Details</a>
-                    <a href="@Url.Action("Delete", new { id = invitation.Id })" class="btn btn-danger">Cancel</a>
-                </td>
+                <th>Event</th>
+                <th>Receiver</th>
+                <th>Invitation Date</th>
+                <th>Status</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
-<a href="@Url.Action("Create")" class="btn btn-primary">Send New Invitation</a>
-<!-- Display received invitations -->
-<h3>Received Invitations</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Event</th>
-            <th>Sender</th>
-            <th>Invitation Date</th>
-            <th>Status</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var invitation in Model.Where(i => i.ReceiverId == ViewBag.UserId && (int)i.Status!=1))
-        {
-            <tr>
-                <td>@invitation.Event.Name</td>
-                <td>@invitation.Sender.UserName</td>
-                <td>@invitation.InvitationDate.ToString("MM/dd/yyyy")</td>
-                <td>@invitation.Status</td>
-                <td>
-                    <form method="post" asp-action="ConfirmInvitation" asp-route-id="@invitation.Id" style="display:inline;">
-                        <button type="submit" class="btn btn-success">Confirm</button>
-                    </form>
-                    <a href="@Url.Action("Details", new { id = invitation.Id })" class="btn btn-info">Details</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var invitation in Model.Where(i => i.SenderId == ViewBag.UserId))
+            {
+                <tr>
+                    <td>@invitation.Event.Name</td>
+                    <td>@invitation.Receiver.UserName</td>
+                    <td>@invitation.InvitationDate.ToString("MM/dd/yyyy")</td>
+                    <td>@invitation.Status</td>
+                    <td>
+                        <a href="@Url.Action("Details", new { id = invitation.Id })" class="btn btn-info btn-sm">Details</a>
+                        <a href="@Url.Action("Delete", new { id = invitation.Id })" class="btn btn-danger btn-sm">Cancel</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a href="@Url.Action("Create")" class="btn btn-primary mb-4">Send New Invitation</a>
 
-<!-- Display confirmed invitations -->
-<h3>Confirmed Invitations</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Event</th>
-            <th>Sender</th>
-            <th>Receiver</th>
-            
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var invitation in Model.Where(i => (int)i.Status == 1 && i.ReceiverId == ViewBag.UserId))
-        {
+    <!-- Display received invitations -->
+    <h3 class="mt-4" style="color: #333;">Received Invitations</h3>
+    <table class="table table-bordered table-hover shadow-sm">
+        <thead class="table-primary">
             <tr>
-                <td>@invitation.Event.Name</td>
-                <td>@invitation.Sender.UserName</td>
-                <td>@invitation.Receiver.UserName</td>
-                
+                <th>Event</th>
+                <th>Sender</th>
+                <th>Invitation Date</th>
+                <th>Status</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var invitation in Model.Where(i => i.ReceiverId == ViewBag.UserId && (int)i.Status != 1))
+            {
+                <tr>
+                    <td>@invitation.Event.Name</td>
+                    <td>@invitation.Sender.UserName</td>
+                    <td>@invitation.InvitationDate.ToString("MM/dd/yyyy")</td>
+                    <td>@invitation.Status</td>
+                    <td>
+                        <form method="post" asp-action="ConfirmInvitation" asp-route-id="@invitation.Id" style="display:inline;">
+                            <button type="submit" class="btn btn-success btn-sm">Confirm</button>
+                        </form>
+                        <a href="@Url.Action("Details", new { id = invitation.Id })" class="btn btn-info btn-sm">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
+    <!-- Display confirmed invitations -->
+    <h3 class="mt-4" style="color: #333;">Confirmed Invitations</h3>
+    <table class="table table-bordered table-hover shadow-sm">
+        <thead class="table-primary">
+            <tr>
+                <th>Event</th>
+                <th>Sender</th>
+                <th>Receiver</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var invitation in Model.Where(i => (int)i.Status == 1 && i.ReceiverId == ViewBag.UserId))
+            {
+                <tr>
+                    <td>@invitation.Event.Name</td>
+                    <td>@invitation.Sender.UserName</td>
+                    <td>@invitation.Receiver.UserName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .table {
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
+
+    .table-primary {
+        background-color: #004080; /* Theme primary color for header */
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+        border: none;
+        font-weight: 600;
+    }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+        font-weight: 600;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+        font-weight: 600;
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+    .btn-primary {
+        background-color: #004080;
+        border: none;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+        .btn-primary:hover {
+            background-color: #003366;
+        }
+</style>

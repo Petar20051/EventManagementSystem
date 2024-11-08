@@ -2,13 +2,53 @@
     ViewData["Title"] = "Payment Successful";
 }
 
-<div class="container text-center mt-5">
+<div class="container text-center mt-5" style="max-width: 600px;">
     <div class="card shadow-sm p-4">
         <div class="card-body">
             <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
-            <h1 class="card-title">Payment Successful!</h1>
-            <p class="card-text">Thank you for your purchase. Your payment has been processed successfully.</p>
-            <a href="/" class="btn btn-success mt-3">Go Back to Home</a>
+            <h1 class="card-title" style="color: #28a745; font-weight: bold;">@ViewData["Title"]</h1>
+            <p class="card-text mt-3" style="color: #6c757d; font-size: 1.1em;">
+                Thank you for your purchase. Your payment has been processed successfully.
+            </p>
+            <a href="/" class="btn btn-primary mt-4" style="background-color: #28a745; border: none;">
+                Go Back to Home
+            </a>
         </div>
     </div>
 </div>
+
+<!-- Optional FontAwesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    .container {
+        max-width: 600px;
+    }
+
+    .card {
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+
+    .card-title {
+        font-size: 2rem;
+        color: #28a745; /* Green color for success */
+    }
+
+    .btn-primary {
+        background-color: #28a745;
+        color: white;
+        padding: 12px 24px;
+        font-size: 1.1em;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: #218838;
+    }
+
+    .text-success {
+        color: #28a745;
+    }
+</style>
+
