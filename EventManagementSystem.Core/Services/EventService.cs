@@ -25,6 +25,15 @@ namespace EventManagementSystem.Core.Services
             _notificationService = notificationService;
         }
 
+        public async Task<List<Event>> GetUpcomingEventsAsync(int count = 5)
+        {
+            return await _context.Events
+                                 .Where(e => e.Date >= DateTime.Now) // Only future events
+                                 .OrderBy(e => e.Date) // Sort by date (soonest first)
+                                 .Take(count) // Limit the number of events
+                                 .ToListAsync();
+        }
+
         public async Task AddEventAsync(Event events)
         {
             // Add the new event to the database

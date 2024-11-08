@@ -38,7 +38,9 @@ namespace EventMaganementSystem.Controllers
                 Name = e.Name,
                 Date = e.Date,
                 Description = e.Description,
-                Location = e.Venue != null ? e.Venue.Address : "Unknown Location"
+                Location = e.Venue != null ? e.Venue.Address : "Unknown Location",
+                ImageUrl=e.ImageUrl
+
             }).ToList();
 
             return View(eventViewModels);
@@ -77,7 +79,8 @@ namespace EventMaganementSystem.Controllers
                     VenueId = (int)model.VenueId,
                     OrganizerId = organizerId,
                     TicketPrice = model.TicketPrice,
-                    EventType = model.EventType
+                    EventType = model.EventType,
+                    ImageUrl = model.ImageURL
                 };
 
                 await _eventService.AddEventAsync(eventItem);
@@ -147,6 +150,7 @@ namespace EventMaganementSystem.Controllers
                 eventItem.Description = model.Description;
                 eventItem.Date = model.Date;
                 eventItem.VenueId = model.VenueId;
+                eventItem.ImageUrl = model.ImageUrl;
 
                 await _eventService.UpdateEventAsync(eventItem);
                 TempData["Message"] = "Event updated successfully.";

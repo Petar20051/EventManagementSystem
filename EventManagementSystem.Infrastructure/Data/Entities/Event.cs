@@ -40,6 +40,8 @@ namespace EventManagementSystem.Infrastructure.Entities
         [ForeignKey(nameof(OrganizerId))]
         public ApplicationUser Organizer { get; set; }
 
+         public string? ImageUrl { get; set; }
+
         public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
         public ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();

@@ -18,5 +18,7 @@ namespace EventManagementSystem.Core.Models.Events
         public List<VenueViewModel>? Venues { get; set; }
 
         public decimal TicketPrice { get; set; }
+
+        public string ImageURL { get; set; }
     }
 }

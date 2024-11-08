@@ -27,16 +27,40 @@ namespace EventMaganementSystem.Controllers
         }
 
         // GET: Reservations/Create
+        [HttpGet]
+        [Route("Reservation/Create")]
         public async Task<IActionResult> Create()
         {
             var events = await _eventService.GetAllEventsAsync();
+
             var viewModel = new ReservationViewModel
             {
-                Events = events // Assuming events is a List<Event>
+                Events = events,
+                EventId = null, 
+                ReservationDate = DateTime.Now
             };
 
             return View(viewModel);
         }
+
+        [HttpGet]
+        [Route("Reservation/Create/{eventId:int}")]
+
+        [HttpGet]
+        public async Task<IActionResult> Create(int? eventId = null)
+        {
+            var events = await _eventService.GetAllEventsAsync();
+
+            var viewModel = new ReservationViewModel
+            {
+                Events = events,
+                EventId = eventId, // Set the EventId from the query parameter
+                ReservationDate = DateTime.Now
+            };
+
+            return View(viewModel);
+        }
+
 
         // POST: Reservations/Create
         [HttpPost]
@@ -54,7 +78,7 @@ namespace EventMaganementSystem.Controllers
             // Create reservation from view model
             var reservation = new Reservation
             {
-                EventId = viewModel.EventId,
+                EventId = (int)viewModel.EventId,
                 AttendeesCount = viewModel.AttendeesCount,
                 ReservationDate = DateTime.Now,
                 UserId = reservatorId
@@ -171,7 +195,7 @@ namespace EventMaganementSystem.Controllers
             }
 
             // Update the reservation properties
-            existingReservation.EventId = viewModel.EventId;
+            existingReservation.EventId = (int)viewModel.EventId;
             existingReservation.AttendeesCount = viewModel.AttendeesCount;
             existingReservation.ReservationDate = viewModel.ReservationDate;
 

@@ -19,8 +19,8 @@ namespace EventManagementSystem.Core.Models.Events
         public string? Location { get; set; }
         public string? OrganizerId {  get; set; }
         public int VenueId {  get; set; }
-       
 
+        public string ImageUrl { get; set; }
         public List<VenueViewModel>? Venues { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace EventManagementSystem.Core.Models.Reservation
         public int? Id { get; set; }
 
         [Required(ErrorMessage = "Please select an event.")]
-        public int EventId { get; set; }
+        public int? EventId { get; set; }
 
         public string? EventName { get; set; }
 

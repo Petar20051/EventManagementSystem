@@ -5,31 +5,57 @@
     ViewData["Title"] = "Create Reservation";
 }
 
-<h1>Create Reservation</h1>
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="text-center mb-0">Create Reservation</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <!-- Event Selection Section -->
+                <div class="form-group mb-3">
+                    <label class="form-label">Event</label>
+                    @if (Model.EventId.HasValue)
+                    {
+                        <!-- Display the chosen event name as plain text if eventId is provided -->
+                        <p class="form-control-plaintext"><strong>@Model.Events.FirstOrDefault(e => e.Id == Model.EventId)?.Name</strong></p>
+                        <input type="hidden" asp-for="EventId" />
+                    }
+                    else
+                    {
+                        <!-- Show dropdown list if no event is preselected -->
+                        <select asp-for="EventId" class="form-select" asp-items="@(new SelectList(Model.Events, "Id", "Name"))">
+                            <option value="">Select an Event</option>
+                        </select>
+                        <span asp-validation-for="EventId" class="text-danger"></span>
+                    }
+                </div>
 
-<form asp-action="Create" method="post">
-    <div class="form-group">
-        <label asp-for="EventId" class="control-label"></label>
-        <select asp-for="EventId" class="form-control" asp-items="@(new SelectList(Model.Events, "Id", "Name"))">
-            <option value="">Select an Event</option>
-        </select>
-        <span asp-validation-for="EventId" class="text-danger"></span>
+                <!-- Attendees Count Section -->
+                <div class="form-group mb-3">
+                    <label asp-for="AttendeesCount" class="form-label">Attendees Count</label>
+                    <input asp-for="AttendeesCount" class="form-control" placeholder="Enter number of attendees" />
+                    <span asp-validation-for="AttendeesCount" class="text-danger"></span>
+                </div>
+
+                <!-- Reservation Date Section -->
+                <div class="form-group mb-3">
+                    <label asp-for="ReservationDate" class="form-label">Reservation Date</label>
+                    <input asp-for="ReservationDate" type="datetime-local" class="form-control" readonly />
+                    <span asp-validation-for="ReservationDate" class="text-danger"></span>
+                </div>
+
+                <!-- Submit and Back Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+                    <button type="submit" class="btn btn-primary">Create Reservation</button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="AttendeesCount" class="control-label"></label>
-        <input asp-for="AttendeesCount" class="form-control" />
-        <span asp-validation-for="AttendeesCount" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="ReservationDate" class="control-label"></label>
-        <input asp-for="ReservationDate" type="datetime-local" value="Date.Now()" class="form-control" />
-        <span asp-validation-for="ReservationDate" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Create</button>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-</form>
+</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
-
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }}
