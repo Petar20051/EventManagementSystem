@@ -28,7 +28,7 @@ namespace EventManagementSystem.Core.Services
         public async Task<string> GetStripeCustomerIdAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            return user?.StripeCustomerId;
+            return user.StripeCustomerId;
         }
 
         public async Task SaveStripeCustomerIdAsync(string userId, string stripeCustomerId)

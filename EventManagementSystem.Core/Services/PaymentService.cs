@@ -3,6 +3,7 @@ using EventManagementSystem.Core.Contracts;
 using EventManagementSystem.Core.Models.Payments;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,12 @@ namespace EventManagementSystem.Core.Services
     public class PaymentService:IPaymentService
     {
         private readonly EventDbContext _context;
+        private readonly IUserService _userService;
 
-        public PaymentService(EventDbContext context)
+        public PaymentService(EventDbContext context,IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         public async Task RecordPaymentAsync(Payment payment)
@@ -42,16 +45,18 @@ namespace EventManagementSystem.Core.Services
         }
 
         // Implementing DeleteCreditCardAsync
-        public async Task DeleteCreditCardAsync(int id, string userId)
+        public async Task DeleteCreditCardAsync(string cardId, string userId)
         {
-            var creditCard = await _context.CreditCardDetails
-                .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
-
-            if (creditCard != null)
+            var customerId = await _userService.GetStripeCustomerIdAsync(userId);
+            if (string.IsNullOrEmpty(customerId))
             {
-                _context.CreditCardDetails.Remove(creditCard);
-                await _context.SaveChangesAsync();
+                throw new InvalidOperationException("Customer ID not found.");
             }
+
+            var service = new PaymentMethodService();
+
+            // Detach the card from the customer
+            await service.DetachAsync(cardId);
         }
     }
 }

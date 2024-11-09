@@ -21,7 +21,7 @@
                         <td>**** @card.Last4Digits</td>
                         <td>@card.ExpirationDate</td>
                         <td>
-                            <form method="post" asp-action="DeletePaymentMethod" asp-route-id="@card.CardId" style="display:inline;">
+                            <form method="post" asp-action="DeletePaymentMethod" asp-route-cardId="@card.CardId" style="display:inline;">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>

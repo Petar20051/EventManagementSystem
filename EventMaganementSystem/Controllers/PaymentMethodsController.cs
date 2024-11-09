@@ -14,7 +14,7 @@ namespace EventMaganementSystem.Controllers
         private readonly IStripePaymentService _stripePaymentService;
         private readonly IUserService _userService;
         private readonly StripeSettings _stripeOptions;
-       
+
 
         public PaymentMethodsController(IPaymentService paymentService, IStripePaymentService stripePaymentService, IUserService userService, IOptions<StripeSettings> stripeOptions)
         {
@@ -55,10 +55,10 @@ namespace EventMaganementSystem.Controllers
             {
                 var user = await _userService.GetUserByIdAsync(userId);
                 customerId = await _stripePaymentService.CreateStripeCustomerAsync(userId, user.Email, user.UserName);
-               _userService.SaveStripeCustomerIdAsync(userId, customerId);
-              
+                _userService.SaveStripeCustomerIdAsync(userId, customerId);
+
             }
-            
+
             // Attach the payment method to the customer
             await _stripePaymentService.AttachPaymentMethodAsync(customerId, inputModel.PaymentMethodId);
 
@@ -76,18 +76,15 @@ namespace EventMaganementSystem.Controllers
 
         // POST: Delete a payment method (e.g., credit card)
         [HttpPost]
-        public async Task<IActionResult> DeletePaymentMethod(int id)
+        public async Task<IActionResult> DeletePaymentMethod(string cardId)
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                return Unauthorized(); // Ensure user is authenticated
+                return Unauthorized();
             }
 
-            // Delete the selected payment method
-            await _paymentService.DeleteCreditCardAsync(id, userId);
-
-            // Redirect back to the manage payment methods page
+            await _paymentService.DeleteCreditCardAsync(cardId, userId);
             return RedirectToAction("ManagePaymentMethods");
         }
     }

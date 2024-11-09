@@ -11,8 +11,9 @@ namespace EventManagementSystem.Core.Contracts
     public interface IPaymentService
     {
         Task RecordPaymentAsync(Payment payment);
-       
-        Task DeleteCreditCardAsync(int id, string userId);
-        
+
+        Task DeleteCreditCardAsync(string cardId, string userId);
+
+
     }
 }
