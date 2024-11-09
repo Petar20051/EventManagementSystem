@@ -1,20 +1,18 @@
 ﻿@using EventManagementSystem.Core.Models
 @model FeedbackViewModel
-
 @{
     ViewData["Title"] = "Event Feedback";
 }
-
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">@Model.EventName - @ViewData["Title"]</h3>
+                    <h3>@Model.EventName - @ViewData["Title"]</h3>
                 </div>
                 <div class="card-body">
                     <!-- Feedback List -->
-                    <h4 class="mb-4" style="color: #004080;">Feedback for @Model.EventName</h4>
+                    <h4 class="mb-4">Feedback for @Model.EventName</h4>
                     <ul id="messagesList" class="list-group mb-4">
                         @if (Model.Feedbacks != null && Model.Feedbacks.Any())
                         {
@@ -34,59 +32,79 @@
                             <li class="list-group-item text-muted">No feedback available for this event.</li>
                         }
                     </ul>
-
                     <!-- Feedback Form -->
-                    <h4 class="mb-3" style="color: #004080;">Leave Your Feedback</h4>
-                    <div class="form-group mb-3">
-                        <textarea id="messageInput" class="form-control" rows="3" placeholder="Write your feedback here..." style="resize: none;"></textarea>
-                    </div>
-                    <button id="sendButton" class="btn btn-primary w-100">Submit Feedback</button>
+                    <h4 class="mb-3">Leave Your Feedback</h4>
+                    <form id="feedbackForm" asp-action="Index" method="post">
+                        <div class="input-group">
+                            <textarea id="messageInput" name="NewFeedback.FeedbackContent" class="form-control" rows="3" placeholder="Write your feedback here..."></textarea>
+                        </div>
+                        <input type="hidden" name="EventId" value="@Model.EventId" />
+                        <button type="submit" id="sendButton" class="btn btn-primary mt-2">Submit Feedback</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chathub?eventId=@Model.EventId")
+            .build();
+
+        // Initialize SignalR connection and receive messages
+        connection.on("ReceiveMessage", (user, message, date) => {
+            const li = document.createElement("li");
+            li.classList.add("list-group-item");
+            li.innerHTML = `<div class="d-flex justify-content-between">
+                                        <strong>${user}</strong>
+                                        <small class="text-muted">${new Date(date).toLocaleString()}</small>
+                                    </div>
+                                    <p class="mb-0">${message}</p>`;
+            document.getElementById("messagesList").appendChild(li);
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+
+        // Handle form submission with AJAX to allow SignalR to send message in real-time
+        document.getElementById("feedbackForm").addEventListener("submit", async function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const message = document.getElementById("messageInput").value;
+            const eventId = @Model.EventId;
+
+            if (message) {
+                // Send feedback to the server
+                const response = await fetch("@Url.Action("Index", "EventFeedback")", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify({ EventId: eventId, NewFeedback: { FeedbackContent: message } })
+                });
+
+                if (response.ok) {
+                    // Send message via SignalR for real-time update
+                    await connection.invoke("SendMessage", eventId, message)
+                        .catch(err => console.error(err.toString()));
+
+                    // Clear the message input
+                    document.getElementById("messageInput").value = '';
+                } else {
+                    alert("Failed to submit feedback. Please try again.");
+                }
+            } else {
+                alert("Please enter a message.");
+            }
+        });
+    </script>
+}
+
 <style>
-    .card {
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
-        background-color: #ffffff;
+    .mb-3 {
+        margin-bottom: 1rem !important;
     }
-
-    .card-header {
-        font-size: 1.25em;
-        font-weight: bold;
-    }
-
-    h4 {
-        font-weight: 600;
-    }
-
-    .list-group-item {
-        border: none;
-        border-bottom: 1px solid #e0e0e0;
-        padding: 15px;
-    }
-
-        .list-group-item:last-child {
-            border-bottom: none;
-        }
-
-    .form-control:focus {
-        border-color: #004080;
-        box-shadow: 0 0 5px rgba(0, 64, 128, 0.2);
-    }
-
-    #sendButton {
-        background-color: #004080;
-        border: none;
-        color: #ffffff;
-        font-weight: 600;
-        transition: background-color 0.3s ease;
-    }
-
-        #sendButton:hover {
-            background-color: #003366;
-        }
 </style>

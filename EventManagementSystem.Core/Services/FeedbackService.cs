@@ -14,18 +14,15 @@ namespace EventManagementSystem.Core.Services
     public class FeedbackService:IFeedbackService
     {
         private readonly EventDbContext _context;
-
         public FeedbackService(EventDbContext context)
         {
             _context = context;
         }
-
         public async Task AddFeedbackAsync(Feedback feedback)
         {
             _context.Feedbacks.Add(feedback);
             await _context.SaveChangesAsync();
         }
-
         public async Task<IEnumerable<Feedback>> GetFeedbacksByEventIdAsync(int eventId)
         {
             return await _context.Feedbacks
