@@ -117,7 +117,7 @@ public async Task<IActionResult> ProcessSponsorship(int eventId)
         [HttpGet]
         public async Task<IActionResult> SponsorshipDashboard()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
             var user = await _userManager.FindByIdAsync(userId);
 
             var model = new SponsorshipDashboardViewModel
