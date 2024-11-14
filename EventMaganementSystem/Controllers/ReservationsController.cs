@@ -26,26 +26,7 @@ namespace EventMaganementSystem.Controllers
             _discountService = discountService;
         }
 
-        // GET: Reservations/Create
-        [HttpGet]
-        [Route("Reservation/Create")]
-        public async Task<IActionResult> Create()
-        {
-            var events = await _eventService.GetAllEventsAsync();
-
-            var viewModel = new ReservationViewModel
-            {
-                Events = events,
-                EventId = null, 
-                ReservationDate = DateTime.Now
-            };
-
-            return View(viewModel);
-        }
-
-        [HttpGet]
-        [Route("Reservation/Create/{eventId:int}")]
-
+        // GET: Reservations/Create/{eventId}
         [HttpGet]
         public async Task<IActionResult> Create(int? eventId = null)
         {
@@ -54,44 +35,49 @@ namespace EventMaganementSystem.Controllers
             var viewModel = new ReservationViewModel
             {
                 Events = events,
-                EventId = eventId, // Set the EventId from the query parameter
+                EventId = eventId,
                 ReservationDate = DateTime.Now
             };
 
             return View(viewModel);
         }
 
-
         // POST: Reservations/Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ReservationViewModel viewModel)
         {
             var reservatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-           
+
             if (!ModelState.IsValid)
             {
-                // Repopulate events in case of error
                 viewModel.Events = await _eventService.GetAllEventsAsync();
                 return View(viewModel);
             }
-            
-            // Create reservation from view model
+
             var reservation = new Reservation
             {
-                EventId = (int)viewModel.EventId,
+                EventId = viewModel.EventId ?? 0,
                 AttendeesCount = viewModel.AttendeesCount,
                 ReservationDate = DateTime.Now,
                 UserId = reservatorId
-                
-                // You can set other properties here as needed
             };
-            
-            var currentEvent = await _eventService.GetEventByIdAsync(reservation.EventId);
-            reservation.TotalAmount = currentEvent.TicketPrice * reservation.AttendeesCount;
+
+            var currentEvent = await _eventService.GetEventByIdAsync(viewModel.EventId ?? 0);
+            if (currentEvent == null)
+            {
+                ModelState.AddModelError("", "Selected event does not exist.");
+                viewModel.Events = await _eventService.GetAllEventsAsync();
+                return View(viewModel);
+            }
+
+            reservation.TotalAmount = currentEvent.TicketPrice * viewModel.AttendeesCount;
             await _reservationService.CreateReservationAsync(reservation);
 
-            return RedirectToAction("Index"); // Redirect to the index or another view after creation
+            return RedirectToAction("Index");
         }
+
+
 
         // GET: Reservations/Index
         public async Task<IActionResult> Index()

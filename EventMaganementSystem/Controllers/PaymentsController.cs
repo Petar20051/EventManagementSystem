@@ -136,7 +136,7 @@ public class PaymentsController : Controller
         else
         {
             ModelState.AddModelError("", "Payment failed. Please try again.");
-            return View(model);
+            return RedirectToAction("PaymentFailed");
         }
     }
     public IActionResult PaymentSuccess()

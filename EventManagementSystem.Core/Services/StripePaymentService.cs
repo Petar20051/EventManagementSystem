@@ -121,10 +121,10 @@ public class StripePaymentService : IStripePaymentService
     public async Task AttachPaymentMethodAsync(string customerId, string paymentMethodId)
     {
         var service = new PaymentMethodService();
-        var attachOptions = new PaymentMethodAttachOptions
+        var options = new PaymentMethodAttachOptions
         {
-            Customer = customerId,  // Ensure the correct Stripe customer ID is passed
+            Customer = customerId,
         };
-        await service.AttachAsync(paymentMethodId, attachOptions);
+        await service.AttachAsync(paymentMethodId, options);
     }
 }

@@ -4,6 +4,7 @@ using EventManagementSystem.Core.Models.Payments;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.Options;
+using Stripe;
 using System.Security.Claims;
 
 namespace EventMaganementSystem.Controllers
@@ -38,32 +39,59 @@ namespace EventMaganementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddPaymentMethod([FromBody] PaymentMethodInputModel inputModel)
         {
-            if (inputModel == null || string.IsNullOrEmpty(inputModel.PaymentMethodId))
+            try
             {
-                return BadRequest("Invalid Payment Method");
-            }
+                if (inputModel == null || string.IsNullOrEmpty(inputModel.PaymentMethodId))
+                {
+                    Console.WriteLine("Invalid Payment Method: PaymentMethodId is null or empty.");
+                    return BadRequest("Invalid Payment Method");
+                }
 
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    Console.WriteLine("Unauthorized: User ID not found.");
+                    return Unauthorized("User not found.");
+                }
+
+                // Fetch or create the Stripe customer ID for the user
+                var customerId = await _userService.GetStripeCustomerIdAsync(userId);
+                if (string.IsNullOrEmpty(customerId))
+                {
+                    var user = await _userService.GetUserByIdAsync(userId);
+                    if (user == null)
+                    {
+                        Console.WriteLine("Error: User not found in system.");
+                        return BadRequest("User not found in the system.");
+                    }
+
+                    // Create a new Stripe customer if customerId is null
+                    customerId = await _stripePaymentService.CreateStripeCustomerAsync(userId, user.Email, user.UserName);
+                    await _userService.SaveStripeCustomerIdAsync(userId, customerId);
+                }
+
+                // Attach the payment method to the customer
+                await _stripePaymentService.AttachPaymentMethodAsync(customerId, inputModel.PaymentMethodId);
+
+                return Ok(); // Or Redirect to a success page
+            }
+            catch (StripeException ex) when (ex.StripeError?.Code == "card_declined")
             {
-                return Unauthorized("User not found.");
+                Console.WriteLine($"Card Declined: {ex.StripeError.Message}");
+                return BadRequest("Your card was declined. Please try a different card or contact your card issuer.");
             }
-
-            // Fetch the Stripe customer ID for the user, or create a new one
-            var customerId = await _userService.GetStripeCustomerIdAsync(userId);
-            if (string.IsNullOrEmpty(customerId))
+            catch (StripeException ex)
             {
-                var user = await _userService.GetUserByIdAsync(userId);
-                customerId = await _stripePaymentService.CreateStripeCustomerAsync(userId, user.Email, user.UserName);
-                _userService.SaveStripeCustomerIdAsync(userId, customerId);
-
+                Console.WriteLine($"Stripe Error: {ex.StripeError.Message}");
+                return StatusCode(500, "An error occurred with Stripe.");
             }
-
-            // Attach the payment method to the customer
-            await _stripePaymentService.AttachPaymentMethodAsync(customerId, inputModel.PaymentMethodId);
-
-            return Ok(); // Or Redirect to a success page
+            catch (Exception ex)
+            {
+                Console.WriteLine($"General Error: {ex.Message}");
+                return StatusCode(500, "An unexpected error occurred.");
+            }
         }
+
 
         // GET: Manage saved payment methods
         public async Task<IActionResult> ManagePaymentMethods()
