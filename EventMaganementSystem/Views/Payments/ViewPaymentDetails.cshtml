@@ -1,0 +1,27 @@
+﻿@using EventManagementSystem.Core.Models.Payments
+@model PaymentDetailsViewModel
+
+@{
+    ViewData["Title"] = "Payment Details";
+}
+
+<div class="container mt-5">
+    <h2>Payment Details</h2>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">Payment ID: @Model.PaymentId</h3>
+        </div>
+        <div class="card-body">
+            <p><strong>Amount:</strong> $@Model.Amount</p>
+            <p><strong>Payment Date:</strong> @Model.PaymentDate.ToString("MM/dd/yyyy")</p>
+            <p><strong>Payment Method:</strong> @Model.PaymentMethod</p>
+            <p><strong>Status:</strong> @Model.Status</p>
+            <!-- Add other payment details here as needed -->
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" asp-controller="Reservations" class="btn btn-outline-secondary">Back to Payments List</a>
+    </div>
+</div>

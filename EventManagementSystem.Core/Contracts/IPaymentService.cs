@@ -13,6 +13,7 @@ namespace EventManagementSystem.Core.Contracts
         Task RecordPaymentAsync(Payment payment);
 
         Task DeleteCreditCardAsync(string cardId, string userId);
+        Task<PaymentDetailsViewModel> GetPaymentByIdAsync(DateTime? reservationDate);
 
 
     }

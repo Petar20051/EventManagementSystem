@@ -58,5 +58,29 @@ namespace EventManagementSystem.Core.Services
             // Detach the card from the customer
             await service.DetachAsync(cardId);
         }
+
+        public async Task<PaymentDetailsViewModel> GetPaymentByIdAsync(DateTime? paymentDate)
+        {
+            var payment = await _context.Payments
+                .Where(p =>
+    p.PaymentDate.Year == paymentDate.Value.Year &&
+    p.PaymentDate.Month == paymentDate.Value.Month &&
+    p.PaymentDate.Day == paymentDate.Value.Day &&
+    p.PaymentDate.Hour == paymentDate.Value.Hour &&
+    p.PaymentDate.Minute == paymentDate.Value.Minute &&
+    p.PaymentDate.Second == paymentDate.Value.Second
+)
+                .Select(p => new PaymentDetailsViewModel
+                {
+                    PaymentId = p.Id,
+                    Amount = p.Amount,
+                    PaymentDate = p.PaymentDate,
+                    PaymentMethod = p.PaymentMethod,
+                    Status = p.Status
+                })
+                .FirstOrDefaultAsync();
+
+            return payment;
+        }
     }
 }

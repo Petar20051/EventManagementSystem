@@ -139,6 +139,23 @@ public class PaymentsController : Controller
             return RedirectToAction("PaymentFailed");
         }
     }
+
+    [HttpGet]
+    public async Task<IActionResult> ViewPaymentDetails(int reservationId)
+    {
+        
+        var reservation=await _reservationService.GetReservationByIdAsync(reservationId);
+        var paymentDate = reservation.PaymentDate;
+        var paymentDetails = await _paymentService.GetPaymentByIdAsync(paymentDate);
+
+        // Check if payment details are found
+        if (paymentDetails == null)
+        {
+            return NotFound();
+        }
+
+        return View(paymentDetails); // Pass payment details to the view
+    }
     public IActionResult PaymentSuccess()
     {
         ViewBag.Message = "Payment successful!";
