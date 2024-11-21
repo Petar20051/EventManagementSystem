@@ -3,6 +3,7 @@ using EventManagementSystem.Core.Models;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace EventMaganementSystem.Controllers
 {
@@ -44,7 +45,8 @@ namespace EventMaganementSystem.Controllers
             ModelState.Remove("NewFeedback.UserId");
             ModelState.Remove("NewFeedback.Event");
             ModelState.Remove("NewFeedback.User");
-
+            var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userid == null) return Redirect("/Identity/Account/Login");
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);

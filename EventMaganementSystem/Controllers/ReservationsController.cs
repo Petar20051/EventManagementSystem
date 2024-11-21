@@ -1,5 +1,6 @@
 ﻿using EventManagementSystem.Core.Contracts;
 using EventManagementSystem.Core.Models.Reservation;
+using EventManagementSystem.Core.Services;
 using EventManagementSystem.Infrastructure.Data.Enums;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -16,14 +17,15 @@ namespace EventMaganementSystem.Controllers
         private readonly IStripePaymentService _stripePaymentService;
         private readonly IUserService _userService;
         private readonly IDiscountService _discountService;
-
-        public ReservationsController(IReservationService reservationService, IEventService eventService, IStripePaymentService stripePaymentService,IUserService userService, IDiscountService discountService)
+        private readonly IProfileService _profileService;
+        public ReservationsController(IReservationService reservationService, IEventService eventService, IStripePaymentService stripePaymentService,IUserService userService, IDiscountService discountService, IProfileService profileService)
         {
             _reservationService = reservationService;
             _eventService = eventService;
             _stripePaymentService = stripePaymentService;
             _userService = userService;
             _discountService = discountService;
+            _profileService = profileService;
         }
 
         // GET: Reservations/Create/{eventId}
@@ -31,7 +33,8 @@ namespace EventMaganementSystem.Controllers
         public async Task<IActionResult> Create(int? eventId = null)
         {
             var events = await _eventService.GetAllEventsAsync();
-
+            var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userid == null) return Redirect("/Identity/Account/Login");
             var viewModel = new ReservationViewModel
             {
                 Events = events,
@@ -82,6 +85,8 @@ namespace EventMaganementSystem.Controllers
         // GET: Reservations/Index
         public async Task<IActionResult> Index()
         {
+            var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userid == null) return Redirect("/Identity/Account/Login");
             // Fetch reservations from the service (this returns a list of Reservation entities)
             var reservations = await _reservationService.GetAllReservationsAsync();
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

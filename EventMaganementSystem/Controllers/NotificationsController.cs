@@ -18,6 +18,7 @@ namespace EventMaganementSystem.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(userId == null)  Redirect("/Identity/Account/Login");
             var notifications = await _notificationService.GetUserNotificationsAsync(userId);
             return View(notifications);
         }

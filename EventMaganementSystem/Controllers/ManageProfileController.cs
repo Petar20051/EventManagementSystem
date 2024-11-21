@@ -25,7 +25,7 @@ namespace EventMaganementSystem.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _profileService.GetUserAsync(GetUserId(User));
-            if (user == null) return NotFound("User not found");
+            if (user == null) return Redirect("/Identity/Account/Login");
             var tickets = _context.Tickets.Where(t=>t.HolderId==user.Id).ToList();
             var model = new ManageProfileViewModel
             {

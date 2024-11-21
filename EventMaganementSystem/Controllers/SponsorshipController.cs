@@ -94,8 +94,8 @@ public async Task<IActionResult> ProcessSponsorship(int eventId)
     if (string.IsNullOrEmpty(userId))
     {
         TempData["ErrorMessage"] = "User is not authenticated.";
-        return RedirectToAction("Login", "Account"); // Redirect to login if user is not authenticated.
-    }
+                return Redirect("/Identity/Account/Login"); // Redirect to login if user is not authenticated.
+            }
 
     // Retrieve the user's saved cards or payment options.
     var savedCards = await _stripePaymentService.GetStoredCardsAsync(userId);
@@ -117,8 +117,11 @@ public async Task<IActionResult> ProcessSponsorship(int eventId)
         [HttpGet]
         public async Task<IActionResult> SponsorshipDashboard()
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            var user = await _userManager.FindByIdAsync(userId);
+
+            var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userid == null) return Redirect("/Identity/Account/Login");
+            var user = await _userManager.FindByIdAsync(userid);
+             
 
             var model = new SponsorshipDashboardViewModel
             {

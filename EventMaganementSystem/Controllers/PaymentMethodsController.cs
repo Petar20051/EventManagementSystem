@@ -29,6 +29,8 @@ namespace EventMaganementSystem.Controllers
         [HttpGet]
         public IActionResult AddPaymentMethod()
         {
+            var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userid == null) return Redirect("/Identity/Account/Login");
             // Replace with your actual Stripe publishable key
             ViewBag.PublishableKey = _stripeOptions.PublishableKey;
             return View();
