@@ -69,7 +69,7 @@ namespace EventMaganementSystem.Controllers
                 {
                     UserId = userId,
                     Amount = model.Amount,
-                    PaymentMethod = "Stripe", // or any other method
+                    PaymentMethod = "Stripe Sponsorship", // or any other method
                     PaymentDate = DateTime.Now,
                     Status = "Completed"
                     
@@ -78,7 +78,7 @@ namespace EventMaganementSystem.Controllers
                 await _paymentService.RecordPaymentAsync(payment);
 
                 TempData["Message"] = $"Thank you for your sponsorship! You are now a {user.SponsorshipTier} sponsor.";
-                return RedirectToAction("SponsorDashboard");
+                return RedirectToAction("SponsorshipDashboard");
             }
             else
             {
