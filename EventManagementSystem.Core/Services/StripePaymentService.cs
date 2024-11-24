@@ -78,6 +78,33 @@ public class StripePaymentService : IStripePaymentService
 
         return paymentIntent.Status;
     }
+    public async Task<string> ProcessSponsorshipPaymentAsync(decimal amount, string paymentMethodId, string userId)
+    {
+        var customerId = await _userService.GetStripeCustomerIdAsync(userId);
+        var user = await _userService.GetUserByIdAsync(userId);
+
+        if (string.IsNullOrEmpty(customerId))
+        {
+            throw new Exception("Stripe customer ID not found.");
+        }
+        
+
+        var options = new PaymentIntentCreateOptions
+        {
+            Amount = (long)(amount * 100), // Convert amount to cents
+            Currency = "usd", // Use your currency code here
+            Customer = customerId,
+            PaymentMethod = paymentMethodId,
+            Confirm = true,
+            PaymentMethodTypes = new List<string> { "card" }, // Specify the payment method types
+            ReturnUrl = "https://localhost:7056/Payments/PaymentSuccess" // Add your return URL here
+        };
+
+        var service = new PaymentIntentService();
+        var paymentIntent = await service.CreateAsync(options);
+
+        return paymentIntent.Status;
+    }
 
     public async Task<List<CardViewModel>> GetStoredCardsAsync(string userId)
     {

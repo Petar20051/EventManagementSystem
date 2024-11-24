@@ -12,6 +12,7 @@ namespace EventManagementSystem.Core.Contracts
     public interface IStripePaymentService
     {
         Task<string> ProcessPaymentAsync(decimal amount, string paymentMethodId, string userId);
+        Task<string> ProcessSponsorshipPaymentAsync(decimal amount, string paymentMethodId, string userId);
         Task<List<CardViewModel>> GetStoredCardsAsync(string userId);
         
         Task<string> CreateStripeCustomerAsync(string userId,string email, string userName);

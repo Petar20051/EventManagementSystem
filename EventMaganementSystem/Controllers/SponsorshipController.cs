@@ -53,7 +53,7 @@ namespace EventMaganementSystem.Controllers
             }
 
             // Process the payment using Stripe
-            var paymentStatus = await _stripePaymentService.ProcessPaymentAsync(model.Amount, model.SelectedCardId, userId);
+            var paymentStatus = await _stripePaymentService.ProcessSponsorshipPaymentAsync(model.Amount, model.SelectedCardId, userId);
 
             if (paymentStatus == "succeeded")
             {
@@ -108,7 +108,9 @@ public async Task<IActionResult> ProcessSponsorship(int eventId)
                 {
                     CardId = card.CardId,
                     Last4Digits = card.Last4Digits
-                }).ToList()
+                }).ToList(),
+                Amount = 1
+
             };
 
             return View(model);
@@ -148,7 +150,7 @@ public async Task<IActionResult> ProcessSponsorship(int eventId)
                 Date = e.Date,
                 Venue = e.Venue?.Name ?? "No Venue Assigned", // Fallback if Venue is null
                 Description = e.Description ?? "No Description Available",
-                OrganizerEmail = e.Organizer?.Email ?? "No Contact Info"
+                OrganizerEmail = e.Organizer.UserName ?? "No Contact Info"
             }).ToList();
 
             return View(model);
