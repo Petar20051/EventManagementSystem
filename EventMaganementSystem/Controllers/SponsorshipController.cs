@@ -53,13 +53,13 @@ namespace EventMaganementSystem.Controllers
             }
 
             // Process the payment using Stripe
-            var paymentStatus = await _stripePaymentService.ProcessSponsorshipPaymentAsync(model.Amount, model.SelectedCardId, userId);
+            var paymentStatus = await _stripePaymentService.ProcessSponsorshipPaymentAsync(model.Amount??0, model.SelectedCardId, userId);
 
             if (paymentStatus == "succeeded")
             {
                 // Update user's sponsorship details
                 var user = await _userManager.FindByIdAsync(userId);
-                user.SponsoredAmount += model.Amount;
+                user.SponsoredAmount += model.Amount??0;
 
                 // Update sponsorship tier based on the new sponsorship amount
                 await _sponsorshipService.UpdateSponsorshipTierAsync(user, _userManager);
@@ -68,7 +68,7 @@ namespace EventMaganementSystem.Controllers
                 var payment = new Payment
                 {
                     UserId = userId,
-                    Amount = model.Amount,
+                    Amount = model.Amount??0,
                     PaymentMethod = "Stripe Sponsorship", // or any other method
                     PaymentDate = DateTime.Now,
                     Status = "Completed"
