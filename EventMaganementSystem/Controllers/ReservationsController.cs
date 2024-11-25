@@ -89,13 +89,13 @@ namespace EventMaganementSystem.Controllers
             if (userid == null) return Redirect("/Identity/Account/Login");
             // Fetch reservations from the service (this returns a list of Reservation entities)
             var reservations = await _reservationService.GetAllReservationsAsync();
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var reservator = await _userService.GetUserByIdAsync(userId);
+            var reservator = await _userService.GetUserByIdAsync(userid);
+            var Reservations= reservations.Where(r=> r.UserId == userid);
 
             var reservationViewModels = new List<ReservationViewModel>();
 
             // Process each reservation asynchronously
-            foreach (var reservation in reservations)
+            foreach (var reservation in Reservations)
             {
                 // Calculate total amount and apply discount
                 decimal totalAmount = reservation.Event.TicketPrice * reservation.AttendeesCount;

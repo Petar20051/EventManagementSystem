@@ -39,7 +39,8 @@ namespace EventMaganementSystem.Controllers
                 Date = e.Date,
                 Description = e.Description,
                 Location = e.Venue != null ? e.Venue.Address : "Unknown Location",
-                ImageUrl=e.ImageUrl
+                ImageUrl=e.ImageUrl,
+                OrganizerId=e.OrganizerId
 
             }).ToList();
 

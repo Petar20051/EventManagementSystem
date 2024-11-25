@@ -108,9 +108,8 @@ public async Task<IActionResult> ProcessSponsorship(int eventId)
                 {
                     CardId = card.CardId,
                     Last4Digits = card.Last4Digits
-                }).ToList(),
-                Amount = 1
-
+                }).ToList()
+                
             };
 
             return View(model);

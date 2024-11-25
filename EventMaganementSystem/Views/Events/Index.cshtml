@@ -1,5 +1,6 @@
 ﻿@model List<EventManagementSystem.Core.Models.Events.EventViewModel>
 
+
 <div class="container mt-5">
     <h2 class="text-center mb-4" style="color: #004080;">Upcoming Events</h2>
 
@@ -39,12 +40,15 @@
                         <p class="card-text text-muted">@item.Date.ToString("MMMM dd, yyyy")</p>
                         <p class="card-text">@item.Description</p>
                         <p class="card-text"><strong>Location:</strong> @item.Location</p>
-                        <div class="d-flex justify-content-between mt-3">
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a>
-                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                            </form>
-                        </div>
+                        @if (item.OrganizerId == ViewBag.UserId)
+                        {
+                            <div class="d-flex justify-content-between mt-3">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a>
+                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+                        }
                         <div class="mt-3">
                             <a asp-action="Create" asp-controller="Reservations" asp-route-eventId="@item.Id" class="btn btn-success w-100">Reserve Now</a>
                         </div>
