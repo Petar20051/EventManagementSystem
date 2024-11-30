@@ -32,6 +32,15 @@ namespace EventMaganementSystem.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Ticket>()
+       .HasOne(t => t.Event)
+       .WithMany(e => e.Tickets)
+       .HasForeignKey(t => t.EventId);
+
+            modelBuilder.Entity<Event>()
+                .HasMany(e => e.Reservations)
+                .WithOne(r => r.Event)
+                .HasForeignKey(r => r.EventId);
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<ApplicationUser>()

@@ -4,6 +4,7 @@ using EventManagementSystem.Core.Models.Payments;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Stripe;
 using System.Security.Claims;
 
@@ -45,54 +46,68 @@ namespace EventMaganementSystem.Controllers
             {
                 if (inputModel == null || string.IsNullOrEmpty(inputModel.PaymentMethodId))
                 {
-                    Console.WriteLine("Invalid Payment Method: PaymentMethodId is null or empty.");
-                    return BadRequest("Invalid Payment Method");
+                    return BadRequest(new { error = "Invalid Payment Method." });
                 }
 
                 var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                if (userId == null)
+                if (string.IsNullOrEmpty(userId))
                 {
-                    Console.WriteLine("Unauthorized: User ID not found.");
-                    return Unauthorized("User not found.");
+                    return Unauthorized(new { error = "User not found." });
                 }
 
-                // Fetch or create the Stripe customer ID for the user
                 var customerId = await _userService.GetStripeCustomerIdAsync(userId);
                 if (string.IsNullOrEmpty(customerId))
                 {
                     var user = await _userService.GetUserByIdAsync(userId);
                     if (user == null)
                     {
-                        Console.WriteLine("Error: User not found in system.");
-                        return BadRequest("User not found in the system.");
+                        return BadRequest(new { error = "User not found in the system." });
                     }
 
-                    // Create a new Stripe customer if customerId is null
                     customerId = await _stripePaymentService.CreateStripeCustomerAsync(userId, user.Email, user.UserName);
                     await _userService.SaveStripeCustomerIdAsync(userId, customerId);
                 }
 
-                // Attach the payment method to the customer
+                var paymentMethodService = new PaymentMethodService();
+                var paymentMethod = await paymentMethodService.GetAsync(inputModel.PaymentMethodId);
+
+                if (paymentMethod.Customer?.Id == customerId)
+                {
+                    return Ok(new { message = "Payment method already added." });
+                }
+                else if (!string.IsNullOrEmpty(paymentMethod.Customer?.Id))
+                {
+                    return BadRequest(new { error = "Payment method is already associated with another account." });
+                }
+
                 await _stripePaymentService.AttachPaymentMethodAsync(customerId, inputModel.PaymentMethodId);
 
-                return Ok(); // Or Redirect to a success page
-            }
-            catch (StripeException ex) when (ex.StripeError?.Code == "card_declined")
-            {
-                Console.WriteLine($"Card Declined: {ex.StripeError.Message}");
-                return BadRequest("Your card was declined. Please try a different card or contact your card issuer.");
+                var customerService = new CustomerService();
+                await customerService.UpdateAsync(customerId, new CustomerUpdateOptions
+                {
+                    InvoiceSettings = new CustomerInvoiceSettingsOptions
+                    {
+                        DefaultPaymentMethod = inputModel.PaymentMethodId
+                    }
+                });
+
+                return Ok(new { message = "Payment method added successfully." });
             }
             catch (StripeException ex)
             {
-                Console.WriteLine($"Stripe Error: {ex.StripeError.Message}");
-                return StatusCode(500, "An error occurred with Stripe.");
+                Console.WriteLine($"Stripe Error Code: {ex.StripeError?.Code}");
+                Console.WriteLine($"Stripe Error Message: {ex.StripeError?.Message}");
+                return BadRequest(new { error = ex.StripeError?.Message ?? "Stripe error occurred." });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"General Error: {ex.Message}");
-                return StatusCode(500, "An unexpected error occurred.");
+                Console.WriteLine($"Unhandled Exception: {ex.Message}");
+                return StatusCode(500, new { error = "An unexpected error occurred." });
             }
         }
+
+
+
 
 
         // GET: Manage saved payment methods

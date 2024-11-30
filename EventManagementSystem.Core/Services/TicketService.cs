@@ -22,9 +22,14 @@ namespace EventManagementSystem.Core.Services
 
         public async Task CreateTicketAsync(int eventId, string userId, DateTime purchaseDate)
         {
-            // Create the ticket
-           
+            // Validate that the event exists
+            var eventEntity = await _context.Events.FirstOrDefaultAsync(e => e.Id == eventId);
+            if (eventEntity == null)
+            {
+                throw new InvalidOperationException("Event not found.");
+            }
 
+            // Create the ticket
             var ticket = new Ticket
             {
                 EventId = eventId,
@@ -39,10 +44,9 @@ namespace EventManagementSystem.Core.Services
 
         public async Task<List<Ticket>> GetUserTicketsAsync(string userId)
         {
-            // Retrieve tickets for the logged-in user, including Event and Reservations
+            // Retrieve tickets for the logged-in user, including Event
             return await _context.Tickets
-                .Include(t => t.Event)
-                .ThenInclude(e => e.Reservations) // Include related reservations for the event
+                .Include(t => t.Event) // Include related event details
                 .Where(t => t.HolderId == userId)
                 .ToListAsync();
         }

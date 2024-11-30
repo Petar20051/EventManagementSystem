@@ -1,5 +1,6 @@
 ﻿using EventManagementSystem.Core.Models.Payments;
 using EventManagementSystem.Infrastructure.Data.Enums;
+using Stripe;
 using Stripe.Checkout;
 using System;
 using System.Collections.Generic;
@@ -18,5 +19,8 @@ namespace EventManagementSystem.Core.Contracts
         Task<string> CreateStripeCustomerAsync(string userId,string email, string userName);
         Task AddPaymentMethodAsync(string stripeCustomerId, string stripeToken);
         Task AttachPaymentMethodAsync(string customerId, string paymentMethodId);
+
+        Task<PaymentMethod> GetPaymentMethodAsync(string paymentMethodId);
+        Task UpdateCustomerDefaultPaymentMethodAsync(string customerId, string paymentMethodId);
     }
 }

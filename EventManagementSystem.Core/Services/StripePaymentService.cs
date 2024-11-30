@@ -13,15 +13,26 @@ public class StripePaymentService : IStripePaymentService
     private readonly IUserService _userService;
     private readonly StripeSettings _stripeOptions;
     private readonly IDiscountService _discountService;
+    private readonly PaymentMethodService _paymentMethodService;
+    private readonly CustomerService _customerService;
+    private readonly PaymentIntentService _paymentIntentService;
 
-    public StripePaymentService(IUserService userService, IOptions<StripeSettings> stripeOptions,IDiscountService discountService)
+    public StripePaymentService(
+        IUserService userService,
+        IOptions<StripeSettings> stripeOptions,
+        IDiscountService discountService,
+        PaymentMethodService paymentMethodService,
+        CustomerService customerService,
+        PaymentIntentService paymentIntentService)
     {
         _userService = userService;
         _stripeOptions = stripeOptions.Value;
-
-        // Set the Stripe secret key from configuration (user secrets)
-        StripeConfiguration.ApiKey = _stripeOptions.SecretKey;
         _discountService = discountService;
+        _paymentMethodService = paymentMethodService;
+        _customerService = customerService;
+        _paymentIntentService = paymentIntentService;
+
+        StripeConfiguration.ApiKey = _stripeOptions.SecretKey;
     }
 
     public async Task AddPaymentMethodAsync(string stripeCustomerId, string stripeToken)
@@ -147,11 +158,39 @@ public class StripePaymentService : IStripePaymentService
     }
     public async Task AttachPaymentMethodAsync(string customerId, string paymentMethodId)
     {
-        var service = new PaymentMethodService();
-        var options = new PaymentMethodAttachOptions
+        var paymentMethodService = new PaymentMethodService();
+
+        try
         {
-            Customer = customerId,
-        };
-        await service.AttachAsync(paymentMethodId, options);
+            await paymentMethodService.AttachAsync(paymentMethodId, new PaymentMethodAttachOptions
+            {
+                Customer = customerId
+            });
+
+            Console.WriteLine($"Payment method {paymentMethodId} attached to customer {customerId} successfully.");
+        }
+        catch (StripeException ex)
+        {
+            Console.WriteLine($"Stripe Error: {ex.StripeError?.Message}");
+            throw; // Re-throw the exception for handling at a higher level
+        }
+    }
+
+    public async Task<PaymentMethod> GetPaymentMethodAsync(string paymentMethodId)
+    {
+        var service = new PaymentMethodService();
+        return await service.GetAsync(paymentMethodId);
+    }
+
+    public async Task UpdateCustomerDefaultPaymentMethodAsync(string customerId, string paymentMethodId)
+    {
+        var service = new CustomerService();
+        await service.UpdateAsync(customerId, new CustomerUpdateOptions
+        {
+            InvoiceSettings = new CustomerInvoiceSettingsOptions
+            {
+                DefaultPaymentMethod = paymentMethodId
+            }
+        });
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EventManagementSystem.Core.Services
 {
-    public class UserEventService:IUserEventService
+    public class UserEventService : IUserEventService
     {
         private readonly EventDbContext _context;
 
@@ -20,11 +20,28 @@ namespace EventManagementSystem.Core.Services
 
         public async Task AddUserEventAsync(string userId, int eventId)
         {
+            if (string.IsNullOrEmpty(userId))  // Check if userId is null or empty
+            {
+                throw new ArgumentException("User ID cannot be null or empty.", nameof(userId));
+            }
+
+            if (eventId <= 0) // Validate that the eventId is positive
+            {
+                throw new ArgumentException("Event ID must be a valid positive integer.", nameof(eventId));
+            }
+
+            var eventEntity = await _context.Events.FindAsync(eventId);
+            if (eventEntity == null)
+            {
+                throw new InvalidOperationException("Event not found.");
+            }
+
             var userEvent = new UserEvent
             {
                 UserId = userId,
                 EventId = eventId
             };
+
             _context.UserEvents.Add(userEvent);
             await _context.SaveChangesAsync();
         }
