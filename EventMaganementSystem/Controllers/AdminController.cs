@@ -20,7 +20,7 @@ namespace EventMaganementSystem.Controllers
         }
 
         // GET: /Admin
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             return View();
         }

@@ -8,115 +8,143 @@ using EventManagementSystem.Core;
 using EventMaganementSystem;
 using EventManagementSystem;
 using Microsoft.AspNetCore.SignalR;
+using EventManagementSystem.Core.Extensions;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-builder.Services.AddDbContext<EventDbContext>(options =>
-    options.UseSqlServer(connectionString));
-
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-// Configure Identity
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+public partial class Program
 {
-    options.SignIn.RequireConfirmedAccount = false;
-    options.Password.RequireNonAlphanumeric = false;
-})
-.AddEntityFrameworkStores<EventDbContext>()
-.AddDefaultTokenProviders();
-
-builder.Services.AddAuthorization(options =>
-{
-    // Define a policy that requires the "Organizer" role
-    options.AddPolicy("OrganizerPolicy", policy => policy.RequireRole("Organizer"));
-});
-
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
-builder.Services.AddTransient<IProfileService, ProfileService>();
-builder.Services.AddTransient<IEventService, EventService>();
-builder.Services.AddScoped<IVenueService, VenueService>();
-builder.Services.AddScoped<IUserEventService, UserEventService>();
-builder.Services.AddScoped<IEventInvitationService, EventInvitationService>();
-builder.Services.AddScoped<IReservationService, ReservationService>();
-builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
-builder.Services.AddScoped<IStripePaymentService, StripePaymentService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ITicketService, TicketService>();
-builder.Services.AddScoped<ISponsorshipService, SponsorshipService>();
-builder.Services.AddScoped<IFeedbackService, FeedbackService>();
-builder.Services.AddScoped<INotificationHub, NotificationHubService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddSignalR();
-builder.Services.AddScoped<IDiscountService,DiscountService>();
-
-var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-    await EnsureRolesAndAdminUser(roleManager, userManager);
-}
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseMigrationsEndPoint();
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts(); // Default HSTS value is 30 days; adjust as needed
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
-app.UseAuthentication(); // Ensure authentication middleware is added
-app.UseAuthorization();
-
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<ChatHub>("/chathub");
-});
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapRazorPages();
-
-app.Run();
-
-async Task EnsureRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
-{
-    const string adminRole = "Admin";
-    const string adminEmail = "admin@example.com";
-    const string adminPassword = "Admin@123"; // Choose a secure password
-
-    // Check if the Admin role exists, create it if it doesn't
-    if (!await roleManager.RoleExistsAsync(adminRole))
+    private static async Task Main(string[] args)
     {
-        await roleManager.CreateAsync(new IdentityRole(adminRole));
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+        builder.Services.AddDbContext<EventDbContext>(options =>
+        {
+            if (builder.Environment.IsEnvironment("Test"))
+            {
+                options.UseInMemoryDatabase("TestDatabase"); // Use in-memory for testing
+            }
+            else
+            {
+                options.UseSqlServer(connectionString); // Use SQL Server for other environments
+            }
+        });
+
+        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+        // Configure Identity
+        builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        {
+            options.SignIn.RequireConfirmedAccount = false;
+            options.Password.RequireNonAlphanumeric = false;
+        })
+        .AddEntityFrameworkStores<EventDbContext>()
+        .AddDefaultTokenProviders();
+
+        // Add authorization policies
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("OrganizerPolicy", policy => policy.RequireRole("Organizer"));
+        });
+
+        // Add services and dependencies
+        builder.Services.AddControllersWithViews();
+        builder.Services.AddRazorPages();
+        RegisterCustomServices(builder.Services);
+
+        // Build the app
+        var app = builder.Build();
+
+        // Initialize roles and admin user
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+            await EnsureRolesAndAdminUser(roleManager, userManager);
+        }
+
+        // Configure the HTTP request pipeline
+        ConfigureMiddleware(app);
+
+        app.Run();
     }
 
-    // Check if the admin user exists, create if it doesn't
-    var adminUser = await userManager.FindByEmailAsync(adminEmail);
-    if (adminUser == null)
+    private static void RegisterCustomServices(IServiceCollection services)
     {
-        adminUser = new ApplicationUser
+        services.AddTransient<IProfileService, ProfileService>();
+        services.AddTransient<IEventService, EventService>();
+        services.AddScoped<IVenueService, VenueService>();
+        services.AddScoped<IUserEventService, UserEventService>();
+        services.AddScoped<IEventInvitationService, EventInvitationService>();
+        services.AddScoped<IReservationService, ReservationService>();
+        services.Configure<StripeSettings>(services.BuildServiceProvider().GetRequiredService<IConfiguration>().GetSection("Stripe"));
+        services.AddScoped<IStripePaymentService, StripePaymentService>();
+        services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITicketService, TicketService>();
+        services.AddScoped<ISponsorshipService, SponsorshipService>();
+        services.AddScoped<IFeedbackService, FeedbackService>();
+        services.AddScoped<INotificationHub, NotificationHubService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddSignalR();
+        services.AddScoped<IDiscountService, DiscountService>();
+        services.AddScoped<IPaymentMethodServiceWrapper, PaymentMethodServiceWrapper>();
+    }
+
+    private static void ConfigureMiddleware(WebApplication app)
+    {
+        if (app.Environment.IsDevelopment())
         {
-            UserName = adminEmail,
-            Email = adminEmail,
-            EmailConfirmed = true
-        };
-        await userManager.CreateAsync(adminUser, adminPassword);
-        await userManager.AddToRoleAsync(adminUser, adminRole);
+            app.UseMigrationsEndPoint();
+        }
+        else
+        {
+            app.UseExceptionHandler("/Home/Error");
+            app.UseHsts(); // Use HSTS with default 30 days
+        }
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.UseAuthentication(); // Ensure authentication middleware is added
+        app.UseAuthorization();
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapHub<ChatHub>("/chathub");
+        });
+
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}");
+        app.MapRazorPages();
+    }
+
+    private static async Task EnsureRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+    {
+        const string adminRole = "Admin";
+        const string adminEmail = "admin@example.com";
+        const string adminPassword = "Admin@123";
+
+        if (!await roleManager.RoleExistsAsync(adminRole))
+        {
+            await roleManager.CreateAsync(new IdentityRole(adminRole));
+        }
+
+        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+        if (adminUser == null)
+        {
+            adminUser = new ApplicationUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true
+            };
+            await userManager.CreateAsync(adminUser, adminPassword);
+            await userManager.AddToRoleAsync(adminUser, adminRole);
+        }
     }
 }

@@ -14,11 +14,15 @@ namespace EventMaganementSystem.Controllers
             _notificationService = notificationService;
         }
 
-       
+
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(userId == null)  Redirect("/Identity/Account/Login");
+            if (userId == null)
+            {
+                return Redirect("/Identity/Account/Login"); // Explicitly return RedirectResult
+            }
+
             var notifications = await _notificationService.GetUserNotificationsAsync(userId);
             return View(notifications);
         }

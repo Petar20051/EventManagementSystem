@@ -88,17 +88,17 @@ namespace EventMaganementSystem.Controllers
         }
 
         [HttpGet]
-public async Task<IActionResult> ProcessSponsorship(int eventId)
-{
-    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-    if (string.IsNullOrEmpty(userId))
-    {
-        TempData["ErrorMessage"] = "User is not authenticated.";
-                return Redirect("/Identity/Account/Login"); // Redirect to login if user is not authenticated.
+        public async Task<IActionResult> ProcessSponsorship(int eventId)
+        {
+            var userId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ErrorMessage"] = "User is not authenticated.";
+                return Redirect("/Identity/Account/Login");
             }
 
-    // Retrieve the user's saved cards or payment options.
-    var savedCards = await _stripePaymentService.GetStoredCardsAsync(userId);
+            // Retrieve the user's saved cards or payment options.
+            var savedCards = await _stripePaymentService.GetStoredCardsAsync(userId);
 
             // Create the view model with the event ID and available payment methods.
             var model = new ProcessSponsorshipViewModel
@@ -109,11 +109,10 @@ public async Task<IActionResult> ProcessSponsorship(int eventId)
                     CardId = card.CardId,
                     Last4Digits = card.Last4Digits
                 }).ToList()
-                
             };
 
             return View(model);
-}
+        }
 
         [HttpGet]
         public async Task<IActionResult> SponsorshipDashboard()

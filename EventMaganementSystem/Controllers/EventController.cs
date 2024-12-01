@@ -196,10 +196,11 @@ namespace EventMaganementSystem.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var eventDetails = await _eventService.GetEventByIdAsync(id);
-            var venuedetails = await _venueService.GetVenueByIdAsync(eventDetails.VenueId);
             if (eventDetails == null) return NotFound("Event not found");
 
-            var venueName = venuedetails.Name;
+            var venuedetails = await _venueService.GetVenueByIdAsync(eventDetails.VenueId);
+            var venueName = venuedetails?.Name ?? "Unknown Venue";
+
             var model = new EventDetailsViewModel
             {
                 Id = eventDetails.Id,
@@ -207,7 +208,7 @@ namespace EventMaganementSystem.Controllers
                 Date = eventDetails.Date,
                 Description = eventDetails.Description,
                 Location = venueName,
-                Address = venuedetails.Address,
+                Address = venuedetails?.Address ?? "No Address Available",
                 OrganizerId = eventDetails.OrganizerId
             };
 
