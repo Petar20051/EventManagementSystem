@@ -11,6 +11,6 @@ namespace EventManagementSystem.Core.Models.Sponsorship
     {
         public SponsorshipTier CurrentTier { get; set; }
         public decimal SponsoredAmount { get; set; }
-        public List<SponsorshipBenefit> Benefits { get; set; }
+        public List<SponsorshipBenefit> Benefits { get; set; } = new List<SponsorshipBenefit>();
     }
 }

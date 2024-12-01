@@ -4,7 +4,7 @@ using EventManagementSystem.Infrastructure.Data.Enums;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.AspNet.SignalR;
 using Microsoft.EntityFrameworkCore;
-using PayPalCheckoutSdk.Orders;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

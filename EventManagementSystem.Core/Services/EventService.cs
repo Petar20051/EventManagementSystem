@@ -36,19 +36,18 @@ namespace EventManagementSystem.Core.Services
 
         public async Task AddEventAsync(Event events)
         {
-            // Add the new event to the database
+            events.OrganizerId = events.OrganizerId ?? "default-organizer-id";  // Default or valid organizer ID
             _context.Events.Add(events);
             await _context.SaveChangesAsync();
 
-            // Retrieve all users to send the notification
+            // Proceed with sending notifications
             var users = await _userManager.Users.ToListAsync();
-
-            // Notify each user about the new event
             foreach (var user in users)
             {
                 await _notificationService.NotifyNewEventAsync(user.Id, events.Name);
             }
         }
+
 
         public async Task DeleteEventAsync(int id)
         {

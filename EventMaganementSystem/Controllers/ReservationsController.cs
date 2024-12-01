@@ -5,7 +5,6 @@ using EventManagementSystem.Infrastructure.Data.Enums;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using PayPal.Api;
 using System.Security.Claims;
 
 namespace EventMaganementSystem.Controllers

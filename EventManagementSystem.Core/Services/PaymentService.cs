@@ -1,5 +1,6 @@
 ﻿using EventMaganementSystem.Data;
 using EventManagementSystem.Core.Contracts;
+using EventManagementSystem.Core.Extensions;
 using EventManagementSystem.Core.Models.Payments;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -16,11 +17,13 @@ namespace EventManagementSystem.Core.Services
     {
         private readonly EventDbContext _context;
         private readonly IUserService _userService;
+        private readonly IPaymentMethodServiceWrapper _paymentMethodServiceWrapper;
 
-        public PaymentService(EventDbContext context,IUserService userService)
+        public PaymentService(EventDbContext context,IUserService userService,IPaymentMethodServiceWrapper paymentMethodServiceWrapper)
         {
             _context = context;
             _userService = userService;
+            _paymentMethodServiceWrapper = paymentMethodServiceWrapper;
         }
 
         public async Task RecordPaymentAsync(Payment payment)
@@ -53,10 +56,7 @@ namespace EventManagementSystem.Core.Services
                 throw new InvalidOperationException("Customer ID not found.");
             }
 
-            var service = new PaymentMethodService();
-
-            // Detach the card from the customer
-            await service.DetachAsync(cardId);
+            await _paymentMethodServiceWrapper.DetachAsync(cardId);
         }
 
         public async Task<PaymentDetailsViewModel> GetPaymentByIdAsync(DateTime? paymentDate)

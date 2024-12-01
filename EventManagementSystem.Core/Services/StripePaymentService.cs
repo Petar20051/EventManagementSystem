@@ -13,25 +13,18 @@ public class StripePaymentService : IStripePaymentService
     private readonly IUserService _userService;
     private readonly StripeSettings _stripeOptions;
     private readonly IDiscountService _discountService;
-    private readonly PaymentMethodService _paymentMethodService;
-    private readonly CustomerService _customerService;
-    private readonly PaymentIntentService _paymentIntentService;
+   
+   
+   
 
     public StripePaymentService(
         IUserService userService,
         IOptions<StripeSettings> stripeOptions,
-        IDiscountService discountService,
-        PaymentMethodService paymentMethodService,
-        CustomerService customerService,
-        PaymentIntentService paymentIntentService)
+        IDiscountService discountService)
     {
         _userService = userService;
         _stripeOptions = stripeOptions.Value;
         _discountService = discountService;
-        _paymentMethodService = paymentMethodService;
-        _customerService = customerService;
-        _paymentIntentService = paymentIntentService;
-
         StripeConfiguration.ApiKey = _stripeOptions.SecretKey;
     }
 

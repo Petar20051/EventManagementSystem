@@ -12,6 +12,6 @@ namespace EventManagementSystem.Core.Models.Payments
         public decimal Amount { get; set; }
         public string PaymentMethodID { get; set; }
         public string SelectedCardId { get; set; }
-        public IEnumerable<CardViewModel> StoredCards { get; set; }
+        public IEnumerable<CardViewModel> StoredCards { get; set; }= Enumerable.Empty<CardViewModel>();
     }
 }

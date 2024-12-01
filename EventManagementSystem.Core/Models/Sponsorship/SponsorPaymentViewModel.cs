@@ -16,7 +16,7 @@ namespace EventManagementSystem.Core.Models.Sponsorship
         public decimal Amount { get; set; }
 
         // ID of the selected saved card (if the user has any)
-        public string SelectedCardId { get; set; }
+        public string? SelectedCardId { get; set; }
 
         // Optionally, display saved cards (if the user has any)
         public List<string> SavedCards { get; set; } = new List<string>();

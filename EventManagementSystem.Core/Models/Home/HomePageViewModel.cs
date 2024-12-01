@@ -9,8 +9,8 @@ namespace EventManagementSystem.Core.Models.Home
 {
     public class HomePageViewModel
     {
-       
-            public List<Event> UpcomingEvents { get; set; }
-        
+
+        public List<Event> UpcomingEvents { get; set; } = new List<Event>();
+
     }
 }

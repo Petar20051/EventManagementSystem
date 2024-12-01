@@ -2,7 +2,6 @@
 using EventManagementSystem.Core.Contracts;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
-using PayPalCheckoutSdk.Orders;
 using System;
 using System.Collections.Generic;
 using System.Linq;

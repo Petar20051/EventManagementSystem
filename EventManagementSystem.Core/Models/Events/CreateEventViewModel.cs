@@ -15,7 +15,7 @@ namespace EventManagementSystem.Core.Models.Events
         public EventTypes EventType { get; set; }
         public DateTime Date { get; set; }
         public int? VenueId { get; set; }
-        public List<VenueViewModel>? Venues { get; set; }
+        public List<VenueViewModel>? Venues { get; set; } = new List<VenueViewModel>();
 
         public decimal TicketPrice { get; set; }
 
