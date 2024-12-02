@@ -108,35 +108,49 @@ namespace EventManagementSystem.Tests.ControllersTests
         }
 
         [Fact]
-        public async Task Create_POST_RedirectsToIndex_WhenModelStateIsValid()
+public async Task Create_POST_RedirectsToIndex_WhenModelStateIsValid()
+{
+    // Arrange
+    var options = new DbContextOptionsBuilder<EventDbContext>()
+        .UseInMemoryDatabase(databaseName: "EventInvitationTestDb")
+        .Options;
+
+    await using var dbContext = new EventDbContext(options);
+    
+    // Seed the database
+    dbContext.Events.Add(new Event { Id = 1, Name = "Test Event", OrganizerId = "user1", Date = DateTime.UtcNow , Description = "good" });
+    dbContext.Users.Add(new ApplicationUser { Id = "user2", UserName = "ReceiverUser" });
+    await dbContext.SaveChangesAsync();
+
+    var userId = "user1";
+    var invitation = new EventInvitation { EventId = 1, ReceiverId = "user2" };
+
+    var mockInvitationService = new Mock<IEventInvitationService>();
+    mockInvitationService.Setup(s => s.SendInvitationAsync(userId, invitation.ReceiverId, invitation.EventId))
+                         .Returns(Task.CompletedTask);
+
+    var controller = new EventInvitationController(mockInvitationService.Object, dbContext)
+    {
+        ControllerContext = new ControllerContext
         {
-            // Arrange
-            var userId = "user1";
-            var invitation = new EventInvitation { EventId = 1, ReceiverId = "user2" };
-
-            _mockInvitationService.Setup(s => s.SendInvitationAsync(userId, invitation.ReceiverId, invitation.EventId))
-                                  .Returns(Task.CompletedTask);
-
-            var controller = new EventInvitationController(_mockInvitationService.Object, _dbContext)
+            HttpContext = new DefaultHttpContext
             {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = new DefaultHttpContext
-                    {
-                        User = CreateUserPrincipal(userId)
-                    }
-                }
-            };
-
-            // Act
-            var result = await controller.Create(invitation);
-
-            // Assert
-            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectResult.ActionName);
-
-            _mockInvitationService.Verify(s => s.SendInvitationAsync(userId, invitation.ReceiverId, invitation.EventId), Times.Once);
+                User = CreateUserPrincipal(userId) // Simulates an authenticated user
+            }
         }
+    };
+
+    // Act
+    var result = await controller.Create(invitation);
+
+    // Assert
+    var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+    Assert.Equal("Index", redirectResult.ActionName);
+
+    mockInvitationService.Verify(s => s.SendInvitationAsync(userId, invitation.ReceiverId, invitation.EventId), Times.Once);
+}
+
+
 
         [Fact]
         public async Task Details_ReturnsViewResult_WithInvitation()
