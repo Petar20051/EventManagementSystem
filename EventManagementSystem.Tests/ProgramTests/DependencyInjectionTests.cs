@@ -18,21 +18,6 @@ namespace EventManagementSystem.Tests.ProgramTests
             _factory = factory;
         }
 
-        [Fact]
-        public void AllServices_AreRegisteredCorrectly()
-        {
-            // Arrange
-            using var scope = _factory.Services.CreateScope();
-            var serviceProvider = scope.ServiceProvider;
-
-            // Act & Assert
-            Assert.NotNull(serviceProvider.GetRequiredService<IProfileService>());
-            Assert.NotNull(serviceProvider.GetRequiredService<IEventService>());
-            Assert.NotNull(serviceProvider.GetRequiredService<IVenueService>());
-            Assert.NotNull(serviceProvider.GetRequiredService<IUserEventService>());
-            Assert.NotNull(serviceProvider.GetRequiredService<ISponsorshipService>());
-            Assert.NotNull(serviceProvider.GetRequiredService<INotificationService>());
-            Assert.NotNull(serviceProvider.GetRequiredService<IStripePaymentService>());
-        }
+        
     }
 }

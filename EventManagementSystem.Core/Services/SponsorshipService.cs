@@ -52,19 +52,20 @@ namespace EventManagementSystem.Core.Services
         // Determine sponsorship tier based on the sponsored amount
         public SponsorshipTier DetermineSponsorshipTier(decimal sponsoredAmount)
         {
-            if (sponsoredAmount >= 1)
+            if (sponsoredAmount >= 100)
             {
-                return SponsorshipTier.Bronze;
+                return SponsorshipTier.Gold;
             }
             if (sponsoredAmount >= 20)
             {
                 return SponsorshipTier.Silver;
             }
-            if (sponsoredAmount >= 100)
+            if (sponsoredAmount >= 1)
             {
-                return SponsorshipTier.Gold;
+                return SponsorshipTier.Bronze;
             }
             return SponsorshipTier.None;
+
         }
     }
 }

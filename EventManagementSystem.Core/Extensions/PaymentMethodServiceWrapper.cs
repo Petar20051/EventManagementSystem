@@ -7,17 +7,19 @@ using System.Threading.Tasks;
 
 namespace EventManagementSystem.Core.Extensions
 {
-    public class PaymentMethodServiceWrapper:IPaymentMethodServiceWrapper
+    public class PaymentMethodServiceWrapper : IPaymentMethodServiceWrapper
     {
-        private readonly PaymentMethodService _paymentMethodService;
+        private readonly IPaymentMethodService _paymentMethodService;
 
-        public PaymentMethodServiceWrapper()
+        public PaymentMethodServiceWrapper(IPaymentMethodService paymentMethodService)
         {
-            _paymentMethodService = new PaymentMethodService();
+            _paymentMethodService = paymentMethodService;
         }
 
         public async Task<PaymentMethod> DetachAsync(string paymentMethodId, PaymentMethodDetachOptions options = null, RequestOptions requestOptions = null)
         {
+            options ??= new PaymentMethodDetachOptions();
+            requestOptions ??= new RequestOptions();
             return await _paymentMethodService.DetachAsync(paymentMethodId, options, requestOptions);
         }
 
@@ -26,12 +28,11 @@ namespace EventManagementSystem.Core.Extensions
             var options = new PaymentMethodListOptions
             {
                 Customer = customerId,
-                Type = "card" // Filter for card payment methods
+                Type = "card"
             };
 
-            var paymentMethods = await _paymentMethodService.ListAsync(options);
+            var paymentMethods = await _paymentMethodService.ListAsync(options, null);
             return paymentMethods.Data;
         }
     }
-
-}
+    }

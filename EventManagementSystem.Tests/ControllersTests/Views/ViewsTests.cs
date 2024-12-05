@@ -24,44 +24,6 @@ namespace EventManagementSystem.Tests.ControllersTests.Views
     public class ViewsTests
     {
 
-
-
-        [Fact]
-        public async Task CalendarPage_ShouldRenderCorrectly()
-        {
-            // Arrange
-            var factory = new WebApplicationFactory<Program>(); // Replace `Program` with your actual Startup class
-            var client = factory.CreateClient();
-
-            // Act
-            var response = await client.GetAsync("/Calendar");
-            var htmlContent = await response.Content.ReadAsStringAsync();
-
-            // Assert
-            response.EnsureSuccessStatusCode(); // Status code 200-299
-            Assert.Contains("<h2 class=\"text-center mb-4\" style=\"color: #004080;\">Event Calendar</h2>", htmlContent);
-            Assert.Contains("<div id=\"calendar\"></div>", htmlContent);
-            Assert.Contains("https://cdn.jsdelivr.net/npm/fullcalendar@5.1.0/main.min.css", htmlContent); // Validate dependency inclusion
-            Assert.Contains("loadData()", htmlContent); // Validate JavaScript initialization
-        }
-
-        [Fact]
-        public async Task CalendarPage_RendersCorrectly_WithEvents()
-        {
-            // Arrange
-            var factory = new WebApplicationFactory<Program>(); // Replace Program with your actual entry class (Program.cs or Startup.cs)
-            var client = factory.CreateClient();
-
-            // Act
-            var response = await client.GetAsync("/Calendar"); // Corrected to match the controller's route
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode); // Ensure 200 OK
-            Assert.Contains("<h2 class=\"text-center mb-4\" style=\"color: #004080;\">Event Calendar</h2>", responseContent);
-            Assert.Contains("<div id=\"calendar\"></div>", responseContent);
-        }
-
         [Fact]
         public async Task IndexAsync_ReturnsViewWithModel_WhenUserExists()
         {

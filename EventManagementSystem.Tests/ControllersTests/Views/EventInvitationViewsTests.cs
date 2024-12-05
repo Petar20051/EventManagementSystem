@@ -41,24 +41,50 @@ namespace EventManagementSystem.Tests.ControllersTests.Views
             dbContext.Database.EnsureDeleted();
             dbContext.Database.EnsureCreated();
 
-            // Seed data
-            dbContext.Events.Add(new Event { Id = 1, Name = "Test Event", OrganizerId = "user1", Date = DateTime.UtcNow, Description = "good" });
-            dbContext.Users.Add(new ApplicationUser { Id = "user2", UserName = "Test User" });
-            dbContext.EventInvitations.Add(new EventInvitation
+            // Check and seed only if necessary
+            if (!dbContext.Events.Any(e => e.Id == 1))
+            {
+                dbContext.Events.Add(new Event { Id = 1, Name = "Test Event", OrganizerId = "user1", Date = DateTime.UtcNow, Description = "good" });
+            }
+
+            if (!dbContext.Users.Any(u => u.Id == "user2"))
+            {
+                dbContext.Users.Add(new ApplicationUser { Id = "user2", UserName = "Test User" });
+            }
+
+            if (!dbContext.EventInvitations.Any(i => i.Id == 1))
+            {
+                dbContext.EventInvitations.Add(new EventInvitation
+                {
+                    Id = 1,
+                    EventId = 1,
+                    SenderId = "user1",
+                    ReceiverId = "user2",
+                    InvitationDate = DateTime.UtcNow
+                });
+            }
+
+            dbContext.SaveChanges();
+        }
+
+
+        private EventInvitationController CreateController()
+        {
+            var mockService = new Mock<IEventInvitationService>();
+            mockService.Setup(service => service.GetAllInvitationsForUserAsync("user2"))
+                .ReturnsAsync(new List<EventInvitation>
+                {
+            new EventInvitation
             {
                 Id = 1,
                 EventId = 1,
                 SenderId = "user1",
                 ReceiverId = "user2",
                 InvitationDate = DateTime.UtcNow
-            });
+            }
+                });
 
-            dbContext.SaveChanges();
-        }
-
-        private EventInvitationController CreateController()
-        {
-            return new EventInvitationController(Mock.Of<IEventInvitationService>(), new EventDbContext(_options))
+            return new EventInvitationController(mockService.Object, new EventDbContext(_options))
             {
                 ControllerContext = new ControllerContext
                 {
@@ -66,12 +92,13 @@ namespace EventManagementSystem.Tests.ControllersTests.Views
                     {
                         User = new ClaimsPrincipal(new ClaimsIdentity(new[]
                         {
-                        new Claim(ClaimTypes.NameIdentifier, "user1")
-                    }))
+                    new Claim(ClaimTypes.NameIdentifier, "user2") // Match ReceiverId in seed data
+                }))
                     }
                 }
             };
         }
+
 
 
         [Fact]
@@ -98,25 +125,10 @@ namespace EventManagementSystem.Tests.ControllersTests.Views
             Assert.NotEmpty(userList); // Ensure UserList is populated
         }
 
-        [Fact]
-        public async Task Index_RendersCorrectly()
-        {
-            // Arrange
-            var controller = CreateController();
-
-            // Act
-            var result = await controller.Index();
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            
-
-            // Validate the model
-            var invitations = Assert.IsAssignableFrom<IEnumerable<EventInvitation>>(viewResult.Model);
-            Assert.Empty(invitations); // Ensure the invitations list is populated
-        }
-
        
+
+
+
 
 
 

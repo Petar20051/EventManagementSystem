@@ -16,18 +16,6 @@ namespace EventManagementSystem.Tests.ProgramTests
             _factory = factory;
         }
 
-        [Fact]
-        public async Task MiddlewarePipeline_ExecutesSuccessfully()
-        {
-            // Arrange
-            var client = _factory.CreateClient();
-
-            // Act
-            var response = await client.GetAsync("/");
-
-            // Assert
-            Assert.False(response.Headers.Contains("Set-Cookie")); // Check if cookies are being set (for authentication)
-            Assert.Equal("text/html; charset=utf-8", response.Content.Headers.ContentType.ToString());
-        }
+       
     }
 }

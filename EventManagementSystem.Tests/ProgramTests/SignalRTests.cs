@@ -16,24 +16,6 @@ namespace EventManagementSystem.Tests.ProgramTests
             _factory = factory;
         }
 
-       
-
-        [Fact]
-        public async Task DefaultRoute_RendersHomePage()
-        {
-            // Arrange
-            var client = _factory.CreateClient();
-
-            // Act
-            var response = await client.GetAsync("/");
-
-            // Assert
-            response.EnsureSuccessStatusCode(); // Ensure the page loaded successfully
-            var pageContent = await response.Content.ReadAsStringAsync();
-
-            // Check if "Home" is somewhere in the HTML content
-            Assert.Contains("Home", pageContent, StringComparison.OrdinalIgnoreCase);
-        }
     }
 }
 

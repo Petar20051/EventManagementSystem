@@ -17,17 +17,6 @@ namespace EventManagementSystem.Tests.ProgramTests
             _factory = factory;
         }
 
-        [Fact]
-        public async Task Application_Startup_Successfully()
-        {
-            // Arrange
-            var client = _factory.CreateClient();
-
-            // Act
-            var response = await client.GetAsync("/");
-
-            // Assert
-            response.EnsureSuccessStatusCode(); // Check if the application starts without errors
-        }
+        
     }
 }

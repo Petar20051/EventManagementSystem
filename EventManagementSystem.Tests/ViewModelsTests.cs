@@ -43,8 +43,73 @@ namespace EventManagementSystem.Tests
             // Assert
             Assert.Equal(value, result);
         }
+        [Fact]
+        public void PaymentDetailsViewModel_CanBeInitialized()
+        {
+            // Arrange & Act
+            var viewModel = new PaymentDetailsViewModel
+            {
+                PaymentId = 1,
+                Amount = 100.50m,
+                PaymentDate = new DateTime(2024, 12, 5),
+                PaymentMethod = "Credit Card",
+                Status = "Completed"
+            };
 
-      
+            // Assert
+            Assert.Equal(1, viewModel.PaymentId);
+            Assert.Equal(100.50m, viewModel.Amount);
+            Assert.Equal(new DateTime(2024, 12, 5), viewModel.PaymentDate);
+            Assert.Equal("Credit Card", viewModel.PaymentMethod);
+            Assert.Equal("Completed", viewModel.Status);
+        }
+
+        [Fact]
+        public void PaymentDetailsViewModel_DefaultValuesAreUnset()
+        {
+            // Arrange & Act
+            var viewModel = new PaymentDetailsViewModel();
+
+            // Assert
+            Assert.Equal(0, viewModel.PaymentId);
+            Assert.Equal(0m, viewModel.Amount);
+            Assert.Equal(default(DateTime), viewModel.PaymentDate);
+            Assert.Null(viewModel.PaymentMethod);
+            Assert.Null(viewModel.Status);
+        }
+
+        [Theory]
+        [InlineData(1, 250.75, "2024-12-01", "PayPal", "Pending")]
+        [InlineData(2, 500.00, "2024-11-30", "Credit Card", "Completed")]
+        public void PaymentDetailsViewModel_SetProperties_CorrectValuesAreSet(
+            int paymentId,
+            decimal amount,
+            string paymentDate,
+            string paymentMethod,
+            string status)
+        {
+            // Arrange
+            var date = DateTime.Parse(paymentDate);
+
+            // Act
+            var viewModel = new PaymentDetailsViewModel
+            {
+                PaymentId = paymentId,
+                Amount = amount,
+                PaymentDate = date,
+                PaymentMethod = paymentMethod,
+                Status = status
+            };
+
+            // Assert
+            Assert.Equal(paymentId, viewModel.PaymentId);
+            Assert.Equal(amount, viewModel.Amount);
+            Assert.Equal(date, viewModel.PaymentDate);
+            Assert.Equal(paymentMethod, viewModel.PaymentMethod);
+            Assert.Equal(status, viewModel.Status);
+        }
+
+
 
         [Theory]
         [InlineData("EventFeedbackViewModel", "EventId", 123)]

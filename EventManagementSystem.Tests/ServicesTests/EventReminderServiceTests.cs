@@ -15,55 +15,118 @@ namespace EventManagementSystem.Tests.ServicesTests
 {
     public class EventReminderServiceTests
     {
-        private readonly Mock<INotificationService> _notificationServiceMock;
-        private readonly Mock<IServiceProvider> _serviceProviderMock;
-        private readonly Mock<IServiceScopeFactory> _serviceScopeFactoryMock;
-        private readonly Mock<IServiceScope> _serviceScopeMock;
-        private readonly EventDbContext _dbContext;
-        private readonly EventReminderService _eventReminderService;
+        private readonly DbContextOptions<EventDbContext> _options;
+        private readonly Mock<INotificationService> _mockNotificationService;
 
         public EventReminderServiceTests()
         {
-            // In-Memory Database setup
-            var options = new DbContextOptionsBuilder<EventDbContext>()
-                .UseInMemoryDatabase(databaseName: "EventDb")
+            // Configure in-memory database for testing
+            _options = new DbContextOptionsBuilder<EventDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
-            _dbContext = new EventDbContext(options);
-
-            // Mock Notification Service
-            _notificationServiceMock = new Mock<INotificationService>();
-
-            // Mock IServiceScopeFactory and IServiceScope
-            _serviceScopeFactoryMock = new Mock<IServiceScopeFactory>();
-            _serviceScopeMock = new Mock<IServiceScope>();
-
-            // Mock IServiceProvider to return the EventDbContext and other services
-            _serviceProviderMock = new Mock<IServiceProvider>();
-
-            _serviceScopeFactoryMock
-                .Setup(f => f.CreateScope())
-                .Returns(_serviceScopeMock.Object);
-
-            _serviceScopeMock
-                .Setup(s => s.ServiceProvider)
-                .Returns(_serviceProviderMock.Object);
-
-            _serviceProviderMock
-                .Setup(sp => sp.GetService(typeof(EventDbContext)))
-                .Returns(_dbContext);
-
-            // Initialize the EventReminderService
-            _eventReminderService = new EventReminderService(_notificationServiceMock.Object, _serviceProviderMock.Object);
+            _mockNotificationService = new Mock<INotificationService>();
         }
 
-        // Cleanup the in-memory database before each test
-        public void ClearDatabase()
+        private async Task SeedDataAsync(EventDbContext dbContext)
         {
-            _dbContext.Database.EnsureDeleted();
-            _dbContext.Database.EnsureCreated();
+            dbContext.Users.AddRange(
+                new ApplicationUser { Id = "user1", UserName = "OrganizerUser" },
+                new ApplicationUser { Id = "user2", UserName = "AttendeeUser" }
+            );
+
+            dbContext.Events.AddRange(
+                new Event
+                {
+                    Id = 1,
+                    Name = "Upcoming Event",
+                    Date = DateTime.UtcNow.Date.AddDays(1),
+                    Description = "Test event happening tomorrow.",
+                    OrganizerId = "user1" // Required property
+                },
+                new Event
+                {
+                    Id = 2,
+                    Name = "Past Event",
+                    Date = DateTime.UtcNow.Date.AddDays(-1),
+                    Description = "Test event that already occurred.",
+                    OrganizerId = "user1" // Required property
+                }
+            );
+
+            dbContext.Reservations.Add(new Reservation
+            {
+                Id = 1,
+                EventId = 1,
+                UserId = "user2"
+            });
+
+            await dbContext.SaveChangesAsync();
         }
 
-        
+
+        private EventReminderService CreateService(IServiceProvider serviceProvider)
+        {
+            return new EventReminderService(_mockNotificationService.Object, serviceProvider);
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_SendsReminderNotificationsForUpcomingEvents()
+        {
+            // Arrange
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton(new EventDbContext(_options))
+                .BuildServiceProvider();
+
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<EventDbContext>();
+                await SeedDataAsync(dbContext);
+            }
+
+            var service = CreateService(serviceProvider);
+
+            // Act
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(2)); // Short execution for testing
+
+            await service.StartAsync(cancellationTokenSource.Token);
+
+            // Assert
+            _mockNotificationService.Verify(
+                n => n.NotifyEventReminderAsync("user2", "Upcoming Event", It.IsAny<DateTime>()),
+                Times.Once);
+
+            _mockNotificationService.VerifyNoOtherCalls();
+        }
+
+
+        [Fact]
+        public async Task ExecuteAsync_DoesNotSendRemindersForPastEvents()
+        {
+            // Arrange
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton(new EventDbContext(_options))
+                .BuildServiceProvider();
+
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<EventDbContext>();
+                await SeedDataAsync(dbContext);
+            }
+
+            var service = CreateService(serviceProvider);
+
+            // Act
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(2)); // Short execution for testing
+
+            await service.StartAsync(cancellationTokenSource.Token);
+
+            // Assert
+            _mockNotificationService.Verify(
+                n => n.NotifyEventReminderAsync("user1", "Past Event", It.IsAny<DateTime>()),
+                Times.Never);
+        }
     }
 }

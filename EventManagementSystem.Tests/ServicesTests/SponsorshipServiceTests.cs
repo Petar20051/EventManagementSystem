@@ -14,55 +14,102 @@ namespace EventManagementSystem.Tests.ServicesTests
 {
     public class SponsorshipServiceTests
     {
+        private readonly Mock<IPaymentService> _mockPaymentService;
         private readonly Mock<IStripePaymentService> _mockStripePaymentService;
-        private readonly Mock<UserManager<ApplicationUser>> _mockUserManager;
         private readonly SponsorshipService _sponsorshipService;
 
         public SponsorshipServiceTests()
         {
+            _mockPaymentService = new Mock<IPaymentService>();
             _mockStripePaymentService = new Mock<IStripePaymentService>();
-            _mockUserManager = new Mock<UserManager<ApplicationUser>>(
+
+            _sponsorshipService = new SponsorshipService(_mockPaymentService.Object, _mockStripePaymentService.Object);
+        }
+
+        [Fact]
+        public async Task ProcessSponsorshipAsync_SuccessfullyProcessesPayment()
+        {
+            // Arrange
+            var user = new ApplicationUser { Id = "user1", SponsoredAmount = 0 };
+            var amount = 50m;
+            var selectedCardId = "card1";
+
+            _mockStripePaymentService.Setup(s => s.ProcessPaymentAsync(amount, selectedCardId, user.Id))
+                .ReturnsAsync("succeeded");
+
+            // Act
+            await _sponsorshipService.ProcessSponsorshipAsync(user, amount, selectedCardId);
+
+            // Assert
+            Assert.Equal(50m, user.SponsoredAmount);
+            _mockStripePaymentService.Verify(s => s.ProcessPaymentAsync(amount, selectedCardId, user.Id), Times.Once);
+        }
+
+        [Fact]
+        public async Task ProcessSponsorshipAsync_ThrowsExceptionOnPaymentFailure()
+        {
+            // Arrange
+            var user = new ApplicationUser { Id = "user1", SponsoredAmount = 0 };
+            var amount = 50m;
+            var selectedCardId = "card1";
+
+            _mockStripePaymentService.Setup(s => s.ProcessPaymentAsync(amount, selectedCardId, user.Id))
+                .ReturnsAsync("failed");
+
+            // Act & Assert
+            await Assert.ThrowsAsync<Exception>(() => _sponsorshipService.ProcessSponsorshipAsync(user, amount, selectedCardId));
+        }
+
+        [Fact]
+        public async Task UpdateSponsorshipTierAsync_UpdatesUserTier()
+        {
+            // Arrange
+            var user = new ApplicationUser { Id = "user1", SponsoredAmount = 100, SponsorshipTier = SponsorshipTier.Silver };
+
+            var mockUserManager = new Mock<UserManager<ApplicationUser>>(
                 Mock.Of<IUserStore<ApplicationUser>>(),
                 null, null, null, null, null, null, null, null);
 
-            _sponsorshipService = new SponsorshipService(null, _mockStripePaymentService.Object);
+            mockUserManager.Setup(um => um.UpdateAsync(user)).ReturnsAsync(IdentityResult.Success);
+
+            // Act
+            await _sponsorshipService.UpdateSponsorshipTierAsync(user, mockUserManager.Object);
+
+            // Assert
+            Assert.Equal(SponsorshipTier.Gold, user.SponsorshipTier);
+            mockUserManager.Verify(um => um.UpdateAsync(user), Times.Once);
         }
 
-        // Test: Payment process succeeds, and the sponsored amount is updated
         [Fact]
-        public async Task ProcessSponsorshipAsync_ShouldUpdateSponsoredAmount_WhenPaymentSucceeds()
+        public async Task UpdateSponsorshipTierAsync_DoesNotUpdateIfTierIsSame()
         {
-            var user = new ApplicationUser { Id = "test-user-id", SponsoredAmount = 0m };
-            var amount = 50m;
-            var selectedCardId = "card_12345";
+            // Arrange
+            var user = new ApplicationUser { Id = "user1", SponsoredAmount = 50, SponsorshipTier = SponsorshipTier.Silver };
 
-            // Simulate a successful payment
-            _mockStripePaymentService.Setup(s => s.ProcessPaymentAsync(amount, selectedCardId, user.Id))
-                                      .ReturnsAsync("succeeded");
+            var mockUserManager = new Mock<UserManager<ApplicationUser>>(
+                Mock.Of<IUserStore<ApplicationUser>>(),
+                null, null, null, null, null, null, null, null);
 
-            await _sponsorshipService.ProcessSponsorshipAsync(user, amount, selectedCardId);
+            // Act
+            await _sponsorshipService.UpdateSponsorshipTierAsync(user, mockUserManager.Object);
 
-            Assert.Equal(amount, user.SponsoredAmount); // Amount should be updated
+            // Assert
+            Assert.Equal(SponsorshipTier.Silver, user.SponsorshipTier);
+            mockUserManager.Verify(um => um.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Never);
         }
 
-        // Test: Payment fails and throws an exception
-        [Fact]
-        public async Task ProcessSponsorshipAsync_ShouldThrowException_WhenPaymentFails()
+        [Theory]
+        [InlineData(0, SponsorshipTier.None)]
+        [InlineData(1, SponsorshipTier.Bronze)]
+        [InlineData(20, SponsorshipTier.Silver)]
+        [InlineData(100, SponsorshipTier.Gold)]
+        public void DetermineSponsorshipTier_ReturnsCorrectTier(decimal sponsoredAmount, SponsorshipTier expectedTier)
         {
-            var user = new ApplicationUser { Id = "test-user-id", SponsoredAmount = 0m };
-            var amount = 50m;
-            var selectedCardId = "card_12345";
+            // Act
+            var result = _sponsorshipService.DetermineSponsorshipTier(sponsoredAmount);
 
-            _mockStripePaymentService.Setup(s => s.ProcessPaymentAsync(amount, selectedCardId, user.Id))
-                                      .ReturnsAsync("failed");
-
-            var exception = await Assert.ThrowsAsync<Exception>(() =>
-                _sponsorshipService.ProcessSponsorshipAsync(user, amount, selectedCardId));
-
-            Assert.Equal("Payment failed. Please try again.", exception.Message);
+            // Assert
+            Assert.Equal(expectedTier, result);
         }
-
-        // Test: Unexpected payment status should throw an exception
-        
     }
 }

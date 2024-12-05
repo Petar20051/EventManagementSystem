@@ -12,85 +12,248 @@ namespace EventManagementSystem.Tests.ServicesTests
 {
     public class ReservationServiceTests
     {
-        private readonly EventDbContext _context;
-        private readonly ReservationService _reservationService;
+        private readonly DbContextOptions<EventDbContext> _options;
 
         public ReservationServiceTests()
         {
-            var options = new DbContextOptionsBuilder<EventDbContext>()
+            _options = new DbContextOptionsBuilder<EventDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
-
-            _context = new EventDbContext(options);
-            _reservationService = new ReservationService(_context);
         }
 
-        
-        [Fact]
-        public async Task CreateReservationAsync_ShouldThrowException_WhenEventNotFound()
+        private ReservationService CreateService(EventDbContext dbContext)
         {
-            // Arrange
-            var reservation = new Reservation { Id = 1, EventId = 999, UserId = "user1" };
-
-            // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _reservationService.CreateReservationAsync(reservation));
+            return new ReservationService(dbContext);
         }
 
-        
-
-        [Fact]
-        public async Task GetReservationByIdAsync_ShouldReturnNull_WhenNotFound()
+        private async Task SeedDataAsync(EventDbContext dbContext)
         {
-            // Act
-            var result = await _reservationService.GetReservationByIdAsync(999);
+            // Add users
+            var users = new List<ApplicationUser>
+    {
+        new ApplicationUser { Id = "user1", UserName = "Test User" },
+        new ApplicationUser { Id = "user2", UserName = "Another User" }
+    };
+            dbContext.Users.AddRange(users);
 
-            // Assert
-            Assert.Null(result);
+            // Add venues
+            dbContext.Venues.AddRange(
+                new Venue { Id = 1, Name = "Main Hall", Address = "123 Main St", Capacity = 100 },
+                new Venue { Id = 2, Name = "Conference Room", Address = "456 Side Ave", Capacity = 50 }
+            );
+
+            // Add events
+            dbContext.Events.AddRange(
+                new Event
+                {
+                    Id = 1,
+                    Name = "Upcoming Event",
+                    Date = DateTime.UtcNow.AddDays(5),
+                    VenueId = 1,
+                    TicketPrice = 50,
+                    Description = "Event description",
+                    OrganizerId = "user1" // Set required property
+                },
+                new Event
+                {
+                    Id = 2,
+                    Name = "Past Event",
+                    Date = DateTime.UtcNow.AddDays(-5),
+                    VenueId = 2,
+                    TicketPrice = 100,
+                    Description = "Event description",
+                    OrganizerId = "user1" // Set required property
+                }
+            );
+
+            // Add reservations
+            dbContext.Reservations.Add(new Reservation
+            {
+                Id = 1,
+                EventId = 1,
+                UserId = "user1",
+                AttendeesCount = 2,
+                IsPaid = true,
+                PaymentDate = DateTime.UtcNow.AddDays(-1),
+                TotalAmount = 100
+            });
+
+            await dbContext.SaveChangesAsync();
         }
 
-       
 
         [Fact]
-        public async Task UpdateReservationAsync_ShouldUpdateReservation_WhenValid()
+        public async Task CreateReservationAsync_AddsReservationSuccessfully()
         {
-            // Arrange
-            var reservation = new Reservation { Id = 1, EventId = 1, UserId = "user1", IsPaid = false };
-            _context.Reservations.Add(reservation);
-            await _context.SaveChangesAsync();
+            using var dbContext = new EventDbContext(_options);
+            await SeedDataAsync(dbContext);
+            var service = CreateService(dbContext);
 
-            var updatedReservation = new Reservation { Id = 1, IsPaid = true, PaymentDate = DateTime.Now };
+            var newReservation = new Reservation
+            {
+                EventId = 1,
+                UserId = "user2",
+                AttendeesCount = 3
+            };
 
-            // Act
-            var result = await _reservationService.UpdateReservationAsync(updatedReservation);
+            var reservation = await service.CreateReservationAsync(newReservation);
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(result.IsPaid);
-            Assert.NotNull(result.PaymentDate);
+            Assert.NotNull(reservation);
+            Assert.Equal(150, reservation.TotalAmount); // 50 per ticket x 3 attendees
+            Assert.Equal(97, dbContext.Venues.First(v => v.Id == 1).Capacity); // 100 - 3
         }
 
         [Fact]
-        public async Task UpdateReservationAsync_ShouldThrowException_WhenReservationNotFound()
+        public async Task CreateReservationAsync_ThrowsIfEventNotFound()
         {
-            // Arrange
-            var updatedReservation = new Reservation { Id = 999, IsPaid = true };
+            using var dbContext = new EventDbContext(_options);
+            var service = CreateService(dbContext);
 
-            // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => _reservationService.UpdateReservationAsync(updatedReservation));
+            var newReservation = new Reservation
+            {
+                EventId = 99, // Non-existent event
+                UserId = "user2",
+                AttendeesCount = 3
+            };
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => service.CreateReservationAsync(newReservation));
         }
 
-       
+        [Fact]
+        public async Task CreateReservationAsync_ThrowsIfVenueCapacityExceeded()
+        {
+            using var dbContext = new EventDbContext(_options);
+            await SeedDataAsync(dbContext);
+            var service = CreateService(dbContext);
+
+            var newReservation = new Reservation
+            {
+                EventId = 1,
+                UserId = "user2",
+                AttendeesCount = 200 // Exceeds venue capacity
+            };
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => service.CreateReservationAsync(newReservation));
+        }
 
         [Fact]
-        public async Task DeleteReservationAsync_ShouldReturnFalse_WhenReservationNotFound()
+        public async Task CreateReservationAsync_ThrowsIfReservationAlreadyExists()
         {
-            // Act
-            var result = await _reservationService.DeleteReservationAsync(999);
+            using var dbContext = new EventDbContext(_options);
+            await SeedDataAsync(dbContext);
+            var service = CreateService(dbContext);
 
-            // Assert
+            var newReservation = new Reservation
+            {
+                EventId = 1,
+                UserId = "user1", // Existing user
+                AttendeesCount = 1
+            };
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => service.CreateReservationAsync(newReservation));
+        }
+
+        [Fact]
+        public async Task GetReservationByIdAsync_ReturnsReservation()
+        {
+            using var dbContext = new EventDbContext(_options);
+            await SeedDataAsync(dbContext);
+            var service = CreateService(dbContext);
+
+            var reservation = await service.GetReservationByIdAsync(1);
+
+            Assert.NotNull(reservation);
+            Assert.Equal(1, reservation.Id);
+            Assert.NotNull(reservation.Event);
+            Assert.NotNull(reservation.Event.Venue);
+        }
+
+        [Fact]
+        public async Task GetAllReservationsAsync_ReturnsAllReservations()
+        {
+            using var dbContext = new EventDbContext(_options);
+            await SeedDataAsync(dbContext);
+            var service = CreateService(dbContext);
+
+            var reservations = await service.GetAllReservationsAsync();
+
+            Assert.Single(reservations);
+        }
+
+        [Fact]
+        public async Task UpdateReservationAsync_UpdatesReservationSuccessfully()
+        {
+            using var dbContext = new EventDbContext(_options);
+            await SeedDataAsync(dbContext);
+            var service = CreateService(dbContext);
+
+            var updatedReservation = new Reservation
+            {
+                Id = 1,
+                IsPaid = false,
+                PaymentDate = DateTime.UtcNow.AddDays(2)
+            };
+
+            var reservation = await service.UpdateReservationAsync(updatedReservation);
+
+            Assert.NotNull(reservation);
+            Assert.False(reservation.IsPaid);
+            Assert.Equal(DateTime.UtcNow.AddDays(2).Date, reservation.PaymentDate?.Date);
+        }
+
+        [Fact]
+        public async Task UpdateReservationAsync_ThrowsIfReservationNotFound()
+        {
+            using var dbContext = new EventDbContext(_options);
+            await SeedDataAsync(dbContext);
+            var service = CreateService(dbContext);
+
+            var updatedReservation = new Reservation
+            {
+                Id = 99, // Non-existent reservation
+                IsPaid = true
+            };
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => service.UpdateReservationAsync(updatedReservation));
+        }
+
+        [Fact]
+        public async Task DeleteReservationAsync_RemovesReservationSuccessfully()
+        {
+            using var dbContext = new EventDbContext(_options);
+            await SeedDataAsync(dbContext);
+            var service = CreateService(dbContext);
+
+            var result = await service.DeleteReservationAsync(1);
+
+            Assert.True(result);
+            Assert.Null(await dbContext.Reservations.FindAsync(1));
+            Assert.Equal(102, dbContext.Venues.First(v => v.Id == 1).Capacity); // 100 + 2 attendees
+        }
+
+        [Fact]
+        public async Task DeleteReservationAsync_ReturnsFalseIfNotFound()
+        {
+            using var dbContext = new EventDbContext(_options);
+            await SeedDataAsync(dbContext);
+            var service = CreateService(dbContext);
+
+            var result = await service.DeleteReservationAsync(99); // Non-existent reservation
+
             Assert.False(result);
         }
 
-        
+        [Fact]
+        public async Task GetReservationsByEventIdAsync_ReturnsReservations()
+        {
+            using var dbContext = new EventDbContext(_options);
+            await SeedDataAsync(dbContext);
+            var service = CreateService(dbContext);
+
+            var reservations = await service.GetReservationsByEventIdAsync(1);
+
+            Assert.Single(reservations);
+            Assert.Equal(1, reservations.First().EventId);
+        }
     }
 }
