@@ -9,10 +9,11 @@ using EventMaganementSystem;
 using EventManagementSystem;
 using Microsoft.AspNetCore.SignalR;
 using EventManagementSystem.Core.Extensions;
+using Stripe;
 
 public partial class Program
 {
-    private static async Task Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -72,10 +73,10 @@ public partial class Program
         app.Run();
     }
 
-    private static void RegisterCustomServices(IServiceCollection services)
+    public static void RegisterCustomServices(IServiceCollection services)
     {
         services.AddTransient<IProfileService, ProfileService>();
-        services.AddTransient<IEventService, EventService>();
+        services.AddTransient<IEventService, EventManagementSystem.Core.Services.EventService>();
         services.AddScoped<IVenueService, VenueService>();
         services.AddScoped<IUserEventService, UserEventService>();
         services.AddScoped<IEventInvitationService, EventInvitationService>();
@@ -90,11 +91,13 @@ public partial class Program
         services.AddScoped<INotificationHub, NotificationHubService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddSignalR();
-        services.AddScoped<IDiscountService, DiscountService>();
+        services.AddScoped<IDiscountService, EventManagementSystem.Core.Services.DiscountService>();
         services.AddScoped<IPaymentMethodServiceWrapper, PaymentMethodServiceWrapper>();
+        services.AddScoped<IPaymentMethodService, StripePaymentMethodService>();
+
     }
 
-    private static void ConfigureMiddleware(WebApplication app)
+    public static void ConfigureMiddleware(WebApplication app)
     {
         if (app.Environment.IsDevelopment())
         {
@@ -123,7 +126,7 @@ public partial class Program
         app.MapRazorPages();
     }
 
-    private static async Task EnsureRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+    public static async Task EnsureRolesAndAdminUser(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
     {
         const string adminRole = "Admin";
         const string adminEmail = "admin@example.com";
