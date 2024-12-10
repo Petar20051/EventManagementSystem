@@ -7,15 +7,18 @@ using Microsoft.Extensions.Options;
 using EventManagementSystem.Core;
 using EventManagementSystem.Core.Services;
 using Microsoft.Extensions.Logging;
+using EventManagementSystem.Core.Extensions;
 
 public class StripePaymentService : IStripePaymentService
 {
     private readonly IUserService _userService;
     private readonly StripeSettings _stripeOptions;
     private readonly IDiscountService _discountService;
-   
-   
-   
+    private readonly PaymentMethodService _paymentMethodService;
+
+
+
+
 
     public StripePaymentService(
         IUserService userService,
@@ -26,20 +29,10 @@ public class StripePaymentService : IStripePaymentService
         _stripeOptions = stripeOptions.Value;
         _discountService = discountService;
         StripeConfiguration.ApiKey = _stripeOptions.SecretKey;
+        _paymentMethodService = new PaymentMethodService();
     }
 
-    public async Task AddPaymentMethodAsync(string stripeCustomerId, string stripeToken)
-    {
-        var paymentMethodService = new PaymentMethodService();
-
-        // Attach the payment method to the customer using the token
-        var attachOptions = new PaymentMethodAttachOptions
-        {
-            Customer = stripeCustomerId
-        };
-
-        await paymentMethodService.AttachAsync(stripeToken, attachOptions);
-    }
+   
 
 
     public async Task<string> CreateStripeCustomerAsync(string userId ,string email, string userName)
@@ -155,6 +148,22 @@ public class StripePaymentService : IStripePaymentService
 
         try
         {
+            // Fetch the payment method details
+            var paymentMethod = await paymentMethodService.GetAsync(paymentMethodId);
+
+            // Check if the payment method is already attached
+            if (paymentMethod.Customer?.Id == customerId)
+            {
+                Console.WriteLine($"Payment method {paymentMethodId} is already attached to customer {customerId}.");
+                return; // Exit early if the card is already attached
+            }
+
+            if (!string.IsNullOrEmpty(paymentMethod.Customer?.Id))
+            {
+                throw new InvalidOperationException($"Payment method {paymentMethodId} is already attached to another customer.");
+            }
+
+            // Attach the payment method
             await paymentMethodService.AttachAsync(paymentMethodId, new PaymentMethodAttachOptions
             {
                 Customer = customerId
@@ -165,9 +174,16 @@ public class StripePaymentService : IStripePaymentService
         catch (StripeException ex)
         {
             Console.WriteLine($"Stripe Error: {ex.StripeError?.Message}");
-            throw; // Re-throw the exception for handling at a higher level
+            throw new InvalidOperationException($"Stripe error: {ex.StripeError?.Message}", ex);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+            throw new InvalidOperationException("An error occurred while attaching the payment method.", ex);
         }
     }
+
+
 
     public async Task<PaymentMethod> GetPaymentMethodAsync(string paymentMethodId)
     {
@@ -186,4 +202,6 @@ public class StripePaymentService : IStripePaymentService
             }
         });
     }
+
+   
 }

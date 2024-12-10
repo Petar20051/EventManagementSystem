@@ -37,7 +37,6 @@ namespace EventMaganementSystem.Controllers
             return View();
         }
 
-        // POST: Handle the submission of a new payment method
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddPaymentMethod([FromBody] PaymentMethodInputModel inputModel)
@@ -55,33 +54,26 @@ namespace EventMaganementSystem.Controllers
                     return Unauthorized(new { error = "User not found." });
                 }
 
-                var customerId = await _userService.GetStripeCustomerIdAsync(userId);
-                if (string.IsNullOrEmpty(customerId))
-                {
-                    var user = await _userService.GetUserByIdAsync(userId);
-                    if (user == null)
-                    {
-                        return BadRequest(new { error = "User not found in the system." });
-                    }
+                // Fetch stored cards for the user
+                var storedCards = await _stripePaymentService.GetStoredCardsAsync(userId);
 
-                    customerId = await _stripePaymentService.CreateStripeCustomerAsync(userId, user.Email, user.UserName);
-                    await _userService.SaveStripeCustomerIdAsync(userId, customerId);
-                }
-
+                // Check if the card already exists
                 var paymentMethodService = new PaymentMethodService();
-                var paymentMethod = await paymentMethodService.GetAsync(inputModel.PaymentMethodId);
+                var newPaymentMethod = await paymentMethodService.GetAsync(inputModel.PaymentMethodId);
 
-                if (paymentMethod.Customer?.Id == customerId)
+                bool alreadyExists = storedCards.Any(card =>
+                    card.Last4Digits == newPaymentMethod.Card.Last4 );
+
+                if (alreadyExists)
                 {
-                    return Ok(new { message = "Payment method already added." });
-                }
-                else if (!string.IsNullOrEmpty(paymentMethod.Customer?.Id))
-                {
-                    return BadRequest(new { error = "Payment method is already associated with another account." });
+                    return BadRequest(new { error = "This card is already added to your account." });
                 }
 
+                // Attach the payment method to the user
+                var customerId = await _userService.GetStripeCustomerIdAsync(userId);
                 await _stripePaymentService.AttachPaymentMethodAsync(customerId, inputModel.PaymentMethodId);
 
+                // Set the payment method as default
                 var customerService = new CustomerService();
                 await customerService.UpdateAsync(customerId, new CustomerUpdateOptions
                 {
@@ -95,22 +87,14 @@ namespace EventMaganementSystem.Controllers
             }
             catch (StripeException ex)
             {
-                Console.WriteLine($"Stripe Error Code: {ex.StripeError?.Code}");
-                Console.WriteLine($"Stripe Error Message: {ex.StripeError?.Message}");
                 return BadRequest(new { error = ex.StripeError?.Message ?? "Stripe error occurred." });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unhandled Exception: {ex.Message}");
                 return StatusCode(500, new { error = "An unexpected error occurred." });
             }
         }
 
-
-
-
-
-        // GET: Manage saved payment methods
         public async Task<IActionResult> ManagePaymentMethods()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the logged-in user ID
@@ -123,14 +107,42 @@ namespace EventMaganementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> DeletePaymentMethod(string cardId)
         {
+            // Get the current user's ID
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
                 return Unauthorized();
             }
 
-            await _paymentService.DeleteCreditCardAsync(cardId, userId);
+            try
+            {
+                // Call the service to detach the payment method
+                await _paymentService.DeleteCreditCardAsync(cardId, userId);
+
+                // Add a success message to TempData
+                TempData["Message"] = "Payment method deleted successfully.";
+            }
+            catch (StripeException ex)
+            {
+                // Handle Stripe-specific exceptions
+                TempData["Error"] = $"Stripe error: {ex.Message}";
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Handle custom service-layer errors
+                TempData["Error"] = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                // Handle unexpected errors
+                TempData["Error"] = "An unexpected error occurred while deleting the payment method. Please try again.";
+                // Optionally log the error for debugging
+                // _logger.LogError(ex, "Error deleting payment method for user {UserId}", userId);
+            }
+
+            // Redirect back to the Manage Payment Methods page
             return RedirectToAction("ManagePaymentMethods");
         }
+
     }
 }

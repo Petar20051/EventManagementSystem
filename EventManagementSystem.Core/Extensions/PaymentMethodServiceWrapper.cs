@@ -18,9 +18,24 @@ namespace EventManagementSystem.Core.Extensions
 
         public async Task<PaymentMethod> DetachAsync(string paymentMethodId, PaymentMethodDetachOptions options = null, RequestOptions requestOptions = null)
         {
-            options ??= new PaymentMethodDetachOptions();
-            requestOptions ??= new RequestOptions();
-            return await _paymentMethodService.DetachAsync(paymentMethodId, options, requestOptions);
+            if (string.IsNullOrEmpty(paymentMethodId))
+                throw new ArgumentNullException(nameof(paymentMethodId), "PaymentMethodId cannot be null or empty.");
+
+            try
+            {
+                // Call Stripe API to detach the payment method
+                return await _paymentMethodService.DetachAsync(paymentMethodId, options, requestOptions);
+            }
+            catch (StripeException ex)
+            {
+                // Handle Stripe-specific exceptions
+                throw new InvalidOperationException($"An error occurred while detaching the payment method: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                // Handle generic exceptions
+                throw new InvalidOperationException("An unexpected error occurred while detaching the payment method.", ex);
+            }
         }
 
         public async Task<IEnumerable<PaymentMethod>> GetPaymentMethodsAsync(string customerId)

@@ -62,15 +62,20 @@
         }
     </div>
 
+    <div class="card shadow-sm p-4 mb-4">
+        <h3 class="card-title" style="color: #004080;">Manage Payment Methods</h3>
+        <button type="button" class="btn btn-primary" onclick="window.location.href='@Url.Action("ManagePaymentMethods", "PaymentMethods")'">Payment Methods</button>
+    </div>
+
     <!-- TempData Messages -->
-    @if (TempData["Message"] != null)
+    @* @if (TempData["Message"] != null)
     {
         <div class="alert alert-success mt-3">@TempData["Message"]</div>
     }
     @if (TempData["Error"] != null)
     {
         <div class="alert alert-danger mt-3">@TempData["Error"]</div>
-    }
+    } *@
 </div>
 
 <style>

@@ -17,7 +17,7 @@ namespace EventManagementSystem.Core.Contracts
         Task<List<CardViewModel>> GetStoredCardsAsync(string userId);
         
         Task<string> CreateStripeCustomerAsync(string userId,string email, string userName);
-        Task AddPaymentMethodAsync(string stripeCustomerId, string stripeToken);
+        //Task AddPaymentMethodAsync(string stripeCustomerId, string stripeToken);
         Task AttachPaymentMethodAsync(string customerId, string paymentMethodId);
 
         Task<PaymentMethod> GetPaymentMethodAsync(string paymentMethodId);

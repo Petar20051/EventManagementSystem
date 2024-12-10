@@ -55,6 +55,19 @@
     // Mount the card element
     card.mount('#card-element');
 
+    // Fetch existing payment methods
+    let existingPaymentMethods = [];
+    fetch('/PaymentMethods/GetPaymentMethods')
+        .then(response => response.json())
+        .then(data => {
+            if (data && Array.isArray(data)) {
+                existingPaymentMethods = data;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching payment methods:', error);
+        });
+
     // Handle form submission
     var form = document.getElementById('payment-form');
     form.addEventListener('submit', function (event) {
@@ -69,6 +82,18 @@
                 // Display error message in #card-errors
                 document.getElementById('card-errors').textContent = result.error.message;
             } else {
+                // Check if the card is already added
+                const cardLast4 = result.paymentMethod.card.last4;
+                const cardBrand = result.paymentMethod.card.brand;
+                const alreadyExists = existingPaymentMethods.some(method =>
+                    method.last4 === cardLast4 && method.brand.toLowerCase() === cardBrand.toLowerCase()
+                );
+
+                if (alreadyExists) {
+                    document.getElementById('card-errors').textContent = "This card is already added.";
+                    return;
+                }
+
                 // Send PaymentMethodId to the server
                 var csrfToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
 

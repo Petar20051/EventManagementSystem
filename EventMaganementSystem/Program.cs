@@ -93,7 +93,8 @@ public partial class Program
         services.AddSignalR();
         services.AddScoped<IDiscountService, EventManagementSystem.Core.Services.DiscountService>();
         services.AddScoped<IPaymentMethodServiceWrapper, PaymentMethodServiceWrapper>();
-        services.AddScoped<IPaymentMethodService, StripePaymentMethodService>();
+        services.AddScoped<IPaymentMethodService, EventManagementSystem.Core.Extensions.StripePaymentMethodService>();
+
 
     }
 

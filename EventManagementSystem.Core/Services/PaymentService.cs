@@ -47,16 +47,24 @@ namespace EventManagementSystem.Core.Services
             return creditCards;
         }
 
-        // Implementing DeleteCreditCardAsync
         public async Task DeleteCreditCardAsync(string cardId, string userId)
         {
-            var customerId = await _userService.GetStripeCustomerIdAsync(userId);
-            if (string.IsNullOrEmpty(customerId))
-            {
-                throw new InvalidOperationException("Customer ID not found.");
-            }
+            if (string.IsNullOrEmpty(cardId))
+                throw new ArgumentNullException(nameof(cardId), "Card ID cannot be null or empty.");
 
-            await _paymentMethodServiceWrapper.DetachAsync(cardId);
+            try
+            {
+                // Call the StripePaymentMethodService to detach the payment method
+                await _paymentMethodServiceWrapper.DetachAsync(cardId);
+            }
+            catch (StripeException ex)
+            {
+                throw new InvalidOperationException($"An error occurred while detaching the payment method: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("An unexpected error occurred while deleting the payment method.", ex);
+            }
         }
 
         public async Task<PaymentDetailsViewModel> GetPaymentByIdAsync(DateTime? paymentDate)
