@@ -1,0 +1,95 @@
+﻿@using EventManagementSystem.Core.Models.Account
+@model IEnumerable<UserViewModel>
+
+@{
+    ViewData["Title"] = "View All Users";
+}
+
+<style>
+    .user-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 1em;
+        text-align: left;
+    }
+
+    .user-table th, .user-table td {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+    }
+
+    .user-table th {
+        background-color: #f4f4f4;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .user-table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.9em;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-danger:hover {
+        background-color: #b52b3a;
+    }
+</style>
+
+<h1 class="text-center">All Users</h1>
+
+<table class="user-table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>@user.PhoneNumber</td>
+                <td>@user.Roles</td>
+                <td>
+                    <div class="action-buttons">
+                        <a asp-action="EditUser" asp-route-id="@user.Id" class="btn btn-primary">Edit</a>
+                        <a asp-action="AssignRole" asp-route-userId="@user.Id" class="btn btn-info">Assign Role</a>
+                        <a asp-action="DeleteUser" asp-route-id="@user.Id" class="btn btn-danger">Delete</a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

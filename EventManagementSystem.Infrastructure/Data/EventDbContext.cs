@@ -104,8 +104,7 @@ namespace EventMaganementSystem.Data
             modelBuilder.Entity<IdentityRole>().HasData(
                 new IdentityRole { Id = "1", Name = "Guest", NormalizedName = "GUEST" },
                 new IdentityRole { Id = "2", Name = "Organizer", NormalizedName = "ORGANIZER" },
-                new IdentityRole { Id = "3", Name = "Sponsor", NormalizedName = "SPONSOR" },
-                new IdentityRole { Id = "4", Name = "Admin", NormalizedName = "ADMIN" }
+                new IdentityRole { Id = "3", Name = "Admin", NormalizedName = "ADMIN" }
             );
 
             // Seed Venues

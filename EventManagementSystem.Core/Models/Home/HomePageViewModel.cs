@@ -11,6 +11,7 @@ namespace EventManagementSystem.Core.Models.Home
     {
 
         public List<Event> UpcomingEvents { get; set; } = new List<Event>();
+        public bool IsAdmin { get; set; }
 
     }
 }
