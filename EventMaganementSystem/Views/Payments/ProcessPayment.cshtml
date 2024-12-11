@@ -41,8 +41,10 @@
                     </div>
                 </div>
             }
+            else{
             <h4 class="mb-3" style="color: #004080;">No Saved Cards Available</h4>
             <p class="text-muted">You don't have any saved payment methods. Please add a new card.</p>
+            }
             <a href="@Url.Action("AddPaymentMethod", "PaymentMethods")" class="btn btn-primary mt-3" style="background-color: #004080;">
                 Add a New Card
             </a>
@@ -124,12 +126,16 @@
     h4 {
         font-weight: bold;
     }
-
+    .mt-3
+    {
+        margin-bottom:10px
+    }
     .btn-primary {
         background-color: #004080;
         border: none;
         color: #ffffff;
         padding: 12px;
+        padding-bottom: 18px;
         font-size: 1rem;
         font-weight: bold;
         border-radius: 5px;

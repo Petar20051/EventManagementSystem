@@ -66,7 +66,7 @@ public class PaymentsController : Controller
             Amount = reservation.TotalAmount,  
             StoredCards = storedCards  
         };
-        await _userEventService.AddUserEventAsync(userId, reservation.EventId);
+       
         
         return View(paymentViewModel);
     }
@@ -97,14 +97,14 @@ public class PaymentsController : Controller
 
         if (paymentStatus == "succeeded")
         {
-            
+           
             var reservation = await _reservationService.GetReservationByIdAsync(model.ReservationId);
             if (reservation == null)
             {
                 return NotFound();
             }
+            await _userEventService.AddUserEventAsync(userId, reservation.EventId);
 
-            
             reservation.IsPaid = true;
             reservation.PaymentDate = DateTime.Now;
             await _reservationService.UpdateReservationAsync(reservation);

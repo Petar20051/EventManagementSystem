@@ -61,7 +61,10 @@
         background-color: #b52b3a;
     }
 </style>
-
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 <h1 class="text-center">All Users</h1>
 
 <table class="user-table">

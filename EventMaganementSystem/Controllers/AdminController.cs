@@ -133,7 +133,7 @@ namespace EventMaganementSystem.Controllers
 
            
             var hasTickets = await _ticketService.GetUserTicketsAsync(id);
-            if (hasTickets!=null)
+            if (hasTickets==null)
             {
                
                 TempData["Error"] = "User cannot be deleted because they have active tickets.";
@@ -152,7 +152,7 @@ namespace EventMaganementSystem.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+       
         public async Task<IActionResult> EditUser(EditUserViewModel model)
         {
             if (!ModelState.IsValid)
