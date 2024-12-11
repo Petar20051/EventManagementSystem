@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 namespace EventMaganementSystem.Controllers
 {
@@ -16,14 +17,16 @@ namespace EventMaganementSystem.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ITicketService _ticketService;
+        private readonly IEventService _eventService;
 
 
-        public AdminController(INotificationService notificationService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,ITicketService ticketService)
+        public AdminController(INotificationService notificationService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,ITicketService ticketService,IEventService eventService)
         {
             _notificationService = notificationService;
             _userManager = userManager;
             _roleManager = roleManager;
             _ticketService = ticketService;
+            _eventService = eventService;
         }
 
        
@@ -124,32 +127,38 @@ namespace EventMaganementSystem.Controllers
 
         public async Task<IActionResult> DeleteUser(string id)
         {
-           
+            
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
-           
+            
             var hasTickets = await _ticketService.GetUserTicketsAsync(id);
-            if (hasTickets==null)
+            if (hasTickets.Count > 0)
             {
-               
                 TempData["Error"] = "User cannot be deleted because they have active tickets.";
                 return RedirectToAction("ViewUsers");
             }
 
-           
+            var events = await _eventService.GetAllEventsAsync();
+            if (events.Any(e => e.OrganizerId == id))
+            {
+                TempData["Error"] = "User cannot be deleted because they are an organizer of events.";
+                return RedirectToAction("ViewUsers");
+            }
+
+          
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
             {
-               
                 TempData["Error"] = "Failed to delete the user.";
             }
 
             return RedirectToAction("ViewUsers");
         }
+
 
         [HttpPost]
        
