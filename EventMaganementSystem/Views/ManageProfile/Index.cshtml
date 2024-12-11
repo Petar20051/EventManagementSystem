@@ -4,10 +4,9 @@
 @inject UserManager<ApplicationUser> UserManager
 @model ManageProfileViewModel
 
-<div class="container mt-5">
+<div class="container mt-5 text-center">
     <h2 class="text-center mb-4" style="color: #004080;">Manage Profile</h2>
 
-    
     <div class="card shadow-sm p-4 mb-4">
         <h3 class="card-title" style="color: #004080;">Profile Information</h3>
         <p><strong>Username:</strong> @Model.UserName.Substring(0, Model.UserName.IndexOf('@'))</p>
@@ -15,8 +14,13 @@
         <p><strong>Sponsored Amount:</strong> @Model?.SponsoredAmount.ToString("C")</p>
         <p><strong>Sponsorship Tier:</strong> @Model?.SponsorshipTier?.ToString()</p>
     </div>
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success mt-3">
+            @TempData["Message"]
+        </div>
+    }
 
-   
     <div class="card shadow-sm p-4 mb-4">
         <h3 class="card-title" style="color: #004080;">Tickets</h3>
         @if (Model?.Tickets != null && Model.Tickets.Any())
@@ -24,7 +28,7 @@
             <ul class="list-unstyled">
                 <li>
                     <form action="@Url.Action("MyTickets", "Ticket")" method="get" style="display:inline;">
-                        <button type="submit" class="btn btn-primary">My Tickets</button>
+                        <button type="submit" class="btn btn-primary custom-button">My Tickets</button>
                     </form>
                 </li>
             </ul>
@@ -35,10 +39,11 @@
         }
     </div>
 
-    
     <div class="card shadow-sm p-4 mb-4">
         <h3 class="card-title" style="color: #004080;">Update Profile Information</h3>
-        <button type="button" class="btn btn-secondary mb-3" onclick="window.location.href='@Url.Action("Index", "ChangePassword")'">Change Password</button>
+        <div class="text-center">
+            <button type="button" class="btn btn-secondary custom-button" onclick="window.location.href='@Url.Action("Index", "ChangePassword")'">Change Password</button>
+        </div>
 
         @if (User.Identity.IsAuthenticated)
         {
@@ -46,9 +51,11 @@
             if (user != null && !await UserManager.IsInRoleAsync(user, "Organizer"))
             {
                 <h3>Become an Organizer</h3>
-                <form asp-action="BecomeOrganizer" method="post">
-                    <button type="submit" class="btn btn-primary">Become Organizer</button>
-                </form>
+                <div class="text-center">
+                    <form asp-action="BecomeOrganizer" method="post">
+                        <button type="submit" class="btn btn-primary custom-button">Become Organizer</button>
+                    </form>
+                </div>
             }
             else
             {
@@ -64,15 +71,16 @@
 
     <div class="card shadow-sm p-4 mb-4">
         <h3 class="card-title" style="color: #004080;">Manage Payment Methods</h3>
-        <button type="button" class="btn btn-primary" onclick="window.location.href='@Url.Action("ManagePaymentMethods", "PaymentMethods")'">Payment Methods</button>
+        <div class="text-center">
+            <button type="button" class="btn btn-primary custom-button" onclick="window.location.href='@Url.Action("ManagePaymentMethods", "PaymentMethods")'">Payment Methods</button>
+        </div>
     </div>
-
-   
 </div>
 
 <style>
     .container {
         max-width: 800px;
+        text-align: center;
     }
 
     .card {
@@ -111,6 +119,12 @@
         .btn-secondary:hover {
             background-color: #5a6268;
         }
+
+    .custom-button {
+        width: auto; 
+        max-width: 200px;
+        padding: 0.5rem 1rem; 
+    }
 
     .alert {
         font-weight: 600;

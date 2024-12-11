@@ -44,21 +44,19 @@ namespace EventMaganementSystem.Controllers
             return View(viewModel);
         }
 
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ReservationViewModel viewModel)
         {
             var reservatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            
             if (!ModelState.IsValid)
             {
                 viewModel.Events = await _eventService.GetAllEventsAsync();
                 return View(viewModel);
             }
 
-            
             if (viewModel.EventId == null || viewModel.EventId <= 0)
             {
                 ModelState.AddModelError("", "Please select a valid event.");
@@ -66,7 +64,6 @@ namespace EventMaganementSystem.Controllers
                 return View(viewModel);
             }
 
-            
             var currentEvent = await _eventService.GetEventByIdAsync(viewModel.EventId.Value);
             if (currentEvent == null)
             {
@@ -75,7 +72,15 @@ namespace EventMaganementSystem.Controllers
                 return View(viewModel);
             }
 
-            
+            var existingReservations = await _reservationService.GetAllReservationsAsync();
+            bool exist = existingReservations.Any(r => r.UserId == reservatorId && r.EventId == viewModel.EventId.Value);
+
+            if (exist)
+            {
+                TempData["ErrorMessage"] = "You already have a reservation for this event.";
+                return RedirectToAction("Index");
+            }
+
             try
             {
                 var reservation = new Reservation
@@ -91,22 +96,18 @@ namespace EventMaganementSystem.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                
-              
-
-                
                 ModelState.AddModelError("", ex.Message);
                 viewModel.Events = await _eventService.GetAllEventsAsync();
                 return RedirectToAction("MainError", "Home", new { message = ex.Message });
             }
 
-            
             return RedirectToAction("Index");
         }
 
 
 
-        
+
+
         public async Task<IActionResult> Index()
         {
             var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -145,22 +146,34 @@ namespace EventMaganementSystem.Controllers
             return View(reservationViewModels);
         }
 
-        
+
         public async Task<IActionResult> Delete(int id)
         {
-            
             var reservation = await _reservationService.GetReservationByIdAsync(id);
-            var @event = await _eventService.GetEventByIdAsync(reservation.EventId);
+
             if (reservation == null)
             {
                 return NotFound();
             }
-            reservation.Event.Name = @event.Name;
+
+            var @event = await _eventService.GetEventByIdAsync(reservation.EventId);
+            if (@event != null)
+            {
+                reservation.Event.Name = @event.Name;
+            }
+
+           
+            if (reservation.IsPaid) 
+            {
+                TempData["ErrorMessage"] = "Cannot delete a reservation that has already been paid.";
+                return RedirectToAction("Index");
+            }
 
             return View(reservation);
         }
 
-        
+
+
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -168,13 +181,21 @@ namespace EventMaganementSystem.Controllers
             return RedirectToAction("Index");
         }
 
-        
+
         public async Task<IActionResult> Edit(int id)
         {
             var reservation = await _reservationService.GetReservationByIdAsync(id);
+
             if (reservation == null)
             {
                 return NotFound();
+            }
+
+            
+            if (reservation.IsPaid) 
+            {
+                TempData["ErrorMessage"] = "Cannot edit a reservation that has already been paid.";
+                return RedirectToAction("Index"); 
             }
 
             var events = await _eventService.GetAllEventsAsync();
@@ -184,13 +205,14 @@ namespace EventMaganementSystem.Controllers
                 EventId = reservation.EventId,
                 AttendeesCount = reservation.AttendeesCount,
                 ReservationDate = reservation.ReservationDate,
-                Events = events 
+                Events = events
             };
 
             return View(viewModel);
         }
 
-        
+
+
         [HttpPost]
         public async Task<IActionResult> Edit(ReservationViewModel viewModel)
         {

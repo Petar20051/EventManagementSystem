@@ -55,7 +55,6 @@ namespace EventMaganementSystem.Controllers
                 return View(invitation);
             }
 
-         
             if (!_context.Events.Any(e => e.Id == invitation.EventId) || !_context.Users.Any(u => u.Id == invitation.ReceiverId))
             {
                 ModelState.AddModelError("", "Invalid event or receiver.");
@@ -65,9 +64,19 @@ namespace EventMaganementSystem.Controllers
             invitation.SenderId = GetUserId(User);
             if (string.IsNullOrEmpty(invitation.SenderId)) return Unauthorized();
 
+            // Check if the sender is the same as the receiver
+            if (invitation.SenderId == invitation.ReceiverId)
+            {
+                TempData["ErrorMessage"]=( "You cannot send an invitation to yourself.");
+                ViewBag.EventList = new SelectList(_context.Events.ToList(), "Id", "Name");
+                ViewBag.UserList = new SelectList(_context.Users.ToList(), "Id", "UserName");
+                return View(invitation);
+            }
+
             await _eventInvitationService.SendInvitationAsync(invitation.SenderId, invitation.ReceiverId, invitation.EventId);
             return RedirectToAction("Index");
         }
+
 
         [HttpGet]
         [Route("Details/{id}")]
@@ -97,7 +106,6 @@ namespace EventMaganementSystem.Controllers
         }
 
         [HttpPost]
-        [Route("Delete/{id}")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try

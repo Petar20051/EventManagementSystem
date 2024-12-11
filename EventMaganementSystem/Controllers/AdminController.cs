@@ -1,5 +1,6 @@
 ﻿using EventManagementSystem.Core.Contracts;
 using EventManagementSystem.Core.Models.Account;
+using EventManagementSystem.Core.Services;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,13 +15,15 @@ namespace EventMaganementSystem.Controllers
         private readonly INotificationService _notificationService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ITicketService _ticketService;
 
 
-        public AdminController(INotificationService notificationService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AdminController(INotificationService notificationService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,ITicketService ticketService)
         {
             _notificationService = notificationService;
             _userManager = userManager;
             _roleManager = roleManager;
+            _ticketService = ticketService;
         }
 
        
@@ -118,16 +121,36 @@ namespace EventMaganementSystem.Controllers
         }
 
 
-        
+
         public async Task<IActionResult> DeleteUser(string id)
         {
+           
             var user = await _userManager.FindByIdAsync(id);
-            if (user != null)
+            if (user == null)
             {
-                await _userManager.DeleteAsync(user);
+                return NotFound();
             }
+
+           
+            var hasTickets = await _ticketService.GetUserTicketsAsync(id);
+            if (hasTickets!=null)
+            {
+               
+                TempData["Error"] = "User cannot be deleted because they have active tickets.";
+                return RedirectToAction("ViewUsers");
+            }
+
+           
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+               
+                TempData["Error"] = "Failed to delete the user.";
+            }
+
             return RedirectToAction("ViewUsers");
         }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditUser(EditUserViewModel model)

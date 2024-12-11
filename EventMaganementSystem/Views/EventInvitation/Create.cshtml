@@ -33,6 +33,10 @@
                         <input type="submit" value="Send Invitation" class="btn btn-primary w-100 mb-3" />
                     }
                     <a href="@Url.Action("Index")" class="btn btn-secondary w-100">Back to List</a>
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    }
                 </div>
             </div>
         </div>
