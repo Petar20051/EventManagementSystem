@@ -64,7 +64,7 @@ namespace EventMaganementSystem.Controllers
             invitation.SenderId = GetUserId(User);
             if (string.IsNullOrEmpty(invitation.SenderId)) return Unauthorized();
 
-            // Check if the sender is the same as the receiver
+           
             if (invitation.SenderId == invitation.ReceiverId)
             {
                 TempData["ErrorMessage"]=( "You cannot send an invitation to yourself.");

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventManagementSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(EventDbContext))]
-    [Migration("20241108192717_Urls")]
-    partial class Urls
+    [Migration("20241211142655_Create")]
+    partial class Create
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -477,6 +477,62 @@ namespace EventManagementSystem.Infrastructure.Migrations
                             Address = "Tech Park",
                             Capacity = 150,
                             Name = "Workshop Room B"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Address = "Sea Garden",
+                            Capacity = 300,
+                            Name = "Banquet Hall C"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Address = "Golden Sands",
+                            Capacity = 1000,
+                            Name = "Exhibition Center D"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Address = "University Campus",
+                            Capacity = 200,
+                            Name = "Auditorium E"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Address = "Primorski Park",
+                            Capacity = 1200,
+                            Name = "Open Air Theater F"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Address = "Business Park Varna",
+                            Capacity = 100,
+                            Name = "Business Lounge G"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Address = "Cultural Center Varna",
+                            Capacity = 400,
+                            Name = "Music Hall H"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Address = "South Beach",
+                            Capacity = 1500,
+                            Name = "Sports Complex I"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Address = "Port Varna",
+                            Capacity = 250,
+                            Name = "Event Hub J"
                         });
                 });
 
@@ -509,12 +565,6 @@ namespace EventManagementSystem.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
-                            Name = "Guest",
-                            NormalizedName = "GUEST"
-                        },
-                        new
-                        {
                             Id = "2",
                             Name = "Organizer",
                             NormalizedName = "ORGANIZER"
@@ -522,12 +572,6 @@ namespace EventManagementSystem.Infrastructure.Migrations
                         new
                         {
                             Id = "3",
-                            Name = "Sponsor",
-                            NormalizedName = "SPONSOR"
-                        },
-                        new
-                        {
-                            Id = "4",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });

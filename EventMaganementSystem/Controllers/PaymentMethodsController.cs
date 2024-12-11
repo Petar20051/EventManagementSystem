@@ -69,8 +69,24 @@ namespace EventMaganementSystem.Controllers
                     return BadRequest(new { error = "This card is already added to your account." });
                 }
 
-                
+
                 var customerId = await _userService.GetStripeCustomerIdAsync(userId);
+
+                if (customerId == null)
+                {
+                   
+                    var user = await _userService.GetUserByIdAsync(userId); 
+                    if (user == null)
+                    {
+                        throw new Exception("User not found."); 
+                    }
+
+                    
+                    customerId = await _stripePaymentService.CreateStripeCustomerAsync(userId, user.Email, user.UserName);
+
+                    
+                    await _userService.SaveStripeCustomerIdAsync(userId, customerId);
+                }
                 await _stripePaymentService.AttachPaymentMethodAsync(customerId, inputModel.PaymentMethodId);
 
                 

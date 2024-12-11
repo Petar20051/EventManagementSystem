@@ -48,7 +48,8 @@ namespace EventMaganementSystem.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Organizer")]
+        [Authorize(Policy = "OrganizerPolicy")]
+
         public async Task<IActionResult> Create()
         {
             var venues = await _venueService.GetAllVenuesAsync();
@@ -216,22 +217,20 @@ namespace EventMaganementSystem.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Organizer")]
+        [Authorize(Roles ="Organizer")]
         public async Task<IActionResult> Attendees(int eventId)
         {
-            var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var organizerId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var eventItem = await _eventService.GetEventByIdAsync(eventId);
 
-            if (eventItem == null || eventItem.OrganizerId != organizerId)
+            if (eventItem.OrganizerId != organizerId)
             {
-                return Forbid(); 
+                TempData["ErrorMessage"] = "You do not have access to view attendees for this event.";
+                return RedirectToAction("Index", "Events"); 
             }
 
             var attendees = await _eventService.GetAttendeesForEventAsync(eventId);
-            if (attendees == null || !attendees.Any())
-            {
-                return NotFound("No attendees found for this event.");
-            }
+           
 
             return View(attendees);
         }

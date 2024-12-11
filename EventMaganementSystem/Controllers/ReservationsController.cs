@@ -5,6 +5,7 @@ using EventManagementSystem.Infrastructure.Data.Enums;
 using EventManagementSystem.Infrastructure.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
 namespace EventMaganementSystem.Controllers
@@ -27,13 +28,18 @@ namespace EventMaganementSystem.Controllers
             _profileService = profileService;
         }
 
-        
+
         [HttpGet]
         public async Task<IActionResult> Create(int? eventId = null)
         {
+            
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Redirect("/Identity/Account/Login");
+            
+           
             var events = await _eventService.GetAllEventsAsync();
-            var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userid == null) return Redirect("/Identity/Account/Login");
+
+           
             var viewModel = new ReservationViewModel
             {
                 Events = events,
@@ -43,6 +49,7 @@ namespace EventMaganementSystem.Controllers
 
             return View(viewModel);
         }
+
 
 
         [HttpPost]
@@ -81,6 +88,13 @@ namespace EventMaganementSystem.Controllers
                 return RedirectToAction("Index");
             }
 
+                if (currentEvent.OrganizerId == reservatorId)
+                {
+
+                    TempData["ErrorMessage"] = "You are the organizer of this event and do not need to make a reservation.";
+                    return RedirectToAction("Index");
+                }
+            
             try
             {
                 var reservation = new Reservation

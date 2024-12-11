@@ -17,7 +17,7 @@
                 <div class="text-center mt-4">
                     @if (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.OrganizerId)
                     {
-                        <a asp-action="Attendees" class="btn btn-primary mb-3 w-100">
+                        <a asp-action="Attendees" asp-route-eventId="@Model.Id" class="btn btn-primary mb-3 w-100">
                             View Attendees
                         </a>
                     }

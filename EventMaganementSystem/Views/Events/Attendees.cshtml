@@ -4,23 +4,36 @@
 <div class="container mt-5">
     <h2 class="text-center mb-4" style="color: #004080;">Attendees List</h2>
 
-    <table class="table table-bordered table-hover shadow-sm">
-        <thead class="table-primary">
-            <tr>
-                <th>User Email</th>
-                <th>Attendee Count</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var attendee in Model)
-            {
+    @if (Model == null || !Model.Any())
+
+    {
+        <div class="alert alert-warning text-center" role="alert">
+            No attendees found for this event.
+        </div>
+    }
+
+    else
+
+    {
+        <table class="table table-bordered table-hover shadow-sm">
+            <thead class="table-primary">
                 <tr>
-                    <td>@attendee.UserEmail</td>
-                    <td>@attendee.AttendeeCount</td>
+                    <th>User Email</th>
+                    <th>Attendee Count</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var attendee in Model)
+
+                {
+                    <tr>
+                        <td>@attendee.UserEmail</td>
+                        <td>@attendee.AttendeeCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>
 
 <style>

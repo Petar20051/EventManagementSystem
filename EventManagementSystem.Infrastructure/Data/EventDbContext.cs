@@ -102,16 +102,24 @@ namespace EventMaganementSystem.Data
 
             
             modelBuilder.Entity<IdentityRole>().HasData(
-                new IdentityRole { Id = "1", Name = "Guest", NormalizedName = "GUEST" },
                 new IdentityRole { Id = "2", Name = "Organizer", NormalizedName = "ORGANIZER" },
                 new IdentityRole { Id = "3", Name = "Admin", NormalizedName = "ADMIN" }
             );
 
-            
+
             modelBuilder.Entity<Venue>().HasData(
-                new Venue { Id = 1, Name = "Conference Hall A", Address = "City Center", Capacity = 500 },
-                new Venue { Id = 2, Name = "Workshop Room B", Address = "Tech Park", Capacity = 150 }
+            new Venue { Id = 1, Name = "Conference Hall A", Address = "City Center", Capacity = 500 },
+            new Venue { Id = 2, Name = "Workshop Room B", Address = "Tech Park", Capacity = 150 },
+            new Venue { Id = 3, Name = "Banquet Hall C", Address = "Sea Garden", Capacity = 300 },
+            new Venue { Id = 4, Name = "Exhibition Center D", Address = "Golden Sands", Capacity = 1000 },
+            new Venue { Id = 5, Name = "Auditorium E", Address = "University Campus", Capacity = 200 },
+            new Venue { Id = 6, Name = "Open Air Theater F", Address = "Primorski Park", Capacity = 1200 },
+            new Venue { Id = 7, Name = "Business Lounge G", Address = "Business Park Varna", Capacity = 100 },
+            new Venue { Id = 8, Name = "Music Hall H", Address = "Cultural Center Varna", Capacity = 400 },
+            new Venue { Id = 9, Name = "Sports Complex I", Address = "South Beach", Capacity = 1500 },
+            new Venue { Id = 10, Name = "Event Hub J", Address = "Port Varna", Capacity = 250 }
             );
+
         }
 
     }
