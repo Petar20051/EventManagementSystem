@@ -2,6 +2,7 @@ using EventMaganementSystem.Models;
 using EventManagementSystem.Core.Contracts;
 using EventManagementSystem.Core.Models.Home;
 using EventManagementSystem.Infrastructure.Entities;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -24,14 +25,13 @@ namespace EventMaganementSystem.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Fetch the upcoming events
-            var upcomingEvents = await _eventService.GetUpcomingEventsAsync(); // Fetches the next 5 upcoming events by default
-
-            // Check if the current user is an admin
+           
+            var upcomingEvents = await _eventService.GetUpcomingEventsAsync(); 
+            
             var user = await _userManager.GetUserAsync(User);
             bool isAdmin = user != null && await _userManager.IsInRoleAsync(user, "Admin");
 
-            // Create the view model with dynamic data
+           
             var viewModel = new HomePageViewModel
             {
                 UpcomingEvents = upcomingEvents,
@@ -51,6 +51,30 @@ namespace EventMaganementSystem.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult MainError()
+        {
+            var exceptionDetails = HttpContext.Features.Get<IExceptionHandlerFeature>();
+            if (exceptionDetails?.Error is InvalidOperationException invalidOperationEx)
+            {
+               
+                ViewData["ErrorMessage"] = invalidOperationEx.Message;
+            }
+            else
+            {
+                ViewData["ErrorMessage"] = "An unexpected error occurred.";
+            }
+
+            return View();
+        }
+
+
+      
+        public IActionResult StatusCode(int code)
+        {
+            ViewData["StatusCode"] = code;
+            return View();
         }
     }
 }

@@ -43,7 +43,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task MyTickets_ReturnsViewResult_WithTickets()
         {
-            // Arrange
+            
             var userId = "user1";
             var tickets = new List<Ticket>
         {
@@ -65,25 +65,25 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.MyTickets();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<List<Ticket>>(viewResult.Model);
             Assert.Equal(2, model.Count);
 
             foreach (var ticket in model)
             {
-                Assert.NotNull(ticket.QRCodeSvg); // Verify QR code is generated
-                Assert.Contains("<svg", ticket.QRCodeSvg); // Ensure the QR code is in SVG format
+                Assert.NotNull(ticket.QRCodeSvg); 
+                Assert.Contains("<svg", ticket.QRCodeSvg); 
             }
         }
 
         [Fact]
         public async Task MyTickets_ReturnsEmptyList_WhenUserHasNoTickets()
         {
-            // Arrange
+            
             var userId = "user1";
 
             _mockUserManager.Setup(m => m.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
@@ -100,10 +100,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.MyTickets();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<List<Ticket>>(viewResult.Model);
             Assert.Empty(model);

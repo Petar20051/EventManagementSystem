@@ -26,7 +26,7 @@ namespace EventManagementSystem.Tests
         [InlineData("PaymentViewModel", "PaymentFor", PaymentFor.Ticket)]
         public void PaymentViewModel_ShouldSetAndGetProperties(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "PaymentViewModel" => new PaymentViewModel(),
@@ -36,17 +36,17 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
         [Fact]
         public void PaymentDetailsViewModel_CanBeInitialized()
         {
-            // Arrange & Act
+            
             var viewModel = new PaymentDetailsViewModel
             {
                 PaymentId = 1,
@@ -56,7 +56,7 @@ namespace EventManagementSystem.Tests
                 Status = "Completed"
             };
 
-            // Assert
+            
             Assert.Equal(1, viewModel.PaymentId);
             Assert.Equal(100.50m, viewModel.Amount);
             Assert.Equal(new DateTime(2024, 12, 5), viewModel.PaymentDate);
@@ -67,10 +67,10 @@ namespace EventManagementSystem.Tests
         [Fact]
         public void PaymentDetailsViewModel_DefaultValuesAreUnset()
         {
-            // Arrange & Act
+            
             var viewModel = new PaymentDetailsViewModel();
 
-            // Assert
+            
             Assert.Equal(0, viewModel.PaymentId);
             Assert.Equal(0m, viewModel.Amount);
             Assert.Equal(default(DateTime), viewModel.PaymentDate);
@@ -88,10 +88,10 @@ namespace EventManagementSystem.Tests
             string paymentMethod,
             string status)
         {
-            // Arrange
+            
             var date = DateTime.Parse(paymentDate);
 
-            // Act
+            
             var viewModel = new PaymentDetailsViewModel
             {
                 PaymentId = paymentId,
@@ -101,7 +101,7 @@ namespace EventManagementSystem.Tests
                 Status = status
             };
 
-            // Assert
+            
             Assert.Equal(paymentId, viewModel.PaymentId);
             Assert.Equal(amount, viewModel.Amount);
             Assert.Equal(date, viewModel.PaymentDate);
@@ -114,11 +114,11 @@ namespace EventManagementSystem.Tests
         [Theory]
         [InlineData("EventFeedbackViewModel", "EventId", 123)]
         [InlineData("EventFeedbackViewModel", "EventName", "Sample Event")]
-        [InlineData("EventFeedbackViewModel", "Feedbacks", null)] // Ensure nullable property works
-        [InlineData("EventFeedbackViewModel", "NewFeedback", null)] // Ensure nullable property works
+        [InlineData("EventFeedbackViewModel", "Feedbacks", null)] 
+        [InlineData("EventFeedbackViewModel", "NewFeedback", null)] 
         public void EventFeedbackViewModel_ShouldSetAndGetProperties(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "EventFeedbackViewModel" => new FeedbackViewModel(),
@@ -128,21 +128,21 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void EventFeedbackViewModel_ShouldInitializeWithDefaultValues()
         {
-            // Arrange
+            
             var viewModel = new FeedbackViewModel();
 
-            // Act & Assert
+            
             Assert.NotNull(viewModel.Feedbacks);
             Assert.Empty(viewModel.Feedbacks);
             Assert.NotNull(viewModel.NewFeedback);
@@ -152,7 +152,7 @@ namespace EventManagementSystem.Tests
         [InlineData("VenueViewModel", "Name", "Sample Venue")]
         public void VenueViewModel_ShouldSetAndGetProperties(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "VenueViewModel" => new VenueViewModel(),
@@ -162,20 +162,20 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Theory]
         [InlineData("SponsorshipDashboardViewModel", "CurrentTier", SponsorshipTier.Gold)]
-        [InlineData("SponsorshipDashboardViewModel", "Benefits", null)] // Ensure Benefits can be set to null
+        [InlineData("SponsorshipDashboardViewModel", "Benefits", null)] 
         public void SponsorshipDashboardViewModel_ShouldSetAndGetProperties(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "SponsorshipDashboardViewModel" => new SponsorshipDashboardViewModel(),
@@ -185,32 +185,32 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void SponsorshipDashboardViewModel_ShouldInitializeWithDefaultValues()
         {
-            // Arrange
+            
             var viewModel = new SponsorshipDashboardViewModel();
 
-            // Act & Assert
+            
             Assert.NotNull(viewModel.Benefits);
-            Assert.Empty(viewModel.Benefits); // Default should be an empty list
+            Assert.Empty(viewModel.Benefits); 
         }
 
         [Fact]
         public void GetBenefits_ShouldReturnListOfSponsorshipBenefits()
         {
-            // Act
+            
             var benefits = SponsorshipBenefits.GetBenefits();
 
-            // Assert
+            
             Assert.NotNull(benefits);
             Assert.Equal(3, benefits.Count);
 
@@ -231,14 +231,14 @@ namespace EventManagementSystem.Tests
         [InlineData("SponsorPaymentViewModel", "EventId", 123)]
        
         [InlineData("SponsorPaymentViewModel", "SelectedCardId", "card-123")]
-        [InlineData("SponsorPaymentViewModel", "SavedCards", null)] // Nullable list
+        [InlineData("SponsorPaymentViewModel", "SavedCards", null)] 
         [InlineData("SponsorPaymentViewModel", "CardNumber", "4242424242424242")]
         [InlineData("SponsorPaymentViewModel", "ExpiryMonth", "12")]
         [InlineData("SponsorPaymentViewModel", "ExpiryYear", "2030")]
         [InlineData("SponsorPaymentViewModel", "Cvc", "123")]
         public void SponsorPaymentViewModel_ShouldSetAndGetProperties(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "SponsorPaymentViewModel" => new SponsorPaymentViewModel(),
@@ -248,38 +248,38 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void SponsorPaymentViewModel_ShouldInitializeWithDefaultValues()
         {
-            // Arrange
+            
             var viewModel = new SponsorPaymentViewModel();
 
-            // Act & Assert
+            
             Assert.NotNull(viewModel.SavedCards);
-            Assert.Empty(viewModel.SavedCards); // Default should be an empty list
+            Assert.Empty(viewModel.SavedCards); 
         }
 
         [Fact]
         public void SponsorPaymentViewModel_ShouldRequireAmountToBeGreaterThanZero()
         {
-            // Arrange
+            
             var viewModel = new SponsorPaymentViewModel { Amount = 0 };
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
-            Assert.False(isValid); // Validation should fail
+            
+            Assert.False(isValid); 
             Assert.Contains(results, r => r.MemberNames.Contains("Amount"));
             Assert.Contains(results, r => r.ErrorMessage == "Amount must be greater than zero.");
         }
@@ -293,7 +293,7 @@ namespace EventManagementSystem.Tests
         [InlineData("SponsorPaymentViewModel", "EventId", 123)]
         public void SponsorPaymentViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "SponsorPaymentViewModel" => new SponsorPaymentViewModel(),
@@ -303,23 +303,23 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void SponsorPaymentViewModel_DefaultValues_ShouldInitializeCorrectly()
         {
-            // Arrange
+            
             var viewModel = new SponsorPaymentViewModel();
 
-            // Act & Assert
+            
             Assert.NotNull(viewModel.SavedCards);
-            Assert.Empty(viewModel.SavedCards); // Default should be an empty list
+            Assert.Empty(viewModel.SavedCards); 
         }
 
        
@@ -339,7 +339,7 @@ namespace EventManagementSystem.Tests
         
         public void ReservationViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "ReservationViewModel" => new ReservationViewModel(),
@@ -349,44 +349,44 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Convert value to the correct type for DateTime
+            
             if (propertyName == "ReservationDate" && value is string)
             {
                 value = DateTime.Parse((string)value);
             }
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void ReservationViewModel_DefaultValues_ShouldInitializeCorrectly()
         {
-            // Arrange
+            
             var viewModel = new ReservationViewModel();
 
-            // Act & Assert
+            
             Assert.NotNull(viewModel.Events);
-            Assert.Empty(viewModel.Events); // Default should be an empty list
+            Assert.Empty(viewModel.Events); 
         }
 
         [Fact]
         public void ReservationViewModel_Validation_ShouldRequireEventId()
         {
-            // Arrange
+            
             var viewModel = new ReservationViewModel { EventId = null };
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
-            Assert.False(isValid); // Validation should fail
+            
+            Assert.False(isValid); 
             Assert.Contains(results, r => r.MemberNames.Contains("EventId"));
             Assert.Contains(results, r => r.ErrorMessage == "Please select an event.");
         }
@@ -394,16 +394,16 @@ namespace EventManagementSystem.Tests
         [Fact]
         public void ReservationViewModel_Validation_ShouldRequireAttendeesCount()
         {
-            // Arrange
+            
             var viewModel = new ReservationViewModel { AttendeesCount = 0 };
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
-            Assert.False(isValid); // Validation should fail
+            
+            Assert.False(isValid); 
             Assert.Contains(results, r => r.MemberNames.Contains("AttendeesCount"));
             Assert.Contains(results, r => r.ErrorMessage == "Attendees count must be at least 1.");
         }
@@ -416,7 +416,7 @@ namespace EventManagementSystem.Tests
         [InlineData("StoredPaymentMethodViewModel", "ExpirationDate", "12/2030")]
         public void StoredPaymentMethodViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "StoredPaymentMethodViewModel" => new StoredPaymentMethodViewModel(),
@@ -426,11 +426,11 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
@@ -441,7 +441,7 @@ namespace EventManagementSystem.Tests
         [InlineData("ProcessPaymentViewModel", "StoredCards", null)]
         public void ProcessPaymentViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "ProcessPaymentViewModel" => new ProcessPaymentViewModel(),
@@ -451,21 +451,21 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void ProcessPaymentViewModel_DefaultValues_ShouldInitializeCorrectly()
         {
-            // Arrange
+            
             var viewModel = new ProcessPaymentViewModel();
 
-            // Act & Assert
+            
             Assert.NotNull(viewModel.StoredCards);
         }
         [Theory]
@@ -473,7 +473,7 @@ namespace EventManagementSystem.Tests
         [InlineData("PaymentMethodViewModel", "CVV", "123")]
         public void PaymentMethodViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "PaymentMethodViewModel" => new PaymentMethodViewModel(),
@@ -483,18 +483,18 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void PaymentMethodViewModel_Validation_ShouldRequireCardNumber()
         {
-            // Arrange
+            
             var viewModel = new PaymentMethodViewModel
             {
                 CardNumber = null,
@@ -505,10 +505,10 @@ namespace EventManagementSystem.Tests
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
+            
             Assert.False(isValid);
             Assert.Contains(results, r => r.MemberNames.Contains("CardNumber"));
         }
@@ -520,7 +520,7 @@ namespace EventManagementSystem.Tests
         [Fact]
         public void PaymentMethodViewModel_Validation_ShouldRequireCVV()
         {
-            // Arrange
+            
             var viewModel = new PaymentMethodViewModel
             {
                 CardNumber = "4242424242424242",
@@ -531,10 +531,10 @@ namespace EventManagementSystem.Tests
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
+            
             Assert.False(isValid);
             Assert.Contains(results, r => r.MemberNames.Contains("CVV"));
         }
@@ -542,7 +542,7 @@ namespace EventManagementSystem.Tests
         [InlineData("PaymentMethodInputModel", "PaymentMethodId", "pm_12345")]
         public void PaymentMethodInputModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "PaymentMethodInputModel" => new PaymentMethodInputModel(),
@@ -552,11 +552,11 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
@@ -568,7 +568,7 @@ namespace EventManagementSystem.Tests
         [InlineData("CardViewModel", "ExpirationDate", "12/2030")]
         public void CardViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "CardViewModel" => new CardViewModel(),
@@ -578,28 +578,28 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
         [Fact]
         public void HomePageViewModel_ShouldInitializeWithEmptyUpcomingEvents()
         {
-            // Arrange
+            
             var viewModel = new HomePageViewModel();
 
-            // Act & Assert
+            
             Assert.NotNull(viewModel.UpcomingEvents);
-            Assert.Empty(viewModel.UpcomingEvents); // Default should be an empty list
+            Assert.Empty(viewModel.UpcomingEvents); 
         }
 
         [Fact]
         public void HomePageViewModel_ShouldSetUpcomingEventsCorrectly()
         {
-            // Arrange
+            
             var viewModel = new HomePageViewModel();
             var events = new List<Event>
         {
@@ -607,10 +607,10 @@ namespace EventManagementSystem.Tests
             new Event { Id = 2, Name = "Event 2", Date = DateTime.UtcNow.AddDays(2) }
         };
 
-            // Act
+            
             viewModel.UpcomingEvents = events;
 
-            // Assert
+            
             Assert.Equal(2, viewModel.UpcomingEvents.Count);
             Assert.Equal("Event 1", viewModel.UpcomingEvents[0].Name);
             Assert.Equal("Event 2", viewModel.UpcomingEvents[1].Name);
@@ -626,7 +626,7 @@ namespace EventManagementSystem.Tests
         [InlineData("ExtendedEventViewModel", "OrganizerEmail", "organizer@example.com")]
         public void ExtendedEventViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "ExtendedEventViewModel" => new ExtendedEventViewModel(),
@@ -636,17 +636,17 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Convert Date string to DateTime if necessary
+            
             if (propertyName == "Date" && value is string)
             {
                 value = DateTime.Parse((string)value);
             }
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
         [Theory]
@@ -658,10 +658,10 @@ namespace EventManagementSystem.Tests
         [InlineData("EventViewModel", "OrganizerId", "organizer-123")]
         [InlineData("EventViewModel", "VenueId", 1)]
         [InlineData("EventViewModel", "ImageUrl", "https://example.com/event.jpg")]
-        [InlineData("EventViewModel", "Venues", null)] // Nullable list
+        [InlineData("EventViewModel", "Venues", null)] 
         public void EventViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "EventViewModel" => new EventViewModel(),
@@ -671,29 +671,29 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Convert `Date` string to `DateTime` if necessary
+            
             if (propertyName == "Date" && value is string)
             {
                 value = DateTime.Parse((string)value);
             }
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void EventViewModel_ShouldInitializeWithDefaultValues()
         {
-            // Arrange
+            
             var viewModel = new EventViewModel();
 
-            // Act & Assert
+            
             Assert.NotNull(viewModel.Venues);
-            Assert.Empty(viewModel.Venues); // Default should be an empty list
+            Assert.Empty(viewModel.Venues); 
         }
 
         [Theory]
@@ -707,7 +707,7 @@ namespace EventManagementSystem.Tests
         [InlineData("EventDetailsViewModel", "VenueId", 1)]
         public void EventDetailsViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "EventDetailsViewModel" => new EventDetailsViewModel(),
@@ -717,27 +717,27 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Convert `Date` string to `DateTime` if necessary
+            
             if (propertyName == "Date" && value is string)
             {
                 value = DateTime.Parse((string)value);
             }
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void EventDetailsViewModel_ShouldInitializeWithNullValues()
         {
-            // Arrange
+            
             var viewModel = new EventDetailsViewModel();
 
-            // Act & Assert
+            
             Assert.Null(viewModel.Name);
             Assert.Null(viewModel.Description);
             Assert.Null(viewModel.Location);
@@ -748,14 +748,14 @@ namespace EventManagementSystem.Tests
         [Theory]
         [InlineData("CreateEventViewModel", "Name", "Sample Event")]
         [InlineData("CreateEventViewModel", "Description", "This is a sample event.")]
-        [InlineData("CreateEventViewModel", "EventType", EventTypes.Concert)] // Assuming EventTypes is an enum
+        [InlineData("CreateEventViewModel", "EventType", EventTypes.Concert)] 
         [InlineData("CreateEventViewModel", "Date", "2024-12-25")]
         [InlineData("CreateEventViewModel", "VenueId", 1)]  
         [InlineData("CreateEventViewModel", "ImageURL", "https://example.com/event.jpg")]
-        [InlineData("CreateEventViewModel", "Venues", null)] // Nullable list
+        [InlineData("CreateEventViewModel", "Venues", null)] 
         public void CreateEventViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "CreateEventViewModel" => new CreateEventViewModel(),
@@ -765,29 +765,29 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Convert `Date` string to `DateTime` if necessary
+            
             if (propertyName == "Date" && value is string)
             {
                 value = DateTime.Parse((string)value);
             }
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void CreateEventViewModel_ShouldInitializeWithDefaultValues()
         {
-            // Arrange
+            
             var viewModel = new CreateEventViewModel();
 
-            // Act & Assert
+            
             Assert.NotNull(viewModel.Venues);
-            Assert.Empty(viewModel.Venues); // Default should be an empty list
+            Assert.Empty(viewModel.Venues); 
         }
 
         [Theory]
@@ -795,7 +795,7 @@ namespace EventManagementSystem.Tests
         [InlineData("AttendeeInfo", "AttendeeCount", 5)]
         public void AttendeeInfo_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "AttendeeInfo" => new AttendeeInfo(),
@@ -805,11 +805,11 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
         [Theory]
@@ -817,10 +817,10 @@ namespace EventManagementSystem.Tests
         [InlineData("ManageProfileViewModel", "Email", "test@example.com")]
         [InlineData("ManageProfileViewModel", "PhoneNumber", "+1234567890")]
        
-        [InlineData("ManageProfileViewModel", "Tickets", null)] // Nullable list
+        [InlineData("ManageProfileViewModel", "Tickets", null)] 
         public void ManageProfileViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "ManageProfileViewModel" => new ManageProfileViewModel(),
@@ -830,27 +830,27 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void ManageProfileViewModel_Validation_ShouldRequireEmail()
         {
-            // Arrange
+            
             var viewModel = new ManageProfileViewModel { Email = null };
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
-            Assert.False(isValid); // Validation should fail
+            
+            Assert.False(isValid); 
             Assert.Contains(results, r => r.MemberNames.Contains("Email"));
             Assert.Contains(results, r => r.ErrorMessage == "The Email field is required.");
         }
@@ -858,16 +858,16 @@ namespace EventManagementSystem.Tests
         [Fact]
         public void ManageProfileViewModel_Validation_ShouldRequireValidEmail()
         {
-            // Arrange
+            
             var viewModel = new ManageProfileViewModel { Email = "invalid-email" };
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
-            Assert.False(isValid); // Validation should fail
+            
+            Assert.False(isValid); 
             Assert.Contains(results, r => r.MemberNames.Contains("Email"));
             Assert.Contains(results, r => r.ErrorMessage == "The Email field is not a valid e-mail address.");
         }
@@ -875,16 +875,16 @@ namespace EventManagementSystem.Tests
         [Fact]
         public void ManageProfileViewModel_Validation_ShouldAllowPhoneNumber()
         {
-            // Arrange
+            
             var viewModel = new ManageProfileViewModel { PhoneNumber = "+1234567890" };
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
-            Assert.False(isValid); // Validation should pass for valid phone number
+            
+            Assert.False(isValid); 
         }
 
         [Theory]
@@ -893,7 +893,7 @@ namespace EventManagementSystem.Tests
         [InlineData("ChangePasswordViewModel", "ConfirmPassword", "newPassword123")]
         public void ChangePasswordViewModel_SetAndGetProperties_ShouldWorkCorrectly(string viewModelType, string propertyName, object value)
         {
-            // Arrange
+            
             object viewModel = viewModelType switch
             {
                 "ChangePasswordViewModel" => new ChangePasswordViewModel(),
@@ -903,27 +903,27 @@ namespace EventManagementSystem.Tests
             var property = viewModel.GetType().GetProperty(propertyName);
             Assert.NotNull(property);
 
-            // Act
+            
             property.SetValue(viewModel, value);
             var result = property.GetValue(viewModel);
 
-            // Assert
+            
             Assert.Equal(value, result);
         }
 
         [Fact]
         public void ChangePasswordViewModel_Validation_ShouldRequireCurrentPassword()
         {
-            // Arrange
+            
             var viewModel = new ChangePasswordViewModel { CurrentPassword = null };
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
-            Assert.False(isValid); // Validation should fail
+            
+            Assert.False(isValid); 
             Assert.Contains(results, r => r.MemberNames.Contains("CurrentPassword"));
             Assert.Contains(results, r => r.ErrorMessage == "Current Password is required.");
         }
@@ -931,16 +931,16 @@ namespace EventManagementSystem.Tests
         [Fact]
         public void ChangePasswordViewModel_Validation_ShouldRequireNewPassword()
         {
-            // Arrange
+            
             var viewModel = new ChangePasswordViewModel { NewPassword = null };
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
-            Assert.False(isValid); // Validation should fail
+            
+            Assert.False(isValid); 
             Assert.Contains(results, r => r.MemberNames.Contains("NewPassword"));
             Assert.Contains(results, r => r.ErrorMessage == "New Password is required.");
         }
@@ -948,16 +948,16 @@ namespace EventManagementSystem.Tests
         [Fact]
         public void ChangePasswordViewModel_Validation_ShouldRequireValidNewPasswordLength()
         {
-            // Arrange
-            var viewModel = new ChangePasswordViewModel { NewPassword = "123" }; // Less than 6 characters
+            
+            var viewModel = new ChangePasswordViewModel { NewPassword = "123" }; 
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
-            Assert.False(isValid); // Validation should fail
+            
+            Assert.False(isValid); 
             Assert.Contains(results, r => r.MemberNames.Contains("NewPassword"));
             Assert.Contains(results, r => r.ErrorMessage == "Password must be at least 6 characters long.");
         }
@@ -965,16 +965,16 @@ namespace EventManagementSystem.Tests
         [Fact]
         public void ChangePasswordViewModel_Validation_ShouldRequireConfirmPassword()
         {
-            // Arrange
+            
             var viewModel = new ChangePasswordViewModel { ConfirmPassword = null };
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
-            Assert.False(isValid); // Validation should fail
+            
+            Assert.False(isValid); 
             Assert.Contains(results, r => r.MemberNames.Contains("ConfirmPassword"));
             Assert.Contains(results, r => r.ErrorMessage == "Please confirm your new password.");
         }
@@ -982,16 +982,16 @@ namespace EventManagementSystem.Tests
         [Fact]
         public void ChangePasswordViewModel_Validation_ShouldMatchNewPasswordAndConfirmPassword()
         {
-            // Arrange
+            
             var viewModel = new ChangePasswordViewModel { NewPassword = "newPassword123", ConfirmPassword = "differentPassword123" };
             var context = new ValidationContext(viewModel);
             var results = new List<ValidationResult>();
 
-            // Act
+            
             var isValid = Validator.TryValidateObject(viewModel, context, results, true);
 
-            // Assert
-            Assert.False(isValid); // Validation should fail
+            
+            Assert.False(isValid); 
             Assert.Contains(results, r => r.MemberNames.Contains("ConfirmPassword"));
             Assert.Contains(results, r => r.ErrorMessage == "The new password and confirmation password do not match.");
         }

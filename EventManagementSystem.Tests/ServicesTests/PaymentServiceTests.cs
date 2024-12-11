@@ -41,10 +41,10 @@ public class PaymentServiceTests
 
         private async Task SeedDataAsync(EventDbContext dbContext)
         {
-            // Add users
+            
             dbContext.Users.Add(new ApplicationUser { Id = "user1", UserName = "Test User 1" });
 
-            // Add payments with required fields
+            
             dbContext.Payments.Add(new Payment
             {
                 Id = 1,
@@ -55,7 +55,7 @@ public class PaymentServiceTests
                 Status = "Completed"
             });
 
-            // Add credit card details with required fields
+            
             dbContext.CreditCardDetails.Add(new CreditCardDetails
             {
                 Id = 1,
@@ -85,10 +85,10 @@ public class PaymentServiceTests
                 Status = "Pending"
             };
 
-            // Act
+            
             await service.RecordPaymentAsync(payment);
 
-            // Assert
+            
             var savedPayment = await dbContext.Payments.FirstOrDefaultAsync(p => p.Amount == 200.0m);
             Assert.NotNull(savedPayment);
             Assert.Equal("PayPal", savedPayment.PaymentMethod);
@@ -101,10 +101,10 @@ public class PaymentServiceTests
             await SeedDataAsync(dbContext);
             var service = CreateService(dbContext);
 
-            // Act
+            
             var paymentMethods = await service.GetUserPaymentMethodsAsync("user1");
 
-            // Assert
+            
             Assert.Single(paymentMethods);
             var card = paymentMethods.First();
             Assert.Equal(1, card.Id);
@@ -113,43 +113,88 @@ public class PaymentServiceTests
         }
 
         [Fact]
-        public async Task DeleteCreditCardAsync_DetachesPaymentMethod()
+        public async Task DeleteCreditCardAsync_ThrowsIfCardIdIsNullOrEmpty()
         {
+            
             var userId = "user1";
-            var cardId = "card1";
-
-            _mockUserService.Setup(s => s.GetStripeCustomerIdAsync(userId))
-                .ReturnsAsync("test_customer_id");
-
-            _mockPaymentMethodServiceWrapper.Setup(s => s.DetachAsync(cardId, null, null))
-                .ReturnsAsync(new PaymentMethod { Id = cardId });
+            string cardId = null; 
 
             using var dbContext = new EventDbContext(_options);
             var service = CreateService(dbContext);
 
-            // Act
-            await service.DeleteCreditCardAsync(cardId, userId);
+            
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => service.DeleteCreditCardAsync(cardId, userId));
+            Assert.Equal("Card ID cannot be null or empty. (Parameter 'cardId')", exception.Message);
+        }
 
-            // Assert
-            _mockUserService.Verify(s => s.GetStripeCustomerIdAsync(userId), Times.Once);
+
+
+        [Fact]
+        public async Task DeleteCreditCardAsync_ThrowsIfStripeExceptionOccurs()
+        {
+            
+            var userId = "user1";
+            var cardId = "card1";
+
+            _mockPaymentMethodServiceWrapper.Setup(s => s.DetachAsync(cardId,null,null))
+      .ThrowsAsync(new StripeException("Stripe error occurred"));
+
+
+            using var dbContext = new EventDbContext(_options);
+            var service = CreateService(dbContext);
+
+            
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => service.DeleteCreditCardAsync(cardId, userId));
+            Assert.Contains("An error occurred while detaching the payment method: Stripe error occurred", exception.Message);
             _mockPaymentMethodServiceWrapper.Verify(s => s.DetachAsync(cardId, null, null), Times.Once);
         }
 
+
         [Fact]
-        public async Task DeleteCreditCardAsync_ThrowsIfCustomerIdNotFound()
+        public async Task DeleteCreditCardAsync_ThrowsIfUnexpectedExceptionOccurs()
         {
+            
             var userId = "user1";
             var cardId = "card1";
 
-            _mockUserService.Setup(s => s.GetStripeCustomerIdAsync(userId))
-                .ReturnsAsync((string)null);
+            _mockPaymentMethodServiceWrapper.Setup(s => s.DetachAsync(cardId, null, null))
+                .ThrowsAsync(new Exception("Unexpected exception"));
 
             using var dbContext = new EventDbContext(_options);
             var service = CreateService(dbContext);
 
-            // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => service.DeleteCreditCardAsync(cardId, userId));
+            
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => service.DeleteCreditCardAsync(cardId, userId));
+            Assert.Contains("An unexpected error occurred while deleting the payment method.", exception.Message);
+            _mockPaymentMethodServiceWrapper.Verify(s => s.DetachAsync(cardId, null, null), Times.Once);
         }
+
+
+        [Fact]
+        public async Task DeleteCreditCardAsync_SuccessfullyDeletesCreditCard()
+        {
+            
+            var userId = "user1";
+            var cardId = "card1";
+
+            _mockPaymentMethodServiceWrapper.Setup(s => s.DetachAsync(cardId, null, null))
+                .ReturnsAsync(new PaymentMethod { Id = cardId }); 
+
+            using var dbContext = new EventDbContext(_options);
+            await SeedDataAsync(dbContext);
+            var service = CreateService(dbContext);
+
+            
+            await service.DeleteCreditCardAsync(cardId, userId);
+
+            
+            _mockPaymentMethodServiceWrapper.Verify(s => s.DetachAsync(cardId, null, null), Times.Once);
+
+            var remainingCards = await dbContext.CreditCardDetails.Where(c => c.UserId == userId).ToListAsync();
+            Assert.DoesNotContain(remainingCards, c => c.PaymentMethodId == cardId);
+        }
+
+
 
         [Fact]
         public async Task GetPaymentByIdAsync_ReturnsCorrectPaymentDetails()
@@ -160,10 +205,10 @@ public class PaymentServiceTests
 
             var paymentDate = new DateTime(2024, 12, 1, 12, 0, 0);
 
-            // Act
+            
             var paymentDetails = await service.GetPaymentByIdAsync(paymentDate);
 
-            // Assert
+            
             Assert.NotNull(paymentDetails);
             Assert.Equal(1, paymentDetails.PaymentId);
             Assert.Equal(100.0m, paymentDetails.Amount);
@@ -180,10 +225,10 @@ public class PaymentServiceTests
 
             var nonExistentDate = new DateTime(2023, 1, 1, 12, 0, 0);
 
-            // Act
+            
             var paymentDetails = await service.GetPaymentByIdAsync(nonExistentDate);
 
-            // Assert
+            
             Assert.Null(paymentDetails);
         }
     }

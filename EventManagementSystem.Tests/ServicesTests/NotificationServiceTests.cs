@@ -74,10 +74,10 @@ namespace EventManagementSystem.Tests.ServicesTests
             var eventName = "Upcoming Event";
             var eventTime = DateTime.UtcNow.AddHours(1);
 
-            // Act
+            
             await service.NotifyEventReminderAsync(userId, eventName, eventTime);
 
-            // Assert
+            
             var notification = await dbContext.Notifications.FirstOrDefaultAsync(n => n.UserId == userId && n.Type == NotificationType.EventReminder);
             Assert.NotNull(notification);
             Assert.Equal($"Reminder: The event {eventName} is happening tomorrow at {eventTime}. We look forward to seeing you there!", notification.Message);
@@ -88,7 +88,7 @@ namespace EventManagementSystem.Tests.ServicesTests
                 NotificationType.EventReminder), Times.Once);
         }
 
-        // Update other tests similarly to ensure the same context and service scope.
+        
         [Fact]
         public async Task CreateNotificationAsync_AddsNotificationAndSendsViaHub()
         {
@@ -99,10 +99,10 @@ namespace EventManagementSystem.Tests.ServicesTests
             var message = "Test notification";
             var type = NotificationType.General;
 
-            // Act
+            
             await service.CreateNotificationAsync(userId, message, type);
 
-            // Assert
+            
             var notification = await dbContext.Notifications.FirstOrDefaultAsync(n => n.Message == message);
             Assert.NotNull(notification);
             Assert.Equal(userId, notification.UserId);
@@ -118,12 +118,12 @@ namespace EventManagementSystem.Tests.ServicesTests
             await SeedDataAsync(dbContext);
             var service = CreateService(dbContext);
 
-            // Act
+            
             var notifications = await service.GetUserNotificationsAsync("user1");
 
-            // Assert
+            
             Assert.Equal(2, notifications.Count);
-            Assert.Equal("Test notification 2", notifications.First().Message); // Ordered by NotificationDate DESC
+            Assert.Equal("Test notification 2", notifications.First().Message); 
         }
     }
 }

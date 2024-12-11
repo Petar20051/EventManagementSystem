@@ -110,7 +110,7 @@ namespace EventMaganementSystem.Controllers
             var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (eventItem.OrganizerId != organizerId)
             {
-                return Forbid(); // User is not the organizer
+                return Forbid(); 
             }
 
             var model = new EventViewModel
@@ -144,7 +144,7 @@ namespace EventMaganementSystem.Controllers
                 var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (eventItem.OrganizerId != organizerId)
                 {
-                    return Forbid(); // User is not the organizer
+                    return Forbid(); 
                 }
 
                 eventItem.Name = model.Name;
@@ -178,7 +178,7 @@ namespace EventMaganementSystem.Controllers
             var organizerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (eventItem.OrganizerId != organizerId)
             {
-                return Forbid(); // User is not the organizer
+                return Forbid(); 
             }
 
             var hasTickets = await _eventService.HasTicketsAsync(id);
@@ -224,7 +224,7 @@ namespace EventMaganementSystem.Controllers
 
             if (eventItem == null || eventItem.OrganizerId != organizerId)
             {
-                return Forbid(); // Only the organizer can view attendees
+                return Forbid(); 
             }
 
             var attendees = await _eventService.GetAttendeesForEventAsync(eventId);

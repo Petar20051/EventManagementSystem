@@ -27,7 +27,7 @@ namespace EventMaganementSystem.Controllers
             _profileService = profileService;
         }
 
-        // GET: Reservations/Create/{eventId}
+        
         [HttpGet]
         public async Task<IActionResult> Create(int? eventId = null)
         {
@@ -44,28 +44,30 @@ namespace EventMaganementSystem.Controllers
             return View(viewModel);
         }
 
-        // POST: Reservations/Create
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ReservationViewModel viewModel)
         {
             var reservatorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            
             if (!ModelState.IsValid)
             {
                 viewModel.Events = await _eventService.GetAllEventsAsync();
                 return View(viewModel);
             }
 
-            var reservation = new Reservation
+            
+            if (viewModel.EventId == null || viewModel.EventId <= 0)
             {
-                EventId = viewModel.EventId ?? 0,
-                AttendeesCount = viewModel.AttendeesCount,
-                ReservationDate = DateTime.Now,
-                UserId = reservatorId
-            };
+                ModelState.AddModelError("", "Please select a valid event.");
+                viewModel.Events = await _eventService.GetAllEventsAsync();
+                return View(viewModel);
+            }
 
-            var currentEvent = await _eventService.GetEventByIdAsync(viewModel.EventId ?? 0);
+            
+            var currentEvent = await _eventService.GetEventByIdAsync(viewModel.EventId.Value);
             if (currentEvent == null)
             {
                 ModelState.AddModelError("", "Selected event does not exist.");
@@ -73,34 +75,57 @@ namespace EventMaganementSystem.Controllers
                 return View(viewModel);
             }
 
-            reservation.TotalAmount = currentEvent.TicketPrice * viewModel.AttendeesCount;
-            await _reservationService.CreateReservationAsync(reservation);
+            
+            try
+            {
+                var reservation = new Reservation
+                {
+                    EventId = viewModel.EventId.Value,
+                    AttendeesCount = viewModel.AttendeesCount,
+                    ReservationDate = DateTime.Now,
+                    UserId = reservatorId,
+                    TotalAmount = currentEvent.TicketPrice * viewModel.AttendeesCount
+                };
 
+                await _reservationService.CreateReservationAsync(reservation);
+            }
+            catch (InvalidOperationException ex)
+            {
+                
+              
+
+                
+                ModelState.AddModelError("", ex.Message);
+                viewModel.Events = await _eventService.GetAllEventsAsync();
+                return RedirectToAction("MainError", "Home", new { message = ex.Message });
+            }
+
+            
             return RedirectToAction("Index");
         }
 
 
 
-        // GET: Reservations/Index
+        
         public async Task<IActionResult> Index()
         {
             var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userid == null) return Redirect("/Identity/Account/Login");
-            // Fetch reservations from the service (this returns a list of Reservation entities)
+            
             var reservations = await _reservationService.GetAllReservationsAsync();
             var reservator = await _userService.GetUserByIdAsync(userid);
             var Reservations= reservations.Where(r=> r.UserId == userid);
 
             var reservationViewModels = new List<ReservationViewModel>();
 
-            // Process each reservation asynchronously
+            
             foreach (var reservation in Reservations)
             {
-                // Calculate total amount and apply discount
+                
                 decimal totalAmount = reservation.Event.TicketPrice * reservation.AttendeesCount;
                 decimal discountedAmount = await _discountService.ApplyDiscountAsync(reservator.SponsorshipTier, totalAmount);
 
-                // Map to ReservationViewModel
+                
                 var viewModel = new ReservationViewModel
                 {
                     Id = reservation.Id,
@@ -116,11 +141,11 @@ namespace EventMaganementSystem.Controllers
                 reservationViewModels.Add(viewModel);
             }
 
-            // Pass the ViewModel list to the view
+            
             return View(reservationViewModels);
         }
 
-        // GET: Reservations/Delete/5
+        
         public async Task<IActionResult> Delete(int id)
         {
             
@@ -135,7 +160,7 @@ namespace EventMaganementSystem.Controllers
             return View(reservation);
         }
 
-        // POST: Reservations/Delete/5
+        
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -143,7 +168,7 @@ namespace EventMaganementSystem.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: Reservations/Edit/5
+        
         public async Task<IActionResult> Edit(int id)
         {
             var reservation = await _reservationService.GetReservationByIdAsync(id);
@@ -159,53 +184,53 @@ namespace EventMaganementSystem.Controllers
                 EventId = reservation.EventId,
                 AttendeesCount = reservation.AttendeesCount,
                 ReservationDate = reservation.ReservationDate,
-                Events = events // Populate the list of events
+                Events = events 
             };
 
             return View(viewModel);
         }
 
-        // POST: Reservations/Edit/5
+        
         [HttpPost]
         public async Task<IActionResult> Edit(ReservationViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
-                // Repopulate events in case of error
+                
                 viewModel.Events = await _eventService.GetAllEventsAsync();
                 return View(viewModel);
             }
 
 
-            // Fetch the existing reservation
+            
             var existingReservation = await _reservationService.GetReservationByIdAsync((int)viewModel.Id);
             if (existingReservation == null)
             {
                 return NotFound();
             }
 
-            // Update the reservation properties
+            
             existingReservation.EventId = (int)viewModel.EventId;
             existingReservation.AttendeesCount = viewModel.AttendeesCount;
             existingReservation.ReservationDate = viewModel.ReservationDate;
 
-            // Call the service to update the reservation
+            
             await _reservationService.UpdateReservationAsync(existingReservation);
 
-            return RedirectToAction("Index"); // Redirect to the index or another view after editing
+            return RedirectToAction("Index"); 
         }
         public async Task<IActionResult> CreatePayment(int id)
         {
             var reservation = await _reservationService.GetReservationByIdAsync(id);
 
-            // Check if the reservation exists
+            
             if (reservation == null)
             {
-                return NotFound(); // Return a 404 Not Found if the reservation does not exist
+                return NotFound(); 
             }
 
-            // Here you might want to include additional logic to set up the payment
-            return View(reservation); // Return the view with the reservation details
+            
+            return View(reservation); 
         }
 
         
@@ -213,7 +238,7 @@ namespace EventMaganementSystem.Controllers
         [HttpGet]
         public IActionResult PaymentSuccess()
         {
-            // Optionally, you can pass any message or reservation details here
+            
             ViewBag.Message = "Payment completed successfully!";
             return View();
         }

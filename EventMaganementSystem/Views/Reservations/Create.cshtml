@@ -14,7 +14,7 @@
             <form asp-action="Create" asp-controller="Reservations" method="post">
                 @Html.AntiForgeryToken()
 
-                <!-- Event Selection Section -->
+              
                 <div class="form-group mb-4">
                     <label class="form-label" style="font-weight: bold;">Event</label>
                     @if (Model.EventId.HasValue)
@@ -33,21 +33,21 @@
                     }
                 </div>
 
-                <!-- Attendees Count Section -->
+               
                 <div class="form-group mb-4">
                     <label asp-for="AttendeesCount" class="form-label" style="font-weight: bold;">Attendees Count</label>
                     <input asp-for="AttendeesCount" class="form-control" placeholder="Enter number of attendees" />
                     <span asp-validation-for="AttendeesCount" class="text-danger"></span>
                 </div>
 
-                <!-- Reservation Date Section -->
+                
                 <div class="form-group mb-4">
                     <label asp-for="ReservationDate" class="form-label" style="font-weight: bold;">Reservation Date</label>
                     <input asp-for="ReservationDate" type="datetime-local" class="form-control" readonly />
                     <span asp-validation-for="ReservationDate" class="text-danger"></span>
                 </div>
 
-                <!-- Submit and Back Buttons -->
+                
                 <div class="d-flex justify-content-between mt-4">
                     <a asp-action="Index" asp-controller="Reservations" class="btn btn-outline-secondary">Back to List</a>
                     <button type="submit" class="btn btn-primary">Create Reservation</button>

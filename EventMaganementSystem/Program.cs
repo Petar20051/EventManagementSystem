@@ -17,7 +17,7 @@ public partial class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container
+        
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
@@ -25,17 +25,17 @@ public partial class Program
         {
             if (builder.Environment.IsEnvironment("Test"))
             {
-                options.UseInMemoryDatabase("TestDatabase"); // Use in-memory for testing
+                options.UseInMemoryDatabase("TestDatabase"); 
             }
             else
             {
-                options.UseSqlServer(connectionString); // Use SQL Server for other environments
+                options.UseSqlServer(connectionString); 
             }
         });
 
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-        // Configure Identity
+        
         builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         {
             options.SignIn.RequireConfirmedAccount = false;
@@ -44,21 +44,21 @@ public partial class Program
         .AddEntityFrameworkStores<EventDbContext>()
         .AddDefaultTokenProviders();
 
-        // Add authorization policies
+        
         builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy("OrganizerPolicy", policy => policy.RequireRole("Organizer"));
         });
 
-        // Add services and dependencies
+        
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
         RegisterCustomServices(builder.Services);
 
-        // Build the app
+        
         var app = builder.Build();
 
-        // Initialize roles and admin user
+        
         using (var scope = app.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
@@ -67,7 +67,7 @@ public partial class Program
             await EnsureRolesAndAdminUser(roleManager, userManager);
         }
 
-        // Configure the HTTP request pipeline
+        
         ConfigureMiddleware(app);
 
         app.Run();
@@ -102,18 +102,21 @@ public partial class Program
     {
         if (app.Environment.IsDevelopment())
         {
-            app.UseMigrationsEndPoint();
+            app.UseDeveloperExceptionPage(); 
+            app.UseMigrationsEndPoint();     
         }
         else
         {
-            app.UseExceptionHandler("/Home/Error");
-            app.UseHsts(); // Use HSTS with default 30 days
+            app.UseExceptionHandler("/Error"); 
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
         }
 
+
         app.UseHttpsRedirection();
+        app.UseStatusCodePagesWithReExecute("/Error/{0}");
         app.UseStaticFiles();
         app.UseRouting();
-        app.UseAuthentication(); // Ensure authentication middleware is added
+        app.UseAuthentication(); 
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>

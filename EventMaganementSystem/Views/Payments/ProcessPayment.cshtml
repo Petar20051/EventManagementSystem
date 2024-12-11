@@ -9,7 +9,7 @@
     <h2 class="text-center mb-4" style="color: #004080;">@ViewData["Title"]</h2>
 
     <div class="card shadow-sm p-4" style="max-width: 700px; margin: 0 auto;">
-        <!-- Alert for Reservation and Amount -->
+       
         <div class="alert alert-info text-center">
             <p>You are paying for <strong>Reservation ID:</strong> @Model.ReservationId</p>
             <p><strong>Total Amount:</strong> $@Model.Amount</p>
@@ -21,7 +21,7 @@
             <input type="hidden" name="Amount" value="@Model.Amount" />
             <input type="hidden" name="ReservationId" value="@Model.ReservationId" />
 
-            <!-- Stored Cards Section -->
+           
             @if (Model.StoredCards != null && Model.StoredCards.Any())
             {
                 <h4 class="mb-3" style="color: #004080;">Choose a Saved Card</h4>
@@ -52,7 +52,7 @@
     </div>
 </div>
 
-<!-- Include Stripe.js -->
+
 <script src="https://js.stripe.com/v3/"></script>
 
 <script>
@@ -73,19 +73,19 @@
         },
     });
 
-    // Mount the Stripe Elements card field
+    
     cardElement.mount('#card-element');
 
-    // Handle form submission
+   
     var form = document.getElementById('payment-form');
     form.addEventListener('submit', function (event) {
         event.preventDefault();
 
-        // Check if user selected to use a stored card or add a new card
+       
         var selectedCard = document.querySelector('input[name="SelectedCardId"]:checked').value;
 
         if (selectedCard === 'new') {
-            // If user is using a new card, create the payment method
+            
             stripe.createPaymentMethod({
                 type: 'card',
                 card: cardElement,
@@ -94,13 +94,13 @@
                     var errorElement = document.getElementById('card-errors');
                     errorElement.textContent = result.error.message;
                 } else {
-                    // Set the payment method ID and submit the form
+                   
                     document.getElementById('paymentMethodId').value = result.paymentMethod.id;
                     form.submit();
                 }
             });
         } else {
-            // If using a stored card, just submit the form with the selected card's ID
+            
             document.getElementById('paymentMethodId').value = selectedCard;
             form.submit();
         }

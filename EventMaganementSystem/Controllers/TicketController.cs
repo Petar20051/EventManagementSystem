@@ -27,16 +27,16 @@ namespace EventMaganementSystem.Controllers
 
             foreach (var ticket in tickets)
             {
-                // Generate SVG QR code with ticket ID or event info
+                
                 QRCodeGenerator qrGenerator = new QRCodeGenerator();
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(ticket.Id.ToString(), QRCodeGenerator.ECCLevel.Q);
 
-                // Use SvgQRCode to generate SVG QR code
+                
                 SvgQRCode qrCode = new SvgQRCode(qrCodeData);
-                string svgQrCode = qrCode.GetGraphic(5); // Reduced the scale factor for a smaller QR code
+                string svgQrCode = qrCode.GetGraphic(5); 
 
-                // Assign the SVG to the ticket's QRCodeSvg property
-                ticket.QRCodeSvg = svgQrCode; // Make sure the property name is QRCodeSvg in the Ticket class
+                
+                ticket.QRCodeSvg = svgQrCode; 
             }
 
             return View(tickets);

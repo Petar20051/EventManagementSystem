@@ -4,27 +4,27 @@
 @{
     ViewData["Title"] = "Calendar";
 
-    // Ensure ViewData["events"] is not null before casting
+   
     var events = ViewData["events"] as List<Event>;
-    var length = events?.Count() ?? 0; // Use null conditional operator with a default value
+    var length = events?.Count() ?? 0;
 }
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4" style="color: #004080;">Event Calendar</h2> <!-- Section title with theme color -->
+    <h2 class="text-center mb-4" style="color: #004080;">Event Calendar</h2>
 
     <table id="todoTable" style="display:none;">
-        <!-- Hidden table for data loading -->
+       
         @for (int i = 0; i < length; i++)
         {
             <tr>
                 <td>@Html.Encode(events[i].Id)</td>
                 <td>@Html.Encode(events[i].Name)</td>
-                <td>@Html.Encode(events[i].Date.ToString("yyyy-MM-dd"))</td> <!-- Format date here -->
+                <td>@Html.Encode(events[i].Date.ToString("yyyy-MM-dd"))</td> 
             </tr>
         }
     </table>
 
-    <!-- Calendar Container -->
+   
     <div class="calendarContainer">
         <div id="calendar"></div>
     </div>
@@ -34,7 +34,7 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.1.0/main.min.js"></script>
 
 <style>
-    /* Calendar container styling */
+    
     .calendarContainer {
         max-width: 1000px;
         margin: 0 auto;
@@ -44,9 +44,9 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    /* FullCalendar event styling */
+   
     .fc-event {
-        background-color: #007bff; /* Bootstrap primary color */
+        background-color: #007bff; 
         border: 1px solid #0056b3;
         color: white;
         cursor: pointer;
@@ -59,7 +59,7 @@
             background-color: #0056b3;
         }
 
-    /* FullCalendar header toolbar styling */
+   
     .fc-toolbar {
         background-color: #004080;
         color: #ffffff;
@@ -73,7 +73,7 @@
             font-weight: bold;
         }
 
-    /* FullCalendar button styling */
+    
     .fc-button {
         background-color: #007bff;
         border: none;

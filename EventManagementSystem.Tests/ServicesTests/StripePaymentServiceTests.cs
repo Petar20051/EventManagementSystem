@@ -45,16 +45,16 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task ProcessPaymentAsync_ThrowsException_WhenCustomerIdNotFound()
         {
-            // Arrange
+            
             var userId = "user1";
             var amount = 100m;
             var paymentMethodId = "pm_test";
 
             _mockUserService
                 .Setup(us => us.GetStripeCustomerIdAsync(userId))
-                .ReturnsAsync((string)null); // Simulate no customer ID
+                .ReturnsAsync((string)null); 
 
-            // Act & Assert
+            
             await Assert.ThrowsAsync<Exception>(() =>
                 _stripePaymentService.ProcessPaymentAsync(amount, paymentMethodId, userId));
         }
@@ -64,17 +64,17 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetStoredCardsAsync_ReturnsEmptyList_WhenCustomerIdIsNull()
         {
-            // Arrange
+            
             var userId = "user1";
 
             _mockUserService
                 .Setup(us => us.GetStripeCustomerIdAsync(userId))
-                .ReturnsAsync((string)null); // Simulate no customer ID
+                .ReturnsAsync((string)null); 
 
-            // Act
+            
             var cards = await _stripePaymentService.GetStoredCardsAsync(userId);
 
-            // Assert
+            
             Assert.NotNull(cards);
             Assert.Empty(cards);
         }

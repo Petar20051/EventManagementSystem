@@ -16,7 +16,7 @@ namespace EventManagementSystem.Core.Extensions
             _stripeService = new PaymentMethodService();
         }
 
-        // Implementation of DetachAsync
+        
         public async Task<PaymentMethod> DetachAsync(string paymentMethodId, PaymentMethodDetachOptions options = null, RequestOptions requestOptions = null)
         {
             if (string.IsNullOrWhiteSpace(paymentMethodId))
@@ -37,7 +37,7 @@ namespace EventManagementSystem.Core.Extensions
             }
         }
 
-        // Implementation of ListAsync
+        
         public async Task<StripeList<PaymentMethod>> ListAsync(PaymentMethodListOptions options, RequestOptions requestOptions = null)
         {
             if (options == null)

@@ -42,7 +42,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_GET_ReturnsNotFound_WhenEventDoesNotExist()
         {
-            // Arrange
+            
             _mockEventService.Setup(s => s.GetEventDetailsAsync(1)).ReturnsAsync((Event)null);
 
             var controller = new EventFeedbackController(
@@ -50,10 +50,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 _mockEventService.Object,
                 _mockUserManager.Object);
 
-            // Act
+            
             var result = await controller.Index(1);
 
-            // Assert
+            
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal("Event not found.", notFoundResult.Value);
         }
@@ -61,7 +61,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_GET_ReturnsViewResult_WithFeedbackViewModel()
         {
-            // Arrange
+            
             var eventDetails = new Event { Id = 1, Name = "Event 1" };
             var feedbacks = new List<Feedback>
         {
@@ -76,10 +76,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 _mockEventService.Object,
                 _mockUserManager.Object);
 
-            // Act
+            
             var result = await controller.Index(1);
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<FeedbackViewModel>(viewResult.Model);
 
@@ -91,7 +91,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_POST_RedirectsToLogin_WhenUserIsNotAuthenticated()
         {
-            // Arrange
+            
             var model = new FeedbackViewModel { EventId = 1 };
 
             var controller = new EventFeedbackController(
@@ -103,15 +103,15 @@ namespace EventManagementSystem.Tests.ControllersTests
                 {
                     HttpContext = new DefaultHttpContext
                     {
-                        User = null // Simulate unauthenticated user by setting User to null
+                        User = null 
                     }
                 }
             };
 
-            // Act
+            
             var result = await controller.Index(model);
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectResult>(result);
             Assert.Equal("/Identity/Account/Login", redirectResult.Url);
         }
@@ -120,7 +120,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_POST_ReturnsUnauthorized_WhenUserNotFound()
         {
-            // Arrange
+            
             var model = new FeedbackViewModel { EventId = 1 };
 
             _mockUserManager.Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync((ApplicationUser)null);
@@ -139,17 +139,17 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Index(model);
 
-            // Assert
+           
             Assert.IsType<UnauthorizedResult>(result);
         }
 
         [Fact]
         public async Task Index_POST_RedirectsToIndex_WhenModelStateIsValid()
         {
-            // Arrange
+            
             var model = new FeedbackViewModel
             {
                 EventId = 1,
@@ -175,10 +175,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Index(model);
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal(nameof(controller.Index), redirectResult.ActionName);
             Assert.Equal(1, redirectResult.RouteValues["eventId"]);
@@ -189,7 +189,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_POST_ReturnsView_WithValidationErrors_WhenModelStateIsInvalid()
         {
-            // Arrange
+            
             var model = new FeedbackViewModel { EventId = 1 };
 
             var eventDetails = new Event { Id = 1, Name = "Event 1" };
@@ -214,10 +214,10 @@ namespace EventManagementSystem.Tests.ControllersTests
 
             controller.ModelState.AddModelError("Error", "Invalid data");
 
-            // Act
+            
             var result = await controller.Index(model);
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var returnedModel = Assert.IsAssignableFrom<FeedbackViewModel>(viewResult.Model);
 

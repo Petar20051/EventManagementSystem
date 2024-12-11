@@ -17,19 +17,19 @@ namespace EventManagementSystem.Tests.ProgramTests
         [Fact]
         public async Task RolesAndAdminUser_AreSetUpCorrectly()
         {
-            // Arrange
+            
             var services = new ServiceCollection();
 
-            // Add in-memory database for EventDbContext
+            
             services.AddDbContext<EventDbContext>(options =>
                 options.UseInMemoryDatabase("TestDatabase"));
 
-            // Add Identity services with in-memory stores
+            
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<EventDbContext>()
                 .AddDefaultTokenProviders();
 
-            // Add logging services
+            
             services.AddLogging();
 
             var serviceProvider = services.BuildServiceProvider();
@@ -37,10 +37,10 @@ namespace EventManagementSystem.Tests.ProgramTests
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            // Act
+            
             await Program.EnsureRolesAndAdminUser(roleManager, userManager);
 
-            // Assert
+            
             var adminRoleExists = await roleManager.RoleExistsAsync("Admin");
             Assert.True(adminRoleExists);
 

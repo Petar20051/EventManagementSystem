@@ -36,7 +36,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task IndexAsync_ReturnsNotFound_WhenUserDoesNotExist()
         {
-            // Arrange
+
             var userId = "user1";
             _mockProfileService.Setup(s => s.GetUserAsync(userId)).ReturnsAsync((ApplicationUser)null);
 
@@ -51,10 +51,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.IndexAsync();
 
-            // Assert
+            
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal("User not found", notFoundResult.Value);
         }
@@ -62,7 +62,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task IndexAsync_ReturnsViewResult_WhenUserExists()
         {
-            // Arrange
+            
             var userId = "user1";
             var user = new ApplicationUser { Id = userId };
             _mockProfileService.Setup(s => s.GetUserAsync(userId)).ReturnsAsync(user);
@@ -78,10 +78,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.IndexAsync();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.IsType<ChangePasswordViewModel>(viewResult.Model);
         }
@@ -89,15 +89,15 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_ReturnsView_WhenModelStateIsInvalid()
         {
-            // Arrange
+            
             var model = new ChangePasswordViewModel();
             var controller = new ChangePasswordController(_mockProfileService.Object);
             controller.ModelState.AddModelError("Error", "Invalid data");
 
-            // Act
+            
             var result = await controller.Index(model);
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal(model, viewResult.Model);
         }
@@ -105,7 +105,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_RedirectsToHome_WhenUserDoesNotExist()
         {
-            // Arrange
+            
             var userId = "user1";
             var model = new ChangePasswordViewModel
             {
@@ -125,10 +125,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Index(model);
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirectResult.ActionName);
             Assert.Equal("Home", redirectResult.ControllerName);
@@ -137,7 +137,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_RedirectsToManageProfile_WhenPasswordChangeSucceeds()
         {
-            // Arrange
+            
             var userId = "user1";
             var user = new ApplicationUser { Id = userId };
             var model = new ChangePasswordViewModel
@@ -161,10 +161,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Index(model);
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirectResult.ActionName);
             Assert.Equal("ManageProfile", redirectResult.ControllerName);
@@ -173,7 +173,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_AddsErrorsToModelState_WhenPasswordChangeFails()
         {
-            // Arrange
+            
             var userId = "user1";
             var user = new ApplicationUser { Id = userId };
             var model = new ChangePasswordViewModel
@@ -198,10 +198,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Index(model);
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal(model, viewResult.Model);
             Assert.True(controller.ModelState.ContainsKey(string.Empty));

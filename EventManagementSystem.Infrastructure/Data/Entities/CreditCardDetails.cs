@@ -10,13 +10,13 @@ namespace EventManagementSystem.Infrastructure.Data.Entities
         public int Id { get; set; }
 
         [Required]
-        public string UserId { get; set; }  // Foreign key to the user
+        public string UserId { get; set; }  
 
         [Required]
-        public string PaymentMethodId { get; set; } // Stripe's tokenized PaymentMethod ID
+        public string PaymentMethodId { get; set; } 
 
-        public string CardBrand { get; set; } // E.g., Visa, Mastercard
-        public string CardNumber { get; set; } // E.g., "4242"
+        public string CardBrand { get; set; } 
+        public string CardNumber { get; set; } 
 
         public string ExpirationMonth { get; set; }
         public string ExpirationYear { get; set; }

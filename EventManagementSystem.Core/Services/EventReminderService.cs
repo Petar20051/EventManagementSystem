@@ -47,7 +47,7 @@ namespace EventManagementSystem.Core.Services
                     }
                 }
 
-                // Delay the task by 24 hours before checking again
+                
                 await Task.Delay(TimeSpan.FromHours(24), stoppingToken);
             }
         }

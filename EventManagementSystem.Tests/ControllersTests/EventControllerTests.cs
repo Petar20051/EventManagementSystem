@@ -41,7 +41,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         new Claim(ClaimTypes.NameIdentifier, userId)
     };
 
-            // Add an authentication type to ClaimsIdentity
+            
             var identity = new ClaimsIdentity(claims, "TestAuthentication");
 
             return new ClaimsPrincipal(identity);
@@ -50,7 +50,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_ReturnsViewResult_WithEventViewModels()
         {
-            // Arrange
+            
             var events = new List<Event>
     {
         new Event { Id = 1, Name = "Event 1", Venue = new Venue { Address = "Location 1" } },
@@ -76,10 +76,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Index();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<List<EventViewModel>>(viewResult.Model);
 
@@ -118,7 +118,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Create_POST_ReturnsView_WhenModelStateIsInvalid()
         {
-            // Arrange
+            
             var model = new CreateEventViewModel();
 
             var venues = new List<Venue>
@@ -137,16 +137,16 @@ namespace EventManagementSystem.Tests.ControllersTests
 
             controller.ModelState.AddModelError("Error", "Invalid data");
 
-            // Act
+            
             var result = await controller.Create(model);
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var returnedModel = Assert.IsAssignableFrom<CreateEventViewModel>(viewResult.Model);
 
-            Assert.Equal(model.Name, returnedModel.Name); // Validate that the same model is returned
-            Assert.Equal(2, returnedModel.Venues.Count); // Ensure venues are populated
-            Assert.Equal("Venue 1", returnedModel.Venues[0].Name); // Validate venue data
+            Assert.Equal(model.Name, returnedModel.Name); 
+            Assert.Equal(2, returnedModel.Venues.Count); 
+            Assert.Equal("Venue 1", returnedModel.Venues[0].Name); 
         }
 
 
@@ -207,7 +207,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Details_ReturnsNotFound_WhenEventDoesNotExist()
         {
-            // Arrange
+            
             _mockEventService.Setup(s => s.GetEventByIdAsync(1)).ReturnsAsync((Event)null);
 
             var controller = new EventsController(
@@ -216,10 +216,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 _mockUserEventService.Object,
                 _mockUserManager.Object);
 
-            // Act
+            
             var result = await controller.Details(1);
 
-            // Assert
+            
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal("Event not found", notFoundResult.Value);
 

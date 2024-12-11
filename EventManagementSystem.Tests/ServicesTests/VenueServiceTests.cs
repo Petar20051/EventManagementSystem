@@ -33,10 +33,10 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetAllVenuesAsync_ShouldReturnAllVenues()
         {
-            // Clear the database
+            
             ClearDatabase();
 
-            // Arrange
+            
             var venues = new List<Venue>
     {
         new Venue { Id = 1, Name = "Venue 1", Address = "123 Main Street", Capacity = 100 },
@@ -46,10 +46,10 @@ namespace EventManagementSystem.Tests.ServicesTests
             _context.Venues.AddRange(venues);
             await _context.SaveChangesAsync();
 
-            // Act
+            
             var result = await _venueService.GetAllVenuesAsync();
 
-            // Assert
+            
             Assert.Equal(2, result.Count);
             Assert.Contains(result, v => v.Name == "Venue 1" && v.Address == "123 Main Street" && v.Capacity == 100);
             Assert.Contains(result, v => v.Name == "Venue 2" && v.Address == "456 Elm Street" && v.Capacity == 200);
@@ -58,15 +58,15 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetVenueByIdAsync_ShouldReturnVenue_WhenVenueExists()
         {
-            // Arrange
+            
             var venue = new Venue { Id = 1, Name = "Venue 1", Address = "123 Main Street", Capacity = 100 };
             _context.Venues.Add(venue);
             await _context.SaveChangesAsync();
 
-            // Act
+            
             var result = await _venueService.GetVenueByIdAsync(1);
 
-            // Assert
+            
             Assert.NotNull(result);
             Assert.Equal(1, result.Id);
             Assert.Equal("Venue 1", result.Name);
@@ -77,10 +77,10 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetVenueByIdAsync_ShouldReturnNull_WhenVenueDoesNotExist()
         {
-            // Act
+            
             var result = await _venueService.GetVenueByIdAsync(999);
 
-            // Assert
+            
             Assert.Null(result);
         }
     }

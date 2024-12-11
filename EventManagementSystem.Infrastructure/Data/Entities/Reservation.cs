@@ -24,7 +24,7 @@ namespace EventManagementSystem.Infrastructure.Entities
         [DataType(DataType.Date)]
         public DateTime ReservationDate { get; set; } = DateTime.Now;
 
-        public bool IsPaid { get; set; } = false; // Default to unpaid until payment is confirmed
+        public bool IsPaid { get; set; } = false; 
 
         [DataType(DataType.DateTime)]
         public DateTime? PaymentDate { get; set; }

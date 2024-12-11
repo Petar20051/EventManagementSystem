@@ -14,8 +14,7 @@
                 <div class="form-group mb-3">
                     <label for="card-element">Credit or Debit Card</label>
                     <div id="card-element" style="padding: 10px; border: 1px solid #ced4da; border-radius: 5px;">
-                        <!-- Stripe Elements will create the card input here -->
-                    </div>
+                       
                     <small id="card-errors" role="alert" class="text-danger mt-2"></small>
                 </div>
 
@@ -25,15 +24,15 @@
     </div>
 </div>
 
-<!-- Include Stripe.js -->
+
 <script src="https://js.stripe.com/v3/"></script>
 
 <script>
-    // Initialize Stripe
-    var stripe = Stripe('@ViewBag.PublishableKey'); // Set your publishable Stripe key here
+   
+    var stripe = Stripe('@ViewBag.PublishableKey'); 
     var elements = stripe.elements();
 
-    // Create a card element
+   
     var card = elements.create('card', {
         style: {
             base: {
@@ -52,10 +51,10 @@
         }
     });
 
-    // Mount the card element
+   
     card.mount('#card-element');
 
-    // Fetch existing payment methods
+    
     let existingPaymentMethods = [];
     fetch('/PaymentMethods/GetPaymentMethods')
         .then(response => response.json())
@@ -68,21 +67,21 @@
             console.error('Error fetching payment methods:', error);
         });
 
-    // Handle form submission
+   
     var form = document.getElementById('payment-form');
     form.addEventListener('submit', function (event) {
         event.preventDefault();
 
-        // Create the payment method
+       
         stripe.createPaymentMethod({
             type: 'card',
             card: card,
         }).then(function (result) {
             if (result.error) {
-                // Display error message in #card-errors
+               
                 document.getElementById('card-errors').textContent = result.error.message;
             } else {
-                // Check if the card is already added
+               
                 const cardLast4 = result.paymentMethod.card.last4;
                 const cardBrand = result.paymentMethod.card.brand;
                 const alreadyExists = existingPaymentMethods.some(method =>
@@ -94,7 +93,7 @@
                     return;
                 }
 
-                // Send PaymentMethodId to the server
+               
                 var csrfToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
                 fetch('/PaymentMethods/AddPaymentMethod', {
@@ -110,7 +109,7 @@
                     if (response.ok) {
                         response.json().then(function (data) {
                             alert(data.message || "Payment method added successfully!");
-                            window.location.href = '/PaymentMethods/ManagePaymentMethods'; // Redirect to manage payment methods page
+                            window.location.href = '/PaymentMethods/ManagePaymentMethods'; 
                         });
                     } else {
                         response.json().then(function (error) {

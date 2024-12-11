@@ -23,17 +23,17 @@ namespace EventManagementSystem.Core.Extensions
 
             try
             {
-                // Call Stripe API to detach the payment method
+                
                 return await _paymentMethodService.DetachAsync(paymentMethodId, options, requestOptions);
             }
             catch (StripeException ex)
             {
-                // Handle Stripe-specific exceptions
+                
                 throw new InvalidOperationException($"An error occurred while detaching the payment method: {ex.Message}", ex);
             }
             catch (Exception ex)
             {
-                // Handle generic exceptions
+                
                 throw new InvalidOperationException("An unexpected error occurred while detaching the payment method.", ex);
             }
         }

@@ -52,7 +52,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task ProcessSponsorship_POST_ThrowsArgumentNullException_WhenModelIsNull()
         {
-            // Arrange
+            
             var controller = new SponsorshipController(
                 _mockSponsorshipService.Object,
                 _mockUserManager.Object,
@@ -60,14 +60,14 @@ namespace EventManagementSystem.Tests.ControllersTests
                 _mockStripePaymentService.Object,
                 _mockEventService.Object);
 
-            // Act & Assert
+            
             await Assert.ThrowsAsync<ArgumentNullException>(() => controller.ProcessSponsorship(null));
         }
 
         [Fact]
         public async Task ProcessSponsorship_POST_ReturnsView_WhenNoPaymentMethodSelected()
         {
-            // Arrange
+            
             var model = new ProcessSponsorshipViewModel();
             var controller = new SponsorshipController(
                 _mockSponsorshipService.Object,
@@ -76,10 +76,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 _mockStripePaymentService.Object,
                 _mockEventService.Object);
 
-            // Act
+            
             var result = await controller.ProcessSponsorship(model);
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal(model, viewResult.Model);
             Assert.True(controller.ModelState.ContainsKey(""));
@@ -89,7 +89,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task SponsorshipDashboard_ReturnsView_WithCorrectViewModel()
         {
-            // Arrange
+            
             var userId = "user1";
             var user = new ApplicationUser { Id = userId, SponsoredAmount = 200, SponsorshipTier = SponsorshipTier.Gold };
 
@@ -111,10 +111,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.SponsorshipDashboard();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<SponsorshipDashboardViewModel>(viewResult.Model);
             Assert.Equal(SponsorshipTier.Gold, model.CurrentTier);
@@ -124,7 +124,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task SponsorEventList_ReturnsView_WithAvailableEvents()
         {
-            // Arrange
+            
             var events = new List<Event>
     {
         new Event
@@ -139,11 +139,11 @@ namespace EventManagementSystem.Tests.ControllersTests
         new Event
         {
             Id = 2,
-            Name = null, // Simulate missing name
+            Name = null, 
             Date = DateTime.Now,
-            Venue = null, // Simulate missing venue
-            Description = null, // Simulate missing description
-            Organizer = new ApplicationUser { UserName = null } // Simulate missing organizer info
+            Venue = null, 
+            Description = null, 
+            Organizer = new ApplicationUser { UserName = null } 
         }
     };
 
@@ -156,14 +156,14 @@ namespace EventManagementSystem.Tests.ControllersTests
                 _mockStripePaymentService.Object,
                 _mockEventService.Object);
 
-            // Act
+            
             var result = await controller.SponsorEventList();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<List<ExtendedEventViewModel>>(viewResult.Model);
 
-            // Verify model properties
+            
             Assert.Equal(2, model.Count);
 
             Assert.Equal(1, model[0].Id);
@@ -173,10 +173,10 @@ namespace EventManagementSystem.Tests.ControllersTests
             Assert.Equal("Organizer1", model[0].OrganizerEmail);
 
             Assert.Equal(2, model[1].Id);
-            Assert.Equal("No Name Available", model[1].Name); // Fallback for null name
-            Assert.Equal("No Venue Assigned", model[1].Venue); // Fallback for null venue
-            Assert.Equal("No Description Available", model[1].Description); // Fallback for null description
-            Assert.Equal("No Contact Info", model[1].OrganizerEmail); // Fallback for null organizer info
+            Assert.Equal("No Name Available", model[1].Name); 
+            Assert.Equal("No Venue Assigned", model[1].Venue); 
+            Assert.Equal("No Description Available", model[1].Description); 
+            Assert.Equal("No Contact Info", model[1].OrganizerEmail); 
         }
 
     }

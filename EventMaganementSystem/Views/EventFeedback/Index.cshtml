@@ -11,7 +11,7 @@
                     <h3>@Model.EventName - @ViewData["Title"]</h3>
                 </div>
                 <div class="card-body">
-                    <!-- Feedback List -->
+                    
                     <h4 class="mb-4">Feedback for @Model.EventName</h4>
                     <ul id="messagesList" class="list-group mb-4">
                         @if (Model.Feedbacks != null && Model.Feedbacks.Any())
@@ -32,7 +32,7 @@
                             <li class="list-group-item text-muted">No feedback available for this event.</li>
                         }
                     </ul>
-                    <!-- Feedback Form -->
+                   
                     <h4 class="mb-3">Leave Your Feedback</h4>
                     <form id="feedbackForm" asp-action="Index" method="post">
                         <div class="input-group">
@@ -54,7 +54,7 @@
             .withUrl("/chathub?eventId=@Model.EventId")
             .build();
 
-        // Initialize SignalR connection and receive messages
+       
         connection.on("ReceiveMessage", (user, message, date) => {
             const li = document.createElement("li");
             li.classList.add("list-group-item");
@@ -68,15 +68,15 @@
 
         connection.start().catch(err => console.error(err.toString()));
 
-        // Handle form submission with AJAX to allow SignalR to send message in real-time
+       
         document.getElementById("feedbackForm").addEventListener("submit", async function (event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault(); 
 
             const message = document.getElementById("messageInput").value;
             const eventId = @Model.EventId;
 
             if (message) {
-                // Send feedback to the server
+               
                 const response = await fetch("@Url.Action("Index", "EventFeedback")", {
                     method: "POST",
                     headers: {
@@ -87,11 +87,11 @@
                 });
 
                 if (response.ok) {
-                    // Send message via SignalR for real-time update
+                   
                     await connection.invoke("SendMessage", eventId, message)
                         .catch(err => console.error(err.toString()));
 
-                    // Clear the message input
+                   
                     document.getElementById("messageInput").value = '';
                 } else {
                     alert("Failed to submit feedback. Please try again.");

@@ -27,17 +27,17 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetUserByIdAsync_ShouldReturnUser_WhenUserExists()
         {
-            // Arrange
+            
             var userId = "test-user-id";
             var expectedUser = new ApplicationUser { Id = userId, UserName = "TestUser" };
 
             _mockUserManager.Setup(um => um.FindByIdAsync(userId))
                             .ReturnsAsync(expectedUser);
 
-            // Act
+            
             var actualUser = await _userService.GetUserByIdAsync(userId);
 
-            // Assert
+            
             Assert.NotNull(actualUser);
             Assert.Equal(expectedUser, actualUser);
         }
@@ -45,16 +45,16 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetUserByIdAsync_ShouldReturnNull_WhenUserDoesNotExist()
         {
-            // Arrange
+            
             var userId = "non-existent-user";
 
             _mockUserManager.Setup(um => um.FindByIdAsync(userId))
                             .ReturnsAsync((ApplicationUser)null);
 
-            // Act
+            
             var actualUser = await _userService.GetUserByIdAsync(userId);
 
-            // Assert
+            
             Assert.Null(actualUser);
         }
 
@@ -63,7 +63,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [InlineData("")]
         public async Task GetUserByIdAsync_ShouldThrowException_WhenUserIdIsNullOrEmpty(string userId)
         {
-            // Act & Assert
+            
             var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
                 _userService.GetUserByIdAsync(userId));
 
@@ -73,7 +73,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetStripeCustomerIdAsync_ShouldReturnStripeCustomerId_WhenUserExists()
         {
-            // Arrange
+            
             var userId = "test-user-id";
             var expectedCustomerId = "cus_12345";
             var user = new ApplicationUser { Id = userId, StripeCustomerId = expectedCustomerId };
@@ -81,26 +81,26 @@ namespace EventManagementSystem.Tests.ServicesTests
             _mockUserManager.Setup(um => um.FindByIdAsync(userId))
                             .ReturnsAsync(user);
 
-            // Act
+            
             var actualCustomerId = await _userService.GetStripeCustomerIdAsync(userId);
 
-            // Assert
+            
             Assert.Equal(expectedCustomerId, actualCustomerId);
         }
 
         [Fact]
         public async Task GetStripeCustomerIdAsync_ShouldReturnNull_WhenUserDoesNotExist()
         {
-            // Arrange
+            
             var userId = "non-existent-user";
 
             _mockUserManager.Setup(um => um.FindByIdAsync(It.Is<string>(id => id == userId)))
                             .ReturnsAsync((ApplicationUser)null);
 
-            // Act
+            
             var actualCustomerId = await _userService.GetStripeCustomerIdAsync(userId);
 
-            // Assert
+            
             Assert.Null(actualCustomerId);
         }
 
@@ -109,7 +109,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [InlineData("")]
         public async Task GetStripeCustomerIdAsync_ShouldThrowException_WhenUserIdIsNullOrEmpty(string userId)
         {
-            // Act & Assert
+            
             var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
                 _userService.GetStripeCustomerIdAsync(userId));
 
@@ -119,7 +119,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task SaveStripeCustomerIdAsync_ShouldUpdateStripeCustomerId_WhenUserExists()
         {
-            // Arrange
+            
             var userId = "test-user-id";
             var stripeCustomerId = "cus_12345";
             var user = new ApplicationUser { Id = userId };
@@ -130,10 +130,10 @@ namespace EventManagementSystem.Tests.ServicesTests
             _mockUserManager.Setup(um => um.UpdateAsync(user))
                             .ReturnsAsync(IdentityResult.Success);
 
-            // Act
+            
             await _userService.SaveStripeCustomerIdAsync(userId, stripeCustomerId);
 
-            // Assert
+            
             Assert.Equal(stripeCustomerId, user.StripeCustomerId);
             _mockUserManager.Verify(um => um.UpdateAsync(user), Times.Once);
         }
@@ -141,25 +141,25 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task SaveStripeCustomerIdAsync_ShouldNotCallUpdate_WhenUserDoesNotExist()
         {
-            // Arrange
+            
             var userId = "non-existent-user";
             var stripeCustomerId = "cus_12345";
 
             _mockUserManager.Setup(um => um.FindByIdAsync(userId))
-                            .ReturnsAsync((ApplicationUser)null); // User does not exist
+                            .ReturnsAsync((ApplicationUser)null); 
 
-            // Act & Assert
+            
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 _userService.SaveStripeCustomerIdAsync(userId, stripeCustomerId));
 
             Assert.Equal("User not found.", exception.Message);
-            _mockUserManager.Verify(um => um.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Never); // Ensure UpdateAsync is not called
+            _mockUserManager.Verify(um => um.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Never); 
         }
 
         [Fact]
         public async Task SaveStripeCustomerIdAsync_ShouldThrowException_WhenUpdateFails()
         {
-            // Arrange
+            
             var userId = "test-user-id";
             var stripeCustomerId = "cus_12345";
             var user = new ApplicationUser { Id = userId };
@@ -174,7 +174,7 @@ namespace EventManagementSystem.Tests.ServicesTests
                                 Description = "Failed to update the user."
                             }));
 
-            // Act & Assert
+            
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 _userService.SaveStripeCustomerIdAsync(userId, stripeCustomerId));
 
@@ -188,7 +188,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [InlineData("test-user-id", "")]
         public async Task SaveStripeCustomerIdAsync_ShouldThrowException_WhenArgumentsAreInvalid(string userId, string stripeCustomerId)
         {
-            // Act & Assert
+            
             var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
                 _userService.SaveStripeCustomerIdAsync(userId, stripeCustomerId));
 

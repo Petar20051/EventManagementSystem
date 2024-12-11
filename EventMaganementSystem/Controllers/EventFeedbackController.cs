@@ -41,7 +41,7 @@ namespace EventMaganementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(FeedbackViewModel model)
         {
-            // Remove validation for properties that are set programmatically
+            
             ModelState.Remove("NewFeedback.UserId");
             ModelState.Remove("NewFeedback.Event");
             ModelState.Remove("NewFeedback.User");
@@ -55,21 +55,21 @@ namespace EventMaganementSystem.Controllers
                     return Unauthorized();
                 }
 
-                // Set programmatically-assigned values
+               
                 model.NewFeedback.UserId = user.Id;
                 model.NewFeedback.FeedbackDate = DateTime.UtcNow;
                 model.NewFeedback.EventId = model.EventId;
 
-                // Save the feedback
+               
                 await _feedbackService.AddFeedbackAsync(model.NewFeedback);
 
-                // Redirect back to the GET action to display the updated list
+               
                 return RedirectToAction(nameof(Index), new { eventId = model.EventId });
             }
 
-            // Reload event details and feedbacks if the model state is invalid
+           
             var eventDetails = await _eventService.GetEventDetailsAsync(model.EventId);
-            model.EventName = eventDetails?.Name ?? "Event"; // Ensure EventName is loaded.
+            model.EventName = eventDetails?.Name ?? "Event"; 
             model.Feedbacks = (await _feedbackService.GetFeedbacksByEventIdAsync(model.EventId)).ToList();
             ViewData["Title"] = model.EventName ?? "Event Feedback";
 

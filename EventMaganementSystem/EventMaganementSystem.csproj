@@ -36,6 +36,14 @@
   <ItemGroup>
     <Folder Include="Extensions\" />
     <Folder Include="ModelBinders\" />
+    <Folder Include="Views\Error\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Shared\Error.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -55,7 +55,7 @@ namespace EventMaganementSystem.Controllers
                 return View(invitation);
             }
 
-            // Validate Event and Receiver
+         
             if (!_context.Events.Any(e => e.Id == invitation.EventId) || !_context.Users.Any(u => u.Id == invitation.ReceiverId))
             {
                 ModelState.AddModelError("", "Invalid event or receiver.");

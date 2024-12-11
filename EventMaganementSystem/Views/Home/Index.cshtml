@@ -1,7 +1,7 @@
 ﻿@using EventManagementSystem.Core.Models.Home
 @model HomePageViewModel
 
-<!-- Common Styling -->
+
 <style>
     .hero-section {
         width: 100%;
@@ -89,7 +89,7 @@
         color: #333333;
     }
 
-    /* Why Choose Us Section */
+    
     .why-choose-us {
         background-color: #f8f9fa;
         padding: 60px 20px;
@@ -140,7 +140,8 @@
 
 @if (Model.IsAdmin)
 {
-    <!-- Admin Home -->
+    
+
     <div class="hero-section admin-hero">
         <div class="section-inner">
             <h1>Welcome to the Admin Panel</h1>
@@ -159,7 +160,7 @@
 }
 else
 {
-    <!-- Normal User Home -->
+   
     <div class="hero-section user-hero">
         <div class="section-inner">
             <h1>Welcome to Event Management System</h1>
@@ -191,7 +192,7 @@ else
     </div>
 }
 
-<!-- Why Choose Us Section -->
+
 <div class="why-choose-us">
     <div class="section-inner">
         <h2>Why Choose Us?</h2>

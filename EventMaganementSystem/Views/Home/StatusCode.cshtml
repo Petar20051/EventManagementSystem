@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Error";
+    var statusCode = ViewData["StatusCode"] as int?;
+}
+
+<div class="container text-center mt-5">
+    <h1 class="display-4 text-danger">Error @statusCode</h1>
+    <p class="lead">
+        @switch (statusCode)
+        {
+            case 404:
+                <text>The page you are looking for could not be found.</text>
+                ;
+                break;
+            case 403:
+                <text>You do not have permission to access this resource.</text>
+                ;
+                break;
+            case 500:
+                <text>Internal server error. Please try again later.</text>
+                ;
+                break;
+            default:
+                <text>An unexpected error occurred. Please try again later.</text>
+                ;
+                break;
+        }
+    </p>
+    <a asp-action="Index" asp-controller="Home" class="btn btn-primary mt-4">Go to Home</a>
+</div>
+
+<style>
+    .container {
+        margin-top: 50px;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 3em;
+        font-weight: bold;
+    }
+
+    p {
+        font-size: 1.2em;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 1.1em;
+        border-radius: 5px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: #ffffff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .text-danger {
+        color: #dc3545;
+    }
+</style>

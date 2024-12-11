@@ -28,7 +28,7 @@ namespace EventManagementSystem.Tests.ServicesTests
 
         private async Task SeedDataAsync(EventDbContext dbContext)
         {
-            // Add users
+            
             var users = new List<ApplicationUser>
     {
         new ApplicationUser { Id = "user1", UserName = "Test User" },
@@ -36,13 +36,13 @@ namespace EventManagementSystem.Tests.ServicesTests
     };
             dbContext.Users.AddRange(users);
 
-            // Add venues
+            
             dbContext.Venues.AddRange(
                 new Venue { Id = 1, Name = "Main Hall", Address = "123 Main St", Capacity = 100 },
                 new Venue { Id = 2, Name = "Conference Room", Address = "456 Side Ave", Capacity = 50 }
             );
 
-            // Add events
+            
             dbContext.Events.AddRange(
                 new Event
                 {
@@ -52,7 +52,7 @@ namespace EventManagementSystem.Tests.ServicesTests
                     VenueId = 1,
                     TicketPrice = 50,
                     Description = "Event description",
-                    OrganizerId = "user1" // Set required property
+                    OrganizerId = "user1" 
                 },
                 new Event
                 {
@@ -62,11 +62,11 @@ namespace EventManagementSystem.Tests.ServicesTests
                     VenueId = 2,
                     TicketPrice = 100,
                     Description = "Event description",
-                    OrganizerId = "user1" // Set required property
+                    OrganizerId = "user1" 
                 }
             );
 
-            // Add reservations
+            
             dbContext.Reservations.Add(new Reservation
             {
                 Id = 1,
@@ -99,8 +99,8 @@ namespace EventManagementSystem.Tests.ServicesTests
             var reservation = await service.CreateReservationAsync(newReservation);
 
             Assert.NotNull(reservation);
-            Assert.Equal(150, reservation.TotalAmount); // 50 per ticket x 3 attendees
-            Assert.Equal(97, dbContext.Venues.First(v => v.Id == 1).Capacity); // 100 - 3
+            Assert.Equal(150, reservation.TotalAmount); 
+            Assert.Equal(97, dbContext.Venues.First(v => v.Id == 1).Capacity); 
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace EventManagementSystem.Tests.ServicesTests
 
             var newReservation = new Reservation
             {
-                EventId = 99, // Non-existent event
+                EventId = 99, 
                 UserId = "user2",
                 AttendeesCount = 3
             };
@@ -130,7 +130,7 @@ namespace EventManagementSystem.Tests.ServicesTests
             {
                 EventId = 1,
                 UserId = "user2",
-                AttendeesCount = 200 // Exceeds venue capacity
+                AttendeesCount = 200 
             };
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => service.CreateReservationAsync(newReservation));
@@ -146,7 +146,7 @@ namespace EventManagementSystem.Tests.ServicesTests
             var newReservation = new Reservation
             {
                 EventId = 1,
-                UserId = "user1", // Existing user
+                UserId = "user1", 
                 AttendeesCount = 1
             };
 
@@ -210,7 +210,7 @@ namespace EventManagementSystem.Tests.ServicesTests
 
             var updatedReservation = new Reservation
             {
-                Id = 99, // Non-existent reservation
+                Id = 99, 
                 IsPaid = true
             };
 
@@ -228,7 +228,7 @@ namespace EventManagementSystem.Tests.ServicesTests
 
             Assert.True(result);
             Assert.Null(await dbContext.Reservations.FindAsync(1));
-            Assert.Equal(102, dbContext.Venues.First(v => v.Id == 1).Capacity); // 100 + 2 attendees
+            Assert.Equal(102, dbContext.Venues.First(v => v.Id == 1).Capacity); 
         }
 
         [Fact]
@@ -238,7 +238,7 @@ namespace EventManagementSystem.Tests.ServicesTests
             await SeedDataAsync(dbContext);
             var service = CreateService(dbContext);
 
-            var result = await service.DeleteReservationAsync(99); // Non-existent reservation
+            var result = await service.DeleteReservationAsync(99); 
 
             Assert.False(result);
         }

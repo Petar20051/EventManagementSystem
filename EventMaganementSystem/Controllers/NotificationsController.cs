@@ -20,7 +20,7 @@ namespace EventMaganementSystem.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                return Redirect("/Identity/Account/Login"); // Explicitly return RedirectResult
+                return Redirect("/Identity/Account/Login");
             }
 
             var notifications = await _notificationService.GetUserNotificationsAsync(userId);

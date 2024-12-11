@@ -32,7 +32,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task SendNotificationAsync_SendsMessageToSpecificUser()
         {
-            // Arrange
+            
             var userId = "test_user";
             var message = "Test notification message";
             var type = NotificationType.General;
@@ -44,11 +44,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                     default))
                 .Returns(Task.CompletedTask);
 
-            // Act
+            
             await _notificationHubService.SendNotificationAsync(userId, message, type);
 
-            // Assert
-            _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
+                        _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
                 "ReceiveNotification",
                 It.Is<object[]>(args => args[0].ToString() == message && args[1].Equals(type)),
                 default), Times.Once);
@@ -57,8 +56,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task NotifyNewEventAsync_SendsNewEventNotification()
         {
-            // Arrange
-            var userId = "test_user";
+                        var userId = "test_user";
             var eventName = "Test Event";
             var expectedMessage = $"A new event, {eventName}, has been added! Check it out now.";
 
@@ -69,11 +67,9 @@ namespace EventManagementSystem.Tests.ControllersTests
                     default))
                 .Returns(Task.CompletedTask);
 
-            // Act
-            await _notificationHubService.NotifyNewEventAsync(userId, eventName);
+                        await _notificationHubService.NotifyNewEventAsync(userId, eventName);
 
-            // Assert
-            _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
+                        _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
                 "ReceiveNotification",
                 It.Is<object[]>(args => args[0].ToString() == expectedMessage && args[1].Equals(NotificationType.NewEventCreated)),
                 default), Times.Once);
@@ -82,8 +78,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task NotifyEventReminderAsync_SendsEventReminderNotification()
         {
-            // Arrange
-            var userId = "test_user";
+                        var userId = "test_user";
             var eventName = "Test Event";
             var eventTime = DateTime.Now.AddDays(1);
             var expectedMessage = $"Reminder: The event {eventName} is happening tomorrow at {eventTime}. We look forward to seeing you there!";
@@ -95,11 +90,9 @@ namespace EventManagementSystem.Tests.ControllersTests
                     default))
                 .Returns(Task.CompletedTask);
 
-            // Act
-            await _notificationHubService.NotifyEventReminderAsync(userId, eventName, eventTime);
+                        await _notificationHubService.NotifyEventReminderAsync(userId, eventName, eventTime);
 
-            // Assert
-            _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
+                        _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
                 "ReceiveNotification",
                 It.Is<object[]>(args => args[0].ToString() == expectedMessage && args[1].Equals(NotificationType.EventReminder)),
                 default), Times.Once);
@@ -108,8 +101,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task NotifyGeneralAnnouncementAsync_SendsGeneralAnnouncementNotification()
         {
-            // Arrange
-            var userId = "test_user";
+                        var userId = "test_user";
             var content = "Important update message.";
             var expectedMessage = $"Important Update: {content}";
 
@@ -120,11 +112,9 @@ namespace EventManagementSystem.Tests.ControllersTests
                     default))
                 .Returns(Task.CompletedTask);
 
-            // Act
-            await _notificationHubService.NotifyGeneralAnnouncementAsync(userId, content);
+                        await _notificationHubService.NotifyGeneralAnnouncementAsync(userId, content);
 
-            // Assert
-            _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
+                        _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
                 "ReceiveNotification",
                 It.Is<object[]>(args => args[0].ToString() == expectedMessage && args[1].Equals(NotificationType.General)),
                 default), Times.Once);
@@ -133,8 +123,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task NotifySystemAlertAsync_SendsSystemAlertNotification()
         {
-            // Arrange
-            var userId = "test_user";
+                        var userId = "test_user";
             var alertContent = "System alert content.";
             var expectedMessage = $"System Alert: {alertContent}. Please review this information.";
 
@@ -145,11 +134,9 @@ namespace EventManagementSystem.Tests.ControllersTests
                     default))
                 .Returns(Task.CompletedTask);
 
-            // Act
-            await _notificationHubService.NotifySystemAlertAsync(userId, alertContent);
+                        await _notificationHubService.NotifySystemAlertAsync(userId, alertContent);
 
-            // Assert
-            _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
+                        _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
                 "ReceiveNotification",
                 It.Is<object[]>(args => args[0].ToString() == expectedMessage && args[1].Equals(NotificationType.SystemAlert)),
                 default), Times.Once);

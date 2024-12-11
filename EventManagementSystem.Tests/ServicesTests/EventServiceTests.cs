@@ -45,7 +45,7 @@ namespace EventManagementSystem.Tests.ServicesTests
 
         private async Task SeedDataAsync(EventDbContext dbContext)
         {
-            // Add users
+            
             var users = new List<ApplicationUser>
         {
             new ApplicationUser { Id = "user1", UserName = "Test User" },
@@ -53,7 +53,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         };
             dbContext.Users.AddRange(users);
 
-            // Mock UserManager.Users property to return the list of users
+            
             var usersQueryable = users.AsQueryable();
             var mockUsersDbSet = new Mock<DbSet<ApplicationUser>>();
             mockUsersDbSet.As<IQueryable<ApplicationUser>>().Setup(m => m.Provider).Returns(usersQueryable.Provider);
@@ -63,13 +63,13 @@ namespace EventManagementSystem.Tests.ServicesTests
 
             _mockUserManager.Setup(um => um.Users).Returns(mockUsersDbSet.Object);
 
-            // Add venues
+            
             dbContext.Venues.AddRange(
                 new Venue { Id = 1, Name = "Main Hall", Address = "123 Main St" },
                 new Venue { Id = 2, Name = "Conference Room", Address = "456 Side Ave" }
             );
 
-            // Add events
+            
             dbContext.Events.AddRange(
                 new Infrastructure.Entities.Event
                 {
@@ -93,7 +93,7 @@ namespace EventManagementSystem.Tests.ServicesTests
                 }
             );
 
-            // Add reservations
+            
             dbContext.Reservations.Add(new Reservation
             {
                 Id = 1,

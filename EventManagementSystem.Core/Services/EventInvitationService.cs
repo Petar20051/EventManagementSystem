@@ -55,7 +55,7 @@ namespace EventManagementSystem.Core.Services
 
             if (invitation == null)
             {
-                // Optionally throw an exception or return null to indicate not found
+                
                 throw new KeyNotFoundException($"Invitation with ID {id} not found.");
             }
 

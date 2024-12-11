@@ -17,9 +17,9 @@ namespace EventManagementSystem.Tests.ServicesTests
 
         public UserEventServiceTests()
         {
-            // Setup InMemory DbContext for testing
+            
             var options = new DbContextOptionsBuilder<EventDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString()) // Unique database for each test
+                .UseInMemoryDatabase(Guid.NewGuid().ToString()) 
                 .Options;
 
             _context = new EventDbContext(options);
@@ -29,26 +29,26 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task AddUserEventAsync_ShouldAddUserEventSuccessfully()
         {
-            // Arrange
+            
             var userId = "test-user-id";
             var eventId = 1;
 
-            // Ensure the event exists in the database with all required fields
+            
             var eventEntity = new Event
             {
                 Id = eventId,
                 Name = "Test Event",
-                Description = "This is a test event",  // Add required Description
+                Description = "This is a test event",  
                 TicketPrice = 50.00m,
-                OrganizerId = "organizer1"  // Add required OrganizerId
+                OrganizerId = "organizer1"  
             };
             _context.Events.Add(eventEntity);
             await _context.SaveChangesAsync();
 
-            // Act
+            
             await _userEventService.AddUserEventAsync(userId, eventId);
 
-            // Assert
+            
             var userEvent = await _context.UserEvents
                                            .FirstOrDefaultAsync(ue => ue.UserId == userId && ue.EventId == eventId);
             Assert.NotNull(userEvent);
@@ -60,26 +60,26 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task AddUserEventAsync_ShouldNotAddUserEvent_WhenEventDoesNotExist()
         {
-            // Arrange
+            
             var userId = "test-user-id";
-            var nonExistentEventId = 999;  // ID for an event that doesn't exist in the database
+            var nonExistentEventId = 999;  
 
-            // Act & Assert
+            
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
                 _userEventService.AddUserEventAsync(userId, nonExistentEventId));
 
-            // Assert that the exception message is correct
+            
             Assert.Equal("Event not found.", exception.Message);
         }
 
         [Fact]
         public async Task AddUserEventAsync_ShouldThrowException_WhenUserIdIsNullOrEmpty()
         {
-            // Arrange
-            var invalidUserId = ""; // Empty userId
+            
+            var invalidUserId = ""; 
             var eventId = 1;
 
-            // Act & Assert
+            
             var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
                 _userEventService.AddUserEventAsync(invalidUserId, eventId));
 
@@ -89,11 +89,11 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task AddUserEventAsync_ShouldThrowException_WhenEventIdIsInvalid()
         {
-            // Arrange
+            
             var userId = "test-user-id";
-            var invalidEventId = 0; // Invalid eventId (can also test with -1)
+            var invalidEventId = 0; 
 
-            // Act & Assert
+            
             var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
                 _userEventService.AddUserEventAsync(userId, invalidEventId));
 

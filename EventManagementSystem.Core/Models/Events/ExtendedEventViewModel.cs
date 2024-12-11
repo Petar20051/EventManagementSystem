@@ -16,7 +16,7 @@ namespace EventManagementSystem.Core.Models.Events
             public string Description { get; set; }
            
 
-            // Organizer details
+            
             public string OrganizerEmail { get; set; }
     }
 }

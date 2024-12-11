@@ -23,7 +23,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_ReturnsViewResult_WithEventsInViewData()
         {
-            // Arrange
+            
             var events = new List<Event>
         {
             new Event { Id = 1, Name = "Event 1" },
@@ -35,10 +35,10 @@ namespace EventManagementSystem.Tests.ControllersTests
 
             var controller = new CalendarController(_mockEventService.Object);
 
-            // Act
+            
             var result = await controller.Index();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.True(viewResult.ViewData.ContainsKey("events"));
             Assert.Equal(events, viewResult.ViewData["events"]);
@@ -48,18 +48,18 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_ReturnsEmptyViewData_WhenNoEventsExist()
         {
-            // Arrange
-            var events = new List<Event>(); // No events
+            
+            var events = new List<Event>(); 
 
             _mockEventService.Setup(service => service.GetAllEventsAsync())
                              .ReturnsAsync(events);
 
             var controller = new CalendarController(_mockEventService.Object);
 
-            // Act
+            
             var result = await controller.Index();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.True(viewResult.ViewData.ContainsKey("events"));
             Assert.Empty((IEnumerable<Event>)viewResult.ViewData["events"]);

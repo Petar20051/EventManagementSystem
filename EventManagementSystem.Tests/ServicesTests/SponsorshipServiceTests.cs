@@ -29,7 +29,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task ProcessSponsorshipAsync_SuccessfullyProcessesPayment()
         {
-            // Arrange
+            
             var user = new ApplicationUser { Id = "user1", SponsoredAmount = 0 };
             var amount = 50m;
             var selectedCardId = "card1";
@@ -37,10 +37,10 @@ namespace EventManagementSystem.Tests.ServicesTests
             _mockStripePaymentService.Setup(s => s.ProcessPaymentAsync(amount, selectedCardId, user.Id))
                 .ReturnsAsync("succeeded");
 
-            // Act
+            
             await _sponsorshipService.ProcessSponsorshipAsync(user, amount, selectedCardId);
 
-            // Assert
+            
             Assert.Equal(50m, user.SponsoredAmount);
             _mockStripePaymentService.Verify(s => s.ProcessPaymentAsync(amount, selectedCardId, user.Id), Times.Once);
         }
@@ -48,7 +48,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task ProcessSponsorshipAsync_ThrowsExceptionOnPaymentFailure()
         {
-            // Arrange
+            
             var user = new ApplicationUser { Id = "user1", SponsoredAmount = 0 };
             var amount = 50m;
             var selectedCardId = "card1";
@@ -56,14 +56,14 @@ namespace EventManagementSystem.Tests.ServicesTests
             _mockStripePaymentService.Setup(s => s.ProcessPaymentAsync(amount, selectedCardId, user.Id))
                 .ReturnsAsync("failed");
 
-            // Act & Assert
+            
             await Assert.ThrowsAsync<Exception>(() => _sponsorshipService.ProcessSponsorshipAsync(user, amount, selectedCardId));
         }
 
         [Fact]
         public async Task UpdateSponsorshipTierAsync_UpdatesUserTier()
         {
-            // Arrange
+            
             var user = new ApplicationUser { Id = "user1", SponsoredAmount = 100, SponsorshipTier = SponsorshipTier.Silver };
 
             var mockUserManager = new Mock<UserManager<ApplicationUser>>(
@@ -72,10 +72,10 @@ namespace EventManagementSystem.Tests.ServicesTests
 
             mockUserManager.Setup(um => um.UpdateAsync(user)).ReturnsAsync(IdentityResult.Success);
 
-            // Act
+            
             await _sponsorshipService.UpdateSponsorshipTierAsync(user, mockUserManager.Object);
 
-            // Assert
+            
             Assert.Equal(SponsorshipTier.Gold, user.SponsorshipTier);
             mockUserManager.Verify(um => um.UpdateAsync(user), Times.Once);
         }
@@ -83,17 +83,17 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task UpdateSponsorshipTierAsync_DoesNotUpdateIfTierIsSame()
         {
-            // Arrange
+            
             var user = new ApplicationUser { Id = "user1", SponsoredAmount = 50, SponsorshipTier = SponsorshipTier.Silver };
 
             var mockUserManager = new Mock<UserManager<ApplicationUser>>(
                 Mock.Of<IUserStore<ApplicationUser>>(),
                 null, null, null, null, null, null, null, null);
 
-            // Act
+            
             await _sponsorshipService.UpdateSponsorshipTierAsync(user, mockUserManager.Object);
 
-            // Assert
+            
             Assert.Equal(SponsorshipTier.Silver, user.SponsorshipTier);
             mockUserManager.Verify(um => um.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Never);
         }
@@ -105,10 +105,10 @@ namespace EventManagementSystem.Tests.ServicesTests
         [InlineData(100, SponsorshipTier.Gold)]
         public void DetermineSponsorshipTier_ReturnsCorrectTier(decimal sponsoredAmount, SponsorshipTier expectedTier)
         {
-            // Act
+            
             var result = _sponsorshipService.DetermineSponsorshipTier(sponsoredAmount);
 
-            // Assert
+            
             Assert.Equal(expectedTier, result);
         }
     }

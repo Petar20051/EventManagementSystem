@@ -45,7 +45,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Create_GET_RedirectsToLogin_WhenUserIsNotAuthenticated()
         {
-            // Arrange
+            
             var controller = new ReservationsController(
                 _mockReservationService.Object,
                 _mockEventService.Object,
@@ -60,10 +60,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Create();
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectResult>(result);
             Assert.Equal("/Identity/Account/Login", redirectResult.Url);
         }
@@ -71,7 +71,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Create_GET_ReturnsViewResult_WithReservationViewModel()
         {
-            // Arrange
+            
             var userId = "user1";
             var events = new List<Event>
         {
@@ -98,10 +98,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Create();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<ReservationViewModel>(viewResult.Model);
             Assert.Equal(2, model.Events.Count());
@@ -110,7 +110,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Create_POST_RedirectsToIndex_WhenModelStateIsValid()
         {
-            // Arrange
+            
             var userId = "user1";
             var viewModel = new ReservationViewModel
             {
@@ -143,10 +143,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Create(viewModel);
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirectResult.ActionName);
             _mockReservationService.Verify(s => s.CreateReservationAsync(It.IsAny<Reservation>()), Times.Once);
@@ -155,7 +155,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Create_POST_ReturnsViewResult_WhenModelStateIsInvalid()
         {
-            // Arrange
+            
             var userId = "user1";
             var viewModel = new ReservationViewModel();
 
@@ -178,10 +178,10 @@ namespace EventManagementSystem.Tests.ControllersTests
 
             controller.ModelState.AddModelError("Error", "Invalid model");
 
-            // Act
+            
             var result = await controller.Create(viewModel);
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.Equal(viewModel, viewResult.Model);
         }
@@ -189,7 +189,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_ReturnsViewResult_WithReservations()
         {
-            // Arrange
+            
             var userId = "user1";
             var reservations = new List<Reservation>
     {
@@ -212,7 +212,7 @@ namespace EventManagementSystem.Tests.ControllersTests
             });
             _mockDiscountService
                 .Setup(s => s.ApplyDiscountAsync(SponsorshipTier.Bronze, It.IsAny<decimal>()))
-                .ReturnsAsync((SponsorshipTier tier, decimal amount) => amount * 0.9m); // 10% discount for Bronze tier
+                .ReturnsAsync((SponsorshipTier tier, decimal amount) => amount * 0.9m); 
 
             var controller = new ReservationsController(
                 _mockReservationService.Object,
@@ -231,16 +231,16 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Index();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<List<ReservationViewModel>>(viewResult.Model);
 
             Assert.Single(model);
             Assert.Equal("Event 1", model[0].EventName);
-            Assert.Equal(90, model[0].DiscountedAmount); // 50 * 2 = 100, 10% discount = 90
+            Assert.Equal(90, model[0].DiscountedAmount); 
             Assert.Equal(100, model[0].TotalAmount);
         }
 

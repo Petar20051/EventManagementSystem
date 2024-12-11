@@ -14,7 +14,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public void StripeSettings_ShouldBindCorrectlyFromConfiguration()
         {
-            // Arrange
+            
             var inMemorySettings = new Dictionary<string, string>
         {
             { "Stripe:PublishableKey", "pk_test_123" },
@@ -25,11 +25,11 @@ namespace EventManagementSystem.Tests.ServicesTests
                 .AddInMemoryCollection(inMemorySettings)
                 .Build();
 
-            // Act
+            
             var stripeSettings = new StripeSettings();
             configuration.GetSection("Stripe").Bind(stripeSettings);
 
-            // Assert
+            
             Assert.Equal("pk_test_123", stripeSettings.PublishableKey);
             Assert.Equal("sk_test_123", stripeSettings.SecretKey);
         }
@@ -37,7 +37,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public void StripeSettings_ShouldBeConfiguredCorrectlyThroughOptions()
         {
-            // Arrange
+            
             var inMemorySettings = new Dictionary<string, string>
         {
             { "Stripe:PublishableKey", "pk_test_123" },
@@ -50,10 +50,10 @@ namespace EventManagementSystem.Tests.ServicesTests
 
             var options = Options.Create(configuration.GetSection("Stripe").Get<StripeSettings>());
 
-            // Act
+            
             var stripeSettings = options.Value;
 
-            // Assert
+            
             Assert.Equal("pk_test_123", stripeSettings.PublishableKey);
             Assert.Equal("sk_test_123", stripeSettings.SecretKey);
         }

@@ -37,37 +37,37 @@ public class PaymentsController : Controller
     [HttpGet]
     public async Task<IActionResult> ProcessPayment(int reservationId)
     {
-        // Fetch the reservation details based on the reservation ID
+        
         var reservation = await _reservationService.GetReservationByIdAsync(reservationId);
         if (reservation == null)
         {
             return NotFound("Reservation not found.");
         }
 
-        // Get the authenticated user's ID
+        
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized("User is not authenticated.");
         }
 
-        // Fetch the user's stored payment methods (Stripe cards, for example)
+        
         var storedCards = await _stripePaymentService.GetStoredCardsAsync(userId);
         if (storedCards == null || !storedCards.Any())
         {
             ModelState.AddModelError("", "No stored payment methods found. Please add a payment method.");
-            return RedirectToAction("AddPaymentMethod", "PaymentMethods");  // Redirect to add payment method if none exist
+            return RedirectToAction("AddPaymentMethod", "PaymentMethods");  
         }
 
-        // Prepare the view model with the necessary data
+        
         var paymentViewModel = new ProcessPaymentViewModel
         {
             ReservationId = reservationId,
-            Amount = reservation.TotalAmount,  // Assuming reservation has TotalAmount
-            StoredCards = storedCards  // Pass the user's stored payment methods
+            Amount = reservation.TotalAmount,  
+            StoredCards = storedCards  
         };
         await _userEventService.AddUserEventAsync(userId, reservation.EventId);
-        // Return the view with the populated view model
+        
         return View(paymentViewModel);
     }
     [HttpPost]
@@ -92,30 +92,30 @@ public class PaymentsController : Controller
             return View(model);
         }
 
-        // Process the payment using Stripe
+        
         var paymentStatus = await _stripePaymentService.ProcessPaymentAsync(model.Amount, model.SelectedCardId, userId);
 
         if (paymentStatus == "succeeded")
         {
-            // Fetch the reservation
+            
             var reservation = await _reservationService.GetReservationByIdAsync(model.ReservationId);
             if (reservation == null)
             {
                 return NotFound();
             }
 
-            // Update reservation's payment status
+            
             reservation.IsPaid = true;
             reservation.PaymentDate = DateTime.Now;
             await _reservationService.UpdateReservationAsync(reservation);
 
-            // Record the payment in the database
+            
             var payment = new Payment
             {
                 ReservationId = reservation.Id,
                 UserId = userId,
                 Amount = model.Amount,
-                PaymentMethod = "Stripe", // or any other method
+                PaymentMethod = "Stripe", 
                 PaymentDate = DateTime.Now,
                 Status = "Completed"
             };
@@ -148,13 +148,13 @@ public class PaymentsController : Controller
         var paymentDate = reservation.PaymentDate;
         var paymentDetails = await _paymentService.GetPaymentByIdAsync(paymentDate);
 
-        // Check if payment details are found
+        
         if (paymentDetails == null)
         {
             return NotFound();
         }
 
-        return View(paymentDetails); // Pass payment details to the view
+        return View(paymentDetails); 
     }
     public IActionResult PaymentSuccess()
     {

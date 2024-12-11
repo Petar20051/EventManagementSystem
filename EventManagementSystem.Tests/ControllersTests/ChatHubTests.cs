@@ -41,7 +41,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task SendNotificationAsync_SendsMessageToSpecificUser()
         {
-            // Arrange
+            
             var userId = "test_user";
             var message = "Test notification message";
             var type = NotificationType.General;
@@ -54,10 +54,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                     default))
                 .Returns(Task.CompletedTask);
 
-            // Act
+            
             await _chatHub.SendNotificationAsync(userId, message, type);
 
-            // Assert
+            
             _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
                 "ReceiveNotification",
                 It.Is<object[]>(args => args[0].ToString() == message &&
@@ -68,7 +68,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task NotifyNewEventAsync_SendsNewEventNotification()
         {
-            // Arrange
+            
             var userId = "test_user";
             var eventName = "Test Event";
 
@@ -82,10 +82,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                     default))
                 .Returns(Task.CompletedTask);
 
-            // Act
+            
             await _chatHub.NotifyNewEventAsync(userId, eventName);
 
-            // Assert
+            
             _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
                 "ReceiveNotification",
                 It.Is<object[]>(args => args[0].ToString() == expectedMessage &&
@@ -96,7 +96,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task NotifyEventReminderAsync_SendsReminderNotification()
         {
-            // Arrange
+            
             var userId = "test_user";
             var eventName = "Test Event";
             var eventTime = DateTime.Now.AddDays(1);
@@ -111,10 +111,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                     default))
                 .Returns(Task.CompletedTask);
 
-            // Act
+
             await _chatHub.NotifyEventReminderAsync(userId, eventName, eventTime);
 
-            // Assert
+            
             _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
                 "ReceiveNotification",
                 It.Is<object[]>(args => args[0].ToString() == expectedMessage &&
@@ -125,7 +125,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task NotifyGeneralAnnouncementAsync_SendsGeneralNotification()
         {
-            // Arrange
+            
             var userId = "test_user";
             var content = "Important update message.";
             var expectedMessage = $"Important Update: {content}";
@@ -138,10 +138,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                     default))
                 .Returns(Task.CompletedTask);
 
-            // Act
+            
             await _chatHub.NotifyGeneralAnnouncementAsync(userId, content);
 
-            // Assert
+            
             _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
                 "ReceiveNotification",
                 It.Is<object[]>(args => args[0].ToString() == expectedMessage &&
@@ -152,7 +152,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task NotifySystemAlertAsync_SendsSystemAlertNotification()
         {
-            // Arrange
+            
             var userId = "test_user";
             var alertContent = "System alert content.";
             var expectedMessage = $"System Alert: {alertContent}. Please review this information.";
@@ -165,10 +165,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                     default))
                 .Returns(Task.CompletedTask);
 
-            // Act
+            
             await _chatHub.NotifySystemAlertAsync(userId, alertContent);
 
-            // Assert
+            
             _clientProxyMock.Verify(proxy => proxy.SendCoreAsync(
                 "ReceiveNotification",
                 It.Is<object[]>(args => args[0].ToString() == expectedMessage &&

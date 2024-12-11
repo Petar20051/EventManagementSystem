@@ -52,24 +52,24 @@ namespace EventMaganementSystem.Controllers
                 return View(model);
             }
 
-            // Process the payment using Stripe
+            
             var paymentStatus = await _stripePaymentService.ProcessSponsorshipPaymentAsync(model.Amount??0, model.SelectedCardId, userId);
 
             if (paymentStatus == "succeeded")
             {
-                // Update user's sponsorship details
+                
                 var user = await _userManager.FindByIdAsync(userId);
                 user.SponsoredAmount += model.Amount??0;
 
-                // Update sponsorship tier based on the new sponsorship amount
+                
                 await _sponsorshipService.UpdateSponsorshipTierAsync(user, _userManager);
 
-                // Record the payment in the database
+                
                 var payment = new Payment
                 {
                     UserId = userId,
                     Amount = model.Amount??0,
-                    PaymentMethod = "Stripe Sponsorship", // or any other method
+                    PaymentMethod = "Stripe Sponsorship", 
                     PaymentDate = DateTime.Now,
                     Status = "Completed"
                     
@@ -97,10 +97,10 @@ namespace EventMaganementSystem.Controllers
                 return Redirect("/Identity/Account/Login");
             }
 
-            // Retrieve the user's saved cards or payment options.
+            
             var savedCards = await _stripePaymentService.GetStoredCardsAsync(userId);
 
-            // Create the view model with the event ID and available payment methods.
+            
             var model = new ProcessSponsorshipViewModel
             {
                 EventId = eventId,
@@ -137,16 +137,16 @@ namespace EventMaganementSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> SponsorEventList()
         {
-            // Use your service to fetch the list of events
+            
             var events = await _eventService.GetAllAvailableEventsAsync();
 
-            // Map the events to the ExtendedEventViewModel with null checks
+            
             var model = events.Select(e => new ExtendedEventViewModel
             {
                 Id = e.Id,
-                Name = e.Name ?? "No Name Available", // Fallback if Name is null
+                Name = e.Name ?? "No Name Available", 
                 Date = e.Date,
-                Venue = e.Venue?.Name ?? "No Venue Assigned", // Fallback if Venue is null
+                Venue = e.Venue?.Name ?? "No Venue Assigned", 
                 Description = e.Description ?? "No Description Available",
                 OrganizerEmail = e.Organizer.UserName ?? "No Contact Info"
             }).ToList();

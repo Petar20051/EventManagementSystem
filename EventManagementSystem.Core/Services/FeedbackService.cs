@@ -25,7 +25,7 @@ namespace EventManagementSystem.Core.Services
         public async Task<IEnumerable<Feedback>> GetFeedbacksByEventIdAsync(int eventId)
         {
             return await _context.Feedbacks
-         .Include(f => f.User) // This ensures the User information is loaded with the feedback.
+         .Include(f => f.User) 
          .Where(f => f.EventId == eventId)
          .OrderByDescending(f => f.FeedbackDate)
          .ToListAsync();

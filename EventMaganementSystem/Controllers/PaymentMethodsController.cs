@@ -26,13 +26,13 @@ namespace EventMaganementSystem.Controllers
             _stripeOptions = stripeOptions.Value;
         }
 
-        // GET: Display form to add a credit card
+      
         [HttpGet]
         public IActionResult AddPaymentMethod()
         {
             var userid = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userid == null) return Redirect("/Identity/Account/Login");
-            // Replace with your actual Stripe publishable key
+           
             ViewBag.PublishableKey = _stripeOptions.PublishableKey;
             return View();
         }
@@ -54,10 +54,10 @@ namespace EventMaganementSystem.Controllers
                     return Unauthorized(new { error = "User not found." });
                 }
 
-                // Fetch stored cards for the user
+               
                 var storedCards = await _stripePaymentService.GetStoredCardsAsync(userId);
 
-                // Check if the card already exists
+                
                 var paymentMethodService = new PaymentMethodService();
                 var newPaymentMethod = await paymentMethodService.GetAsync(inputModel.PaymentMethodId);
 
@@ -69,11 +69,11 @@ namespace EventMaganementSystem.Controllers
                     return BadRequest(new { error = "This card is already added to your account." });
                 }
 
-                // Attach the payment method to the user
+                
                 var customerId = await _userService.GetStripeCustomerIdAsync(userId);
                 await _stripePaymentService.AttachPaymentMethodAsync(customerId, inputModel.PaymentMethodId);
 
-                // Set the payment method as default
+                
                 var customerService = new CustomerService();
                 await customerService.UpdateAsync(customerId, new CustomerUpdateOptions
                 {
@@ -97,17 +97,17 @@ namespace EventMaganementSystem.Controllers
 
         public async Task<IActionResult> ManagePaymentMethods()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the logged-in user ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
             var paymentMethods = await _stripePaymentService.GetStoredCardsAsync(userId);
 
             return View(paymentMethods);
         }
 
-        // POST: Delete a payment method (e.g., credit card)
+        
         [HttpPost]
         public async Task<IActionResult> DeletePaymentMethod(string cardId)
         {
-            // Get the current user's ID
+            
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
@@ -116,31 +116,30 @@ namespace EventMaganementSystem.Controllers
 
             try
             {
-                // Call the service to detach the payment method
+                
                 await _paymentService.DeleteCreditCardAsync(cardId, userId);
 
-                // Add a success message to TempData
+                
                 TempData["Message"] = "Payment method deleted successfully.";
             }
             catch (StripeException ex)
             {
-                // Handle Stripe-specific exceptions
+                
                 TempData["Error"] = $"Stripe error: {ex.Message}";
             }
             catch (InvalidOperationException ex)
             {
-                // Handle custom service-layer errors
+                
                 TempData["Error"] = ex.Message;
             }
             catch (Exception ex)
             {
-                // Handle unexpected errors
+                
                 TempData["Error"] = "An unexpected error occurred while deleting the payment method. Please try again.";
-                // Optionally log the error for debugging
-                // _logger.LogError(ex, "Error deleting payment method for user {UserId}", userId);
+                
             }
 
-            // Redirect back to the Manage Payment Methods page
+            
             return RedirectToAction("ManagePaymentMethods");
         }
 

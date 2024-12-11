@@ -10,28 +10,28 @@
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="Id" />
 
-                <!-- Event Name -->
+               
                 <div class="form-group mb-3">
                     <label asp-for="Name" class="form-label">Event Name</label>
                     <input asp-for="Name" class="form-control" />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
-                <!-- Event Description -->
+               
                 <div class="form-group mb-3">
                     <label asp-for="Description" class="form-label">Description</label>
                     <textarea asp-for="Description" class="form-control" rows="4"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
 
-                <!-- Event Date -->
+               
                 <div class="form-group mb-3">
                     <label asp-for="Date" class="form-label">Date</label>
                     <input asp-for="Date" type="date" class="form-control" />
                     <span asp-validation-for="Date" class="text-danger"></span>
                 </div>
 
-                <!-- Venue Selection -->
+               
                 <div class="form-group mb-3">
                     <label asp-for="VenueId" class="form-label">Venue</label>
                     <select asp-for="VenueId" asp-items="@(new SelectList(Model.Venues, "Id", "Name"))" class="form-control">
@@ -40,14 +40,14 @@
                     <span asp-validation-for="VenueId" class="text-danger"></span>
                 </div>
 
-                <!-- Image URL -->
+                
                 <div class="form-group mb-3">
                     <label asp-for="ImageUrl" class="form-label">Event Image URL</label>
                     <input asp-for="ImageUrl" class="form-control" placeholder="Enter the URL of the event image" />
                     <span asp-validation-for="ImageUrl" class="text-danger"></span>
                 </div>
 
-                <!-- Display Preview of the Image URL if provided -->
+               
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
                     <div class="mb-3 text-center">
@@ -58,7 +58,7 @@
                     </div>
                 }
 
-                <!-- Submit and Cancel Buttons -->
+                
                 <div class="d-flex justify-content-between mt-4">
                     <button type="submit" class="btn btn-primary">Update</button>
                     <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>

@@ -20,8 +20,8 @@ namespace EventManagementSystem.Core.Models
         public decimal Amount { get; set; }
 
         [Required(ErrorMessage = "Payment For is required.")]
-        public PaymentFor PaymentFor { get; set; } // You can use the PaymentFor enum
+        public PaymentFor PaymentFor { get; set; } 
 
-        // Additional properties can be added as needed for your payment processing
+        
     }
 }

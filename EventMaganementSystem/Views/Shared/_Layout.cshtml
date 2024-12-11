@@ -12,7 +12,7 @@
     <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
     <style>
         body {
-            background-color: #f8f9fa; /* Light background for better contrast */
+            background-color: #f8f9fa;
         }
 
         .mb-3 {
@@ -27,36 +27,35 @@
             border-bottom: 0px solid #dee2e6 !important;
         }
         .navbar {
-            background-color: #343a40; /* Dark blue for the navbar */
-        }
+            background-color: #343a40;
 
         .navbar-brand,
         .nav-link {
-            color: #ffffff !important; /* White text for navbar links */
+            color: #ffffff !important; 
         }
 
             .navbar-brand:hover,
             .nav-link:hover {
-                color: #d1e7dd !important; /* Light color on hover */
+                color: #d1e7dd !important; 
             }
 
 
         .footer {
-            background-color: #343a40; /* Dark footer */
-            color: white; /* White text */
+            background-color: #343a40; 
+            color: white; 
         }
 
             .footer a {
-                color: #ffffff; /* White links in footer */
+                color: #ffffff; 
             }
 
                 .footer a:hover {
-                    color: #d1e7dd; /* Light color on hover in footer */
+                    color: #d1e7dd; 
                 }
 
         .card {
-            border-radius: 8px; /* Rounded corners */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
         }
 
         .btn-primary {
@@ -102,6 +101,9 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Events" asp-action="Index">All Events</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Events" asp-action="Search">Search Event</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="EventInvitation" asp-action="Index">All Invitations</a>
@@ -154,7 +156,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
 
-    <!-- SignalR connection and notification handling -->
+   
     <script>
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("/chathub")

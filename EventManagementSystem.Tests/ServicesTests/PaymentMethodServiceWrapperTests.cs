@@ -23,7 +23,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task DetachAsync_CallsServiceAndReturnsDetachedPaymentMethod()
         {
-            // Arrange
+            
             var paymentMethodId = "pm_test";
             var expectedPaymentMethod = new PaymentMethod { Id = paymentMethodId };
 
@@ -34,10 +34,10 @@ namespace EventManagementSystem.Tests.ServicesTests
                     It.IsAny<RequestOptions>()))
                 .ReturnsAsync(expectedPaymentMethod);
 
-            // Act
+            
             var result = await _serviceWrapper.DetachAsync(paymentMethodId);
 
-            // Assert
+            
             Assert.NotNull(result);
             Assert.Equal(paymentMethodId, result.Id);
 
@@ -50,7 +50,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetPaymentMethodsAsync_ReturnsListOfPaymentMethods()
         {
-            // Arrange
+            
             var customerId = "cus_test";
             var paymentMethods = new List<PaymentMethod>
         {
@@ -64,10 +64,10 @@ namespace EventManagementSystem.Tests.ServicesTests
                     It.IsAny<RequestOptions>()))
                 .ReturnsAsync(new StripeList<PaymentMethod> { Data = paymentMethods });
 
-            // Act
+            
             var result = await _serviceWrapper.GetPaymentMethodsAsync(customerId);
 
-            // Assert
+            
             Assert.NotNull(result);
             Assert.Equal(2, result.Count());
             Assert.Contains(result, pm => pm.Id == "pm_1" && pm.Card.Brand == "Visa");

@@ -30,10 +30,10 @@ namespace EventManagementSystem.Infrastructure.Entities
         public string Description { get; set; }
 
         [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        public int VenueId { get; set; } // Foreign key for Venue
+        public int VenueId { get; set; } 
 
         [ForeignKey(nameof(VenueId))]
-        public Venue Venue { get; set; } // Navigation property to Venue
+        public Venue Venue { get; set; } 
 
         public string OrganizerId { get; set; }
 
@@ -48,6 +48,6 @@ namespace EventManagementSystem.Infrastructure.Entities
         public ICollection<EventInvitation> Invitations { get; set; } = new List<EventInvitation>();
 
         [Required(ErrorMessage = ValidationConstants.RequiredField)]
-        public EventTypes EventType { get; set; } // Enum for event type
+        public EventTypes EventType { get; set; } 
     }
 }

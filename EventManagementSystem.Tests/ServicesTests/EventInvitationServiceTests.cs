@@ -71,10 +71,10 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task SendInvitationAsync_AddsNewInvitation()
         {
-            // Act
+            
             await _service.SendInvitationAsync("user1", "user3", 1);
 
-            // Assert
+            
             var invitation = await _context.EventInvitations.FirstOrDefaultAsync(i =>
                 i.SenderId == "user1" && i.ReceiverId == "user3" && i.EventId == 1);
 
@@ -85,13 +85,13 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetPendingInvitationsAsync_ReturnsOnlyPendingInvitations()
         {
-            // Arrange
+            
             await SeedDataAsync();
 
-            // Act
+           
             var pendingInvitations = await _service.GetPendingInvitationsAsync("user2");
 
-            // Assert
+           
             Assert.Single(pendingInvitations);
             Assert.Equal(InvitationStatus.Pending, pendingInvitations.First().Status);
         }
@@ -99,13 +99,13 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetInvitationByIdAsync_ReturnsCorrectInvitation()
         {
-            // Arrange
+          
             await SeedDataAsync();
 
-            // Act
+            
             var invitation = await _service.GetInvitationByIdAsync(1);
 
-            // Assert
+            
             Assert.NotNull(invitation);
             Assert.Equal(1, invitation.Id);
         }
@@ -114,20 +114,20 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetInvitationByIdAsync_ThrowsExceptionIfNotFound()
         {
-            // Act & Assert
+           
             await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.GetInvitationByIdAsync(999));
         }
 
         [Fact]
         public async Task DeleteInvitationAsync_RemovesInvitation()
         {
-            // Arrange
+          
             await SeedDataAsync();
 
-            // Act
+           
             await _service.DeleteInvitationAsync(1);
 
-            // Assert
+           
             var invitation = await _context.EventInvitations.FindAsync(1);
             Assert.Null(invitation);
         }
@@ -135,13 +135,13 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task RespondToInvitationAsync_UpdatesStatusToAccepted()
         {
-            // Arrange
+           
             await SeedDataAsync();
 
-            // Act
+            
             await _service.RespondToInvitationAsync(1, true);
 
-            // Assert
+            
             var invitation = await _context.EventInvitations.FindAsync(1);
             Assert.Equal(InvitationStatus.Accepted, invitation.Status);
         }
@@ -149,13 +149,13 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task RespondToInvitationAsync_UpdatesStatusToDeclined()
         {
-            // Arrange
+            
             await SeedDataAsync();
 
-            // Act
+            
             await _service.RespondToInvitationAsync(1, false);
 
-            // Assert
+            
             var invitation = await _context.EventInvitations.FindAsync(1);
             Assert.Equal(InvitationStatus.Declined, invitation.Status);
         }
@@ -163,13 +163,13 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetInvitationsForEventAsync_ReturnsInvitationsForSpecificEvent()
         {
-            // Arrange
+          
             await SeedDataAsync();
 
-            // Act
+            
             var invitations = await _service.GetInvitationsForEventAsync(1);
 
-            // Assert
+            
             Assert.Single(invitations);
             Assert.Equal(1, invitations.First().EventId);
         }
@@ -177,13 +177,13 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task GetAllInvitationsForUserAsync_ReturnsAllRelatedInvitations()
         {
-            // Arrange
+            
             await SeedDataAsync();
 
-            // Act
+           
             var invitations = await _service.GetAllInvitationsForUserAsync("user2");
 
-            // Assert
+           
             Assert.Equal(2, invitations.Count());
         }
 
@@ -191,13 +191,13 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task ConfirmInvitationAsync_UpdatesStatusToAccepted()
         {
-            // Arrange
+           
             await SeedDataAsync();
 
-            // Act
+           
             await _service.ConfirmInvitationAsync(1);
 
-            // Assert
+            
             var invitation = await _context.EventInvitations.FindAsync(1);
             Assert.Equal(InvitationStatus.Accepted, invitation.Status);
         }
@@ -205,7 +205,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task ConfirmInvitationAsync_ThrowsExceptionIfNotFound()
         {
-            // Act & Assert
+            
             await Assert.ThrowsAsync<KeyNotFoundException>(() => _service.ConfirmInvitationAsync(999));
         }
     }

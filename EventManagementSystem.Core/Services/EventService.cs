@@ -28,19 +28,19 @@ namespace EventManagementSystem.Core.Services
         public async Task<List<Event>> GetUpcomingEventsAsync(int count = 5)
         {
             return await _context.Events
-                                 .Where(e => e.Date >= DateTime.Now) // Only future events
-                                 .OrderBy(e => e.Date) // Sort by date (soonest first)
-                                 .Take(count) // Limit the number of events
+                                 .Where(e => e.Date >= DateTime.Now) 
+                                 .OrderBy(e => e.Date) 
+                                 .Take(count) 
                                  .ToListAsync();
         }
 
         public async Task AddEventAsync(Event events)
         {
-            events.OrganizerId = events.OrganizerId ?? "default-organizer-id";  // Default or valid organizer ID
+            events.OrganizerId = events.OrganizerId ?? "default-organizer-id";  
             _context.Events.Add(events);
             await _context.SaveChangesAsync();
 
-            // Proceed with sending notifications
+            
             var users = await _userManager.Users.ToListAsync();
             foreach (var user in users)
             {
@@ -97,13 +97,13 @@ namespace EventManagementSystem.Core.Services
         {
             var query = _context.Events.Include(e => e.Venue).AsQueryable();
 
-            // Search by term (event name or description)
+            
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 query = query.Where(e => e.Name.Contains(searchTerm) || e.Description.Contains(searchTerm));
             }
 
-            // Filter by date range
+            
             if (startDate.HasValue)
             {
                 query = query.Where(e => e.Date >= startDate.Value);
@@ -114,19 +114,13 @@ namespace EventManagementSystem.Core.Services
                 query = query.Where(e => e.Date <= endDate.Value);
             }
 
-            // Filter by location
+            
             if (!string.IsNullOrEmpty(location))
             {
                 query = query.Where(e => e.Venue.Address.Contains(location));
             }
 
-            // Filter by event type
-            //if (!string.IsNullOrEmpty(eventType))
-            //{
-            //    query = query.Where(e => e.Type.Name == eventType);
-            //}
-
-            // Filter by price range
+            
             if (minPrice.HasValue)
             {
                 query = query.Where(e => e.TicketPrice >= minPrice.Value);

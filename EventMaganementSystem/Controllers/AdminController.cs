@@ -23,13 +23,13 @@ namespace EventMaganementSystem.Controllers
             _roleManager = roleManager;
         }
 
-        // GET: /Admin
+       
         public async Task<IActionResult> Index()
         {
             return View();
         }
 
-        // POST: /Admin/SendGeneralNotification
+        
         [HttpPost]
         public async Task<IActionResult> SendGeneralNotification(string message)
         {
@@ -49,7 +49,7 @@ namespace EventMaganementSystem.Controllers
             return RedirectToAction("Index");
         }
 
-        // POST: /Admin/SendSystemAlert
+       
         [HttpPost]
         public async Task<IActionResult> SendSystemAlert(string alertMessage)
         {
@@ -70,17 +70,17 @@ namespace EventMaganementSystem.Controllers
         }
         public async Task<IActionResult> ViewUsers()
         {
-            // Fetch all users into memory
+            
             var userList = await _userManager.Users.ToListAsync();
 
-            // Prepare a list of UserViewModels
+            
             var users = new List<UserViewModel>();
             foreach (var user in userList)
             {
-                // Get user roles asynchronously
+               
                 var roles = await _userManager.GetRolesAsync(user);
 
-                // Map user data to UserViewModel
+               
                 users.Add(new UserViewModel
                 {
                     Id = user.Id,
@@ -111,16 +111,14 @@ namespace EventMaganementSystem.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Roles = roles.ToList(),
-               
-              
+                Roles = roles.ToList()
             };
 
             return View(viewModel);
         }
 
 
-        [Authorize(Roles = "Admin")]
+        
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -183,7 +181,7 @@ namespace EventMaganementSystem.Controllers
             return View(viewModel);
         }
 
-        // POST: Admin/AssignRole
+       
         [HttpPost]
         public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
         {
@@ -198,11 +196,11 @@ namespace EventMaganementSystem.Controllers
                 return NotFound();
             }
 
-            // Remove user from all roles before assigning a new one
+            
             var userRoles = await _userManager.GetRolesAsync(user);
             await _userManager.RemoveFromRolesAsync(user, userRoles);
 
-            // Assign the new role
+           
             if (!string.IsNullOrEmpty(model.SelectedRole))
             {
                 var result = await _userManager.AddToRoleAsync(user, model.SelectedRole);

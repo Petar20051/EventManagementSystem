@@ -29,13 +29,13 @@ namespace EventManagementSystem.Tests.ServicesTests
 
         private async Task SeedDataAsync(EventDbContext dbContext)
         {
-            // Add users
+            
             dbContext.Users.AddRange(
                 new ApplicationUser { Id = "user1", UserName = "Test User 1" },
                 new ApplicationUser { Id = "user2", UserName = "Test User 2" }
             );
 
-            // Add events with required fields
+            
             dbContext.Events.AddRange(
                 new Event
                 {
@@ -55,7 +55,7 @@ namespace EventManagementSystem.Tests.ServicesTests
                 }
             );
 
-            // Add feedbacks
+            
             dbContext.Feedbacks.AddRange(
                 new Feedback
                 {
@@ -93,10 +93,10 @@ namespace EventManagementSystem.Tests.ServicesTests
                 FeedbackDate = DateTime.UtcNow
             };
 
-            // Act
+            
             await service.AddFeedbackAsync(newFeedback);
 
-            // Assert
+            
             var addedFeedback = await dbContext.Feedbacks.FirstOrDefaultAsync(f => f.FeedbackContent == "Amazing event!");
             Assert.NotNull(addedFeedback);
             Assert.Equal(2, addedFeedback.EventId);
@@ -110,10 +110,10 @@ namespace EventManagementSystem.Tests.ServicesTests
             await SeedDataAsync(dbContext);
             var service = CreateService(dbContext);
 
-            // Act
+            
             var feedbacks = await service.GetFeedbacksByEventIdAsync(1);
 
-            // Assert
+            
             Assert.Equal(2, feedbacks.Count());
             Assert.Equal("Great event!", feedbacks.First().FeedbackContent);
             Assert.Equal("It was okay.", feedbacks.Last().FeedbackContent);
@@ -126,10 +126,10 @@ namespace EventManagementSystem.Tests.ServicesTests
             await SeedDataAsync(dbContext);
             var service = CreateService(dbContext);
 
-            // Act
-            var feedbacks = await service.GetFeedbacksByEventIdAsync(99); // Non-existent EventId
+            
+            var feedbacks = await service.GetFeedbacksByEventIdAsync(99); 
 
-            // Assert
+            
             Assert.Empty(feedbacks);
         }
     }

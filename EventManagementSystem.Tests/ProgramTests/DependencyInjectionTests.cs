@@ -22,10 +22,10 @@ namespace EventManagementSystem.Tests.ProgramTests
         [Fact]
         public void Services_AreRegisteredCorrectly()
         {
-            // Arrange
+            
             var services = new ServiceCollection();
 
-            // Mock IConfiguration
+            
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
@@ -35,7 +35,7 @@ namespace EventManagementSystem.Tests.ProgramTests
                 .Build();
             services.AddSingleton<IConfiguration>(configuration);
 
-            // Mock UserManager and RoleManager
+            
             var userStoreMock = new Mock<IUserStore<ApplicationUser>>();
             var userManagerMock = new Mock<UserManager<ApplicationUser>>(
                 userStoreMock.Object,
@@ -48,22 +48,22 @@ namespace EventManagementSystem.Tests.ProgramTests
                 null, null, null, null);
             services.AddSingleton(roleManagerMock.Object);
 
-            // Add an in-memory database for EventDbContext
+            
             services.AddDbContext<EventDbContext>(options =>
                 options.UseInMemoryDatabase("TestDatabase"));
 
-            // Register a real LoggerFactory
+            
             services.AddSingleton<ILoggerFactory, LoggerFactory>();
             services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
-            // Add SignalR (this will internally register DefaultHubLifetimeManager)
+            
             services.AddSignalR();
 
-            // Act
+            
             Program.RegisterCustomServices(services);
             var serviceProvider = services.BuildServiceProvider();
 
-            // Assert
+            
             Assert.NotNull(serviceProvider.GetService<IProfileService>());
             Assert.NotNull(serviceProvider.GetService<IEventService>());
             Assert.NotNull(serviceProvider.GetService<IVenueService>());

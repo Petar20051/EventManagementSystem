@@ -28,8 +28,8 @@ namespace EventManagementSystem.Core.Models.Reservation
 
         public IEnumerable<Event> Events { get; set; } = new List<Event>();
 
-        // Payment-related fields
-        public bool IsPaid { get; set; } // To track payment status
+        
+        public bool IsPaid { get; set; } 
 
         public decimal TotalAmount { get; set; }
         public decimal? DiscountedAmount { get; set; }

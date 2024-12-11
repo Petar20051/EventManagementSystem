@@ -37,7 +37,7 @@ namespace EventManagementSystem.Core.Services
             _context.Notifications.Add(notification);
             await _context.SaveChangesAsync();
 
-            // Send the notification in real-time via INotificationHub
+            
             await _notificationHub.SendNotificationAsync(userId, message, type);
         }
 

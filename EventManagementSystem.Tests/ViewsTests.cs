@@ -41,16 +41,16 @@ namespace EventManagementSystem.Tests
         [InlineData("/Payments/PaymentSuccess")]
         public async Task AllViews_ShouldLoadSuccessfully(string url)
         {
-            // Arrange
+            
             var client = _factory.CreateClient();
 
-            // Act
+           
             var response = await client.GetAsync(url);
 
-            // Assert
+           
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
-            Assert.False(string.IsNullOrEmpty(content)); // Ensure content is returned
+            Assert.False(string.IsNullOrEmpty(content));
         }
 
         [Theory]
@@ -59,13 +59,13 @@ namespace EventManagementSystem.Tests
         [InlineData("/Identity/Account/Logout")]
         public async Task IdentityViews_ShouldLoadSuccessfully(string url)
         {
-            // Arrange
+            
             var client = _factory.CreateClient();
 
-            // Act
+            
             var response = await client.GetAsync(url);
 
-            // Assert
+           
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 

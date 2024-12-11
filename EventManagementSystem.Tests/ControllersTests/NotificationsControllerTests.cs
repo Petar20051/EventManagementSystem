@@ -33,31 +33,26 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_RedirectsToLogin_WhenUserIsNotAuthenticated()
         {
-            // Arrange
-            var controller = new NotificationsController(_mockNotificationService.Object)
+                        var controller = new NotificationsController(_mockNotificationService.Object)
             {
                 ControllerContext = new ControllerContext
                 {
                     HttpContext = new DefaultHttpContext
                     {
-                        User = null // Simulate unauthenticated user
-                    }
+                        User = null                     }
                 }
             };
 
-            // Act
-            var result = await controller.Index();
+                        var result = await controller.Index();
 
-            // Assert
-            var redirectResult = Assert.IsType<RedirectResult>(result);
+                        var redirectResult = Assert.IsType<RedirectResult>(result);
             Assert.Equal("/Identity/Account/Login", redirectResult.Url);
         }
 
         [Fact]
         public async Task Index_ReturnsViewResult_WithNotifications()
         {
-            // Arrange
-            var userId = "user1";
+                        var userId = "user1";
             var notifications = new List<Notification>
         {
             new Notification { Id = 1, Message = "Notification 1" },
@@ -77,11 +72,9 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
-            var result = await controller.Index();
+                        var result = await controller.Index();
 
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
+                        var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<List<Notification>>(viewResult.Model);
 
             Assert.Equal(2, model.Count);

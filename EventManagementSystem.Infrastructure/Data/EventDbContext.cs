@@ -67,7 +67,7 @@ namespace EventMaganementSystem.Data
 
             modelBuilder.Entity<Event>()
     .HasOne(e => e.Organizer)
-    .WithMany()  // No collection on ApplicationUser
+    .WithMany()  
     .HasForeignKey(e => e.OrganizerId)
     .OnDelete(DeleteBehavior.Restrict);
 
@@ -100,14 +100,14 @@ namespace EventMaganementSystem.Data
             modelBuilder.Entity<UserEvent>()
                 .HasKey(ue => new { ue.UserId, ue.EventId });
 
-            // Configure seed data for Identity Roles
+            
             modelBuilder.Entity<IdentityRole>().HasData(
                 new IdentityRole { Id = "1", Name = "Guest", NormalizedName = "GUEST" },
                 new IdentityRole { Id = "2", Name = "Organizer", NormalizedName = "ORGANIZER" },
                 new IdentityRole { Id = "3", Name = "Admin", NormalizedName = "ADMIN" }
             );
 
-            // Seed Venues
+            
             modelBuilder.Entity<Venue>().HasData(
                 new Venue { Id = 1, Name = "Conference Hall A", Address = "City Center", Capacity = 500 },
                 new Venue { Id = 2, Name = "Workshop Room B", Address = "Tech Park", Capacity = 150 }

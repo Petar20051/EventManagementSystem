@@ -14,7 +14,7 @@ namespace EventManagementSystem.Infrastructure.Data.Entities
     {
             public int Id { get; set; }
 
-            //[Required]
+            
             public string? SenderId { get; set; }
             [ForeignKey(nameof(SenderId))]
             public ApplicationUser? Sender { get; set; }

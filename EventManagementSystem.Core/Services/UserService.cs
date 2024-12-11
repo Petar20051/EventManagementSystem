@@ -38,7 +38,7 @@ namespace EventManagementSystem.Core.Services
 
             var user = await _userManager.FindByIdAsync(userId);
 
-            // Return the StripeCustomerId or null if the user is not found.
+            
             return user?.StripeCustomerId;
         }
 

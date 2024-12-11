@@ -61,13 +61,13 @@ public class StripePaymentService : IStripePaymentService
 
         var options = new PaymentIntentCreateOptions
         {
-            Amount = (long)(discountedAmount * 100), // Convert amount to cents
-            Currency = "usd", // Use your currency code here
+            Amount = (long)(discountedAmount * 100), 
+            Currency = "bgn", 
             Customer = customerId,
             PaymentMethod = paymentMethodId,
             Confirm = true,
-            PaymentMethodTypes = new List<string> { "card" }, // Specify the payment method types
-            ReturnUrl = "https://localhost:7056/Payments/PaymentSuccess" // Add your return URL here
+            PaymentMethodTypes = new List<string> { "card" }, 
+            ReturnUrl = "https://localhost:7056/Payments/PaymentSuccess" 
         };
 
         var service = new PaymentIntentService();
@@ -88,13 +88,13 @@ public class StripePaymentService : IStripePaymentService
 
         var options = new PaymentIntentCreateOptions
         {
-            Amount = (long)(amount * 100), // Convert amount to cents
-            Currency = "usd", // Use your currency code here
+            Amount = (long)(amount * 100), 
+            Currency = "bgn", 
             Customer = customerId,
             PaymentMethod = paymentMethodId,
             Confirm = true,
-            PaymentMethodTypes = new List<string> { "card" }, // Specify the payment method types
-            ReturnUrl = "https://localhost:7056/Payments/PaymentSuccess" // Add your return URL here
+            PaymentMethodTypes = new List<string> { "card" }, 
+            ReturnUrl = "https://localhost:7056/Payments/PaymentSuccess" 
         };
 
         var service = new PaymentIntentService();
@@ -140,7 +140,7 @@ public class StripePaymentService : IStripePaymentService
         var service = new SetupIntentService();
         var setupIntent = await service.CreateAsync(options);
 
-        return setupIntent.ClientSecret; // Use this on the client side to confirm the setup
+        return setupIntent.ClientSecret; 
     }
     public async Task AttachPaymentMethodAsync(string customerId, string paymentMethodId)
     {
@@ -148,14 +148,14 @@ public class StripePaymentService : IStripePaymentService
 
         try
         {
-            // Fetch the payment method details
+            
             var paymentMethod = await paymentMethodService.GetAsync(paymentMethodId);
 
-            // Check if the payment method is already attached
+            
             if (paymentMethod.Customer?.Id == customerId)
             {
                 Console.WriteLine($"Payment method {paymentMethodId} is already attached to customer {customerId}.");
-                return; // Exit early if the card is already attached
+                return; 
             }
 
             if (!string.IsNullOrEmpty(paymentMethod.Customer?.Id))
@@ -163,7 +163,7 @@ public class StripePaymentService : IStripePaymentService
                 throw new InvalidOperationException($"Payment method {paymentMethodId} is already attached to another customer.");
             }
 
-            // Attach the payment method
+            
             await paymentMethodService.AttachAsync(paymentMethodId, new PaymentMethodAttachOptions
             {
                 Customer = customerId

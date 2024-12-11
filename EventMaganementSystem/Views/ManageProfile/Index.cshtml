@@ -7,7 +7,7 @@
 <div class="container mt-5">
     <h2 class="text-center mb-4" style="color: #004080;">Manage Profile</h2>
 
-    <!-- Profile Information Card -->
+    
     <div class="card shadow-sm p-4 mb-4">
         <h3 class="card-title" style="color: #004080;">Profile Information</h3>
         <p><strong>Username:</strong> @Model.UserName.Substring(0, Model.UserName.IndexOf('@'))</p>
@@ -16,7 +16,7 @@
         <p><strong>Sponsorship Tier:</strong> @Model?.SponsorshipTier?.ToString()</p>
     </div>
 
-    <!-- Tickets Section -->
+   
     <div class="card shadow-sm p-4 mb-4">
         <h3 class="card-title" style="color: #004080;">Tickets</h3>
         @if (Model?.Tickets != null && Model.Tickets.Any())
@@ -35,7 +35,7 @@
         }
     </div>
 
-    <!-- Update Profile Section -->
+    
     <div class="card shadow-sm p-4 mb-4">
         <h3 class="card-title" style="color: #004080;">Update Profile Information</h3>
         <button type="button" class="btn btn-secondary mb-3" onclick="window.location.href='@Url.Action("Index", "ChangePassword")'">Change Password</button>
@@ -67,15 +67,7 @@
         <button type="button" class="btn btn-primary" onclick="window.location.href='@Url.Action("ManagePaymentMethods", "PaymentMethods")'">Payment Methods</button>
     </div>
 
-    <!-- TempData Messages -->
-    @* @if (TempData["Message"] != null)
-    {
-        <div class="alert alert-success mt-3">@TempData["Message"]</div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger mt-3">@TempData["Error"]</div>
-    } *@
+   
 </div>
 
 <style>

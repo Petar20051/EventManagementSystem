@@ -39,7 +39,7 @@ namespace EventManagementSystem.Tests.ControllersTests
             _mockUserManager = new Mock<UserManager<ApplicationUser>>(
                 userStoreMock.Object, null, null, null, null, null, null, null, null);
 
-            // Seed database
+            
             _dbContext.Tickets.Add(new Ticket { Id = 1, HolderId = "user1", EventId = 1 });
             _dbContext.SaveChanges();
         }
@@ -55,7 +55,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_RedirectsToLogin_WhenUserNotFound()
         {
-            // Arrange
+            
             _mockProfileService.Setup(s => s.GetUserAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
 
             var controller = new ManageProfileController(_mockProfileService.Object, _dbContext, _mockUserManager.Object)
@@ -69,10 +69,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Index();
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectResult>(result);
             Assert.Equal("/Identity/Account/Login", redirectResult.Url);
         }
@@ -80,7 +80,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_ReturnsViewResult_WithManageProfileViewModel()
         {
-            // Arrange
+            
             var user = new ApplicationUser
             {
                 Id = "user1",
@@ -103,10 +103,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Index();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<ManageProfileViewModel>(viewResult.Model);
 
@@ -120,7 +120,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task BecomeOrganizer_AddsUserToRole_WhenNotAlreadyOrganizer()
         {
-            // Arrange
+            
             var user = new ApplicationUser { Id = "user1", UserName = "TestUser" };
 
             _mockUserManager.Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
@@ -136,13 +136,13 @@ namespace EventManagementSystem.Tests.ControllersTests
                         User = CreateUserPrincipal("user1")
                     }
                 },
-                TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()) // Initialize TempData
+                TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()) 
             };
 
-            // Act
+            
             var result = await controller.BecomeOrganizer();
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirectResult.ActionName);
             Assert.Equal("You are now an Organizer!", controller.TempData["Message"]);
@@ -154,7 +154,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task BecomeOrganizer_DoesNotAddUserToRole_WhenAlreadyOrganizer()
         {
-            // Arrange
+            
             var user = new ApplicationUser { Id = "user1", UserName = "TestUser" };
 
             _mockUserManager.Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
@@ -172,10 +172,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()) // Initialize TempData
             };
 
-            // Act
+            
             var result = await controller.BecomeOrganizer();
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirectResult.ActionName);
             Assert.Equal("You are already an Organizer.", controller.TempData["Error"]);
@@ -185,7 +185,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task BecomeOrganizer_ReturnsError_WhenAddingToRoleFails()
         {
-            // Arrange
+            
             var user = new ApplicationUser { Id = "user1", UserName = "TestUser" };
 
             _mockUserManager.Setup(s => s.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
@@ -201,13 +201,13 @@ namespace EventManagementSystem.Tests.ControllersTests
                         User = CreateUserPrincipal("user1")
                     }
                 },
-                TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()) // Initialize TempData
+                TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()) 
             };
 
-            // Act
+            
             var result = await controller.BecomeOrganizer();
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirectResult.ActionName);
             Assert.Equal("Failed to assign Organizer role.", controller.TempData["Error"]);

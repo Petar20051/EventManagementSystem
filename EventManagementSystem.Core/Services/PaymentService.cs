@@ -54,7 +54,7 @@ namespace EventManagementSystem.Core.Services
 
             try
             {
-                // Call the StripePaymentMethodService to detach the payment method
+                
                 await _paymentMethodServiceWrapper.DetachAsync(cardId);
             }
             catch (StripeException ex)

@@ -25,14 +25,14 @@ namespace EventManagementSystem.Tests.ControllersTests
         {
             _mockInvitationService = new Mock<IEventInvitationService>();
 
-            // In-memory database setup
+            
             var options = new DbContextOptionsBuilder<EventDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
             _dbContext = new EventDbContext(options);
 
-            // Seed the in-memory database with required properties
+            
             _dbContext.Events.Add(new Event
             {
                 Id = 1,
@@ -62,7 +62,7 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public async Task Index_ReturnsViewResult_WithInvitations()
         {
-            // Arrange
+            
             var userId = "user1";
             var invitations = new List<EventInvitation>
         {
@@ -82,10 +82,10 @@ namespace EventManagementSystem.Tests.ControllersTests
                 }
             };
 
-            // Act
+            
             var result = await controller.Index();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<List<EventInvitation>>(viewResult.Model);
             Assert.Single(model);
@@ -95,13 +95,13 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
         public void Create_GET_ReturnsView_WithEventAndUserLists()
         {
-            // Arrange
+            
             var controller = new EventInvitationController(_mockInvitationService.Object, _dbContext);
 
-            // Act
+            
             var result = controller.Create();
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             Assert.NotNull(viewResult.ViewData["EventList"]);
             Assert.NotNull(viewResult.ViewData["UserList"]);
@@ -110,14 +110,14 @@ namespace EventManagementSystem.Tests.ControllersTests
         [Fact]
 public async Task Create_POST_RedirectsToIndex_WhenModelStateIsValid()
 {
-    // Arrange
+    
     var options = new DbContextOptionsBuilder<EventDbContext>()
         .UseInMemoryDatabase(databaseName: "EventInvitationTestDb")
         .Options;
 
     await using var dbContext = new EventDbContext(options);
     
-    // Seed the database
+    
     dbContext.Events.Add(new Event { Id = 1, Name = "Test Event", OrganizerId = "user1", Date = DateTime.UtcNow , Description = "good" });
     dbContext.Users.Add(new ApplicationUser { Id = "user2", UserName = "ReceiverUser" });
     await dbContext.SaveChangesAsync();
@@ -135,15 +135,15 @@ public async Task Create_POST_RedirectsToIndex_WhenModelStateIsValid()
         {
             HttpContext = new DefaultHttpContext
             {
-                User = CreateUserPrincipal(userId) // Simulates an authenticated user
+                User = CreateUserPrincipal(userId) 
             }
         }
     };
 
-    // Act
+    
     var result = await controller.Create(invitation);
 
-    // Assert
+    
     var redirectResult = Assert.IsType<RedirectToActionResult>(result);
     Assert.Equal("Index", redirectResult.ActionName);
 
@@ -155,16 +155,16 @@ public async Task Create_POST_RedirectsToIndex_WhenModelStateIsValid()
         [Fact]
         public async Task Details_ReturnsViewResult_WithInvitation()
         {
-            // Arrange
+            
             var invitation = new EventInvitation { Id = 1, EventId = 1, ReceiverId = "user2" };
             _mockInvitationService.Setup(s => s.GetInvitationByIdAsync(1)).ReturnsAsync(invitation);
 
             var controller = new EventInvitationController(_mockInvitationService.Object, _dbContext);
 
-            // Act
+            
             var result = await controller.Details(1);
 
-            // Assert
+            
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<EventInvitation>(viewResult.Model);
             Assert.Equal(1, model.Id);
@@ -173,15 +173,15 @@ public async Task Create_POST_RedirectsToIndex_WhenModelStateIsValid()
         [Fact]
         public async Task DeleteConfirmed_RedirectsToIndex_WhenInvitationIsDeleted()
         {
-            // Arrange
+            
             _mockInvitationService.Setup(s => s.DeleteInvitationAsync(1)).Returns(Task.CompletedTask);
 
             var controller = new EventInvitationController(_mockInvitationService.Object, _dbContext);
 
-            // Act
+            
             var result = await controller.DeleteConfirmed(1);
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirectResult.ActionName);
 
@@ -191,17 +191,17 @@ public async Task Create_POST_RedirectsToIndex_WhenModelStateIsValid()
         [Fact]
         public async Task ConfirmInvitation_RedirectsToIndex_WhenInvitationIsConfirmed()
         {
-            // Arrange
+            
             var invitation = new EventInvitation { Id = 1, EventId = 1 };
             _mockInvitationService.Setup(s => s.GetInvitationByIdAsync(1)).ReturnsAsync(invitation);
             _mockInvitationService.Setup(s => s.ConfirmInvitationAsync(1)).Returns(Task.CompletedTask);
 
             var controller = new EventInvitationController(_mockInvitationService.Object, _dbContext);
 
-            // Act
+            
             var result = await controller.ConfirmInvitation(1);
 
-            // Assert
+            
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirectResult.ActionName);
 

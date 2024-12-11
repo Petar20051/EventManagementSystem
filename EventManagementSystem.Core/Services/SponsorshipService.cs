@@ -21,15 +21,15 @@ namespace EventManagementSystem.Core.Services
             _stripePaymentService = stripePaymentService;
         }
 
-        // Process the sponsorship payment
+        
         public async Task ProcessSponsorshipAsync(ApplicationUser user, decimal amount, string selectedCardId)
         {
-            // Process the payment using the StripePaymentService
+            
             var paymentStatus = await _stripePaymentService.ProcessPaymentAsync(amount, selectedCardId, user.Id);
 
             if (paymentStatus == "succeeded")
             {
-                // Add to user's sponsored amount
+                
                 user.SponsoredAmount += amount;
             }
             else
@@ -38,18 +38,18 @@ namespace EventManagementSystem.Core.Services
             }
         }
 
-        // Update the sponsorship tier based on the total sponsored amount
+        
         public async Task UpdateSponsorshipTierAsync(ApplicationUser user, UserManager<ApplicationUser> userManager)
         {
             var newTier = DetermineSponsorshipTier(user.SponsoredAmount);
             if (user.SponsorshipTier != newTier)
             {
                 user.SponsorshipTier = newTier;
-                await userManager.UpdateAsync(user); // Update the user in the database
+                await userManager.UpdateAsync(user); 
             }
         }
 
-        // Determine sponsorship tier based on the sponsored amount
+        
         public SponsorshipTier DetermineSponsorshipTier(decimal sponsoredAmount)
         {
             if (sponsoredAmount >= 100)

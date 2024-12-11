@@ -26,41 +26,41 @@ namespace EventManagementSystem.Tests.ProgramTests
         [Fact]
         public void Program_Main_SetsUpBuilderCorrectly()
         {
-            // Arrange
+            
             var builder = WebApplication.CreateBuilder();
 
-            // Add in-memory database for testing
+            
             builder.Services.AddDbContext<EventDbContext>(options =>
                 options.UseInMemoryDatabase("TestDatabase"));
 
-            // Mock UserManager<ApplicationUser>
+            
             var userStoreMock = new Mock<IUserStore<ApplicationUser>>();
             var userManagerMock = new Mock<UserManager<ApplicationUser>>(
                 userStoreMock.Object,
                 null, null, null, null, null, null, null, null);
             builder.Services.AddSingleton(userManagerMock.Object);
 
-            // Mock RoleManager<IdentityRole>
+            
             var roleStoreMock = new Mock<IRoleStore<IdentityRole>>();
             var roleManagerMock = new Mock<RoleManager<IdentityRole>>(
                 roleStoreMock.Object,
                 null, null, null, null);
             builder.Services.AddSingleton(roleManagerMock.Object);
 
-            // Add other services required by Program.RegisterCustomServices
+            
             builder.Services.AddAuthorization();
             builder.Services.AddAuthentication("TestScheme")
                 .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestScheme", options => { });
-            builder.Services.AddSignalR(); // Add SignalR
-            builder.Services.AddLogging(); // Add Logging
+            builder.Services.AddSignalR(); 
+            builder.Services.AddLogging(); 
 
-            // Act
+            
             Program.RegisterCustomServices(builder.Services);
 
-            // Assert
+            
             var serviceProvider = builder.Services.BuildServiceProvider();
-            Assert.NotNull(serviceProvider.GetService<IEventService>()); // Check EventService registration
-            Assert.NotNull(serviceProvider.GetService<UserManager<ApplicationUser>>()); // Check UserManager
+            Assert.NotNull(serviceProvider.GetService<IEventService>()); 
+            Assert.NotNull(serviceProvider.GetService<UserManager<ApplicationUser>>()); 
         }
     }
 

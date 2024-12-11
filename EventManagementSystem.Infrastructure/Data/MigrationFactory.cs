@@ -10,7 +10,7 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<EventDbCo
     {
         var optionsBuilder = new DbContextOptionsBuilder<EventDbContext>();
 
-        // Assuming your connection string is in appsettings.json
+        
         IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")

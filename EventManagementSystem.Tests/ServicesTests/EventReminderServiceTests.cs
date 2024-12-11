@@ -20,7 +20,6 @@ namespace EventManagementSystem.Tests.ServicesTests
 
         public EventReminderServiceTests()
         {
-            // Configure in-memory database for testing
             _options = new DbContextOptionsBuilder<EventDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
@@ -42,7 +41,7 @@ namespace EventManagementSystem.Tests.ServicesTests
                     Name = "Upcoming Event",
                     Date = DateTime.UtcNow.Date.AddDays(1),
                     Description = "Test event happening tomorrow.",
-                    OrganizerId = "user1" // Required property
+                    OrganizerId = "user1" 
                 },
                 new Event
                 {
@@ -50,7 +49,7 @@ namespace EventManagementSystem.Tests.ServicesTests
                     Name = "Past Event",
                     Date = DateTime.UtcNow.Date.AddDays(-1),
                     Description = "Test event that already occurred.",
-                    OrganizerId = "user1" // Required property
+                    OrganizerId = "user1" 
                 }
             );
 
@@ -73,7 +72,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task ExecuteAsync_SendsReminderNotificationsForUpcomingEvents()
         {
-            // Arrange
+            
             var serviceProvider = new ServiceCollection()
                 .AddSingleton(new EventDbContext(_options))
                 .BuildServiceProvider();
@@ -86,13 +85,13 @@ namespace EventManagementSystem.Tests.ServicesTests
 
             var service = CreateService(serviceProvider);
 
-            // Act
+            
             var cancellationTokenSource = new CancellationTokenSource();
-            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(2)); // Short execution for testing
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(2)); 
 
             await service.StartAsync(cancellationTokenSource.Token);
 
-            // Assert
+            
             _mockNotificationService.Verify(
                 n => n.NotifyEventReminderAsync("user2", "Upcoming Event", It.IsAny<DateTime>()),
                 Times.Once);
@@ -104,7 +103,7 @@ namespace EventManagementSystem.Tests.ServicesTests
         [Fact]
         public async Task ExecuteAsync_DoesNotSendRemindersForPastEvents()
         {
-            // Arrange
+            
             var serviceProvider = new ServiceCollection()
                 .AddSingleton(new EventDbContext(_options))
                 .BuildServiceProvider();
@@ -117,13 +116,13 @@ namespace EventManagementSystem.Tests.ServicesTests
 
             var service = CreateService(serviceProvider);
 
-            // Act
+            
             var cancellationTokenSource = new CancellationTokenSource();
-            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(2)); // Short execution for testing
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(2)); 
 
             await service.StartAsync(cancellationTokenSource.Token);
 
-            // Assert
+            
             _mockNotificationService.Verify(
                 n => n.NotifyEventReminderAsync("user1", "Past Event", It.IsAny<DateTime>()),
                 Times.Never);

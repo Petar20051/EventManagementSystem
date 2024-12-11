@@ -20,12 +20,12 @@ namespace EventManagementSystem.Core.Services
 
         public async Task AddUserEventAsync(string userId, int eventId)
         {
-            if (string.IsNullOrEmpty(userId))  // Check if userId is null or empty
+            if (string.IsNullOrEmpty(userId))  
             {
                 throw new ArgumentException("User ID cannot be null or empty.", nameof(userId));
             }
 
-            if (eventId <= 0) // Validate that the eventId is positive
+            if (eventId <= 0) 
             {
                 throw new ArgumentException("Event ID must be a valid positive integer.", nameof(eventId));
             }

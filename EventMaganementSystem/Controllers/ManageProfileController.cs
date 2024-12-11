@@ -51,10 +51,10 @@ namespace EventMaganementSystem.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
 
-            // Check if the user is already in the Organizer role
+          
             if (!await _userManager.IsInRoleAsync(user, "Organizer"))
             {
-                // Add user to the Organizer role
+               
                 var result = await _userManager.AddToRoleAsync(user, "Organizer");
                 if (result.Succeeded)
                 {
@@ -63,7 +63,7 @@ namespace EventMaganementSystem.Controllers
                 }
                 else
                 {
-                    // Handle errors (optional)
+                   
                     TempData["Error"] = "Failed to assign Organizer role.";
                 }
             }
